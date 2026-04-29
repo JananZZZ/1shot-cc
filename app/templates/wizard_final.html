@@ -6,13 +6,82 @@
   <p class="text-muted mt-1">您的 Claude Code 环境已准备就绪。</p>
 </div>
 
-<div class="grid-2 mb-2">
-  <div class="card" style="text-align:center;">
-    <div style="font-size:2.5rem;">🤖</div>
-    <h3>启动 Claude Code</h3>
-    <p class="text-sm text-muted mt-1">打开"命令窗口"（Win+R 输入 cmd），进入工作目录，输入 <code>claude</code> 即可启动</p>
-    <p class="text-sm text-muted">首次启动可能需要 10-30 秒加载</p>
+<!-- API 未配置警告 -->
+<div id="api-warning-card" class="warning" style="max-width:650px; margin:0 auto 20px; display:none;">
+  <strong>⚠️ 重要提醒：您还没有配置 API 提供商！</strong>
+  <p class="text-sm mt-1">如果不配置可用的 API，Claude Code 将要求你使用 Anthropic 官方账号登录（需要科学上网），否则会显示 <strong>"Log in"</strong> 无法进行任何操作。</p>
+  <a href="/wizard/config" class="btn btn-primary btn-sm mt-1">⚙️ 立即配置 API →</a>
+</div>
+
+<!-- 一键启动 Claude Code -->
+<div class="text-center mb-3" id="launch-section">
+  <button id="launch-btn" class="btn btn-primary" style="font-size:1.2rem; padding: 16px 40px;" onclick="launchClaudeCode()">
+    🚀 开始尝试 Claude Code coding 吧！
+  </button>
+  <p id="launch-hint" class="text-sm text-muted mt-1" style="display:none;"></p>
+</div>
+
+<h2>🎨 终端美化（推荐）</h2>
+<div class="card mb-2" style="border:2px solid var(--accent);">
+  <div class="card-header">✨ Color-cc — 让终端界面赏心悦目</div>
+  <p class="text-sm">默认的命令窗口黑底白字，排版可能比较简陋。推荐安装 <strong>Color-cc</strong>，一键美化 Windows 终端界面，让 Claude Code 的排版更加清晰美观。</p>
+  <div class="flex flex-wrap gap-2 mt-1">
+    <a href="https://github.com/JananZZZ/Color-cc" target="_blank" class="btn btn-primary btn-sm">📦 查看 Color-cc 项目</a>
+    <span class="text-sm text-muted" style="align-self:center;">可选 · 安装后终端界面效果显著提升</span>
   </div>
+</div>
+
+<h2>🖥️ 如何启动 Claude Code？</h2>
+
+<div class="grid-2 mb-2">
+  <!-- PowerShell 推荐 -->
+  <div class="card" style="border:2px solid var(--success);">
+    <div class="card-header">✅ 推荐：PowerShell（界面更好看）</div>
+    <p class="text-sm text-muted mb-1">PowerShell 对 Claude Code 的富文本渲染支持更好，排版不容易混乱。</p>
+    <ol class="text-sm" style="padding-left:18px;">
+      <li class="mb-1">在项目文件夹中，<strong>按住 Shift + 右键空白处</strong></li>
+      <li class="mb-1">选择 <strong>"在此处打开 PowerShell 窗口"</strong></li>
+      <li class="mb-1">或者按 <kbd>Win</kbd> + <kbd>R</kbd>，输入 <code>powershell</code>，回车</li>
+      <li class="mb-1">也可以在开始菜单搜索 <strong>PowerShell</strong></li>
+      <li>进入项目目录后输入 <code>claude</code> 并回车</li>
+    </ol>
+    <div class="tip mt-1">
+      <strong>💡 技巧：</strong>在 PowerShell 中按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd> 可以放大字体，<kbd>Ctrl</kbd>+<kbd>-</kbd> 缩小。
+    </div>
+  </div>
+
+  <!-- CMD 备选 -->
+  <div class="card">
+    <div class="card-header">备选：命令提示符（CMD）</div>
+    <p class="text-sm text-muted mb-1">传统的 Windows 命令窗口，Claude Code 可以运行但可能出现排版问题。</p>
+    <ol class="text-sm" style="padding-left:18px;">
+      <li class="mb-1">按 <kbd>Win</kbd> + <kbd>R</kbd>，输入 <code>cmd</code>，回车</li>
+      <li class="mb-1">或在文件夹地址栏输入 <code>cmd</code> 回车</li>
+      <li class="mb-1">或在开始菜单搜索 <strong>cmd</strong> 或 <strong>命令提示符</strong></li>
+      <li>进入项目目录后输入 <code>claude</code> 并回车</li>
+    </ol>
+    <div class="warning mt-1">
+      <strong>⚠️ 注意：</strong>CMD 对 Unicode 和富文本支持较差，可能出现字符错位。建议优先使用 PowerShell。
+    </div>
+  </div>
+</div>
+
+<!-- 首次使用指南 -->
+<div class="card mb-2">
+  <div class="card-header">👋 第一次使用 Claude Code</div>
+  <ol class="text-sm" style="padding-left:18px;">
+    <li class="mb-1">在终端输入 <code>claude</code> 并回车</li>
+    <li class="mb-1">Claude Code 会扫描当前文件夹，可能提示"是否信任此文件夹"——选 <strong>Yes</strong></li>
+    <li class="mb-1">等待几秒加载完成后，会出现对话界面</li>
+    <li>试试输入：<code>hello world！帮我写一个简单的 Python 脚本</code></li>
+  </ol>
+  <div class="info mt-1">
+    <strong>🎯 第一次对话建议：</strong>从一个简单任务开始。比如让 Claude Code 创建一个新文件、解释一段代码、或者帮你运行一条命令。熟悉了基本用法后，再尝试复杂的任务。
+  </div>
+</div>
+
+<!-- 其他功能卡片 -->
+<div class="grid-2 mb-2">
   <div class="card" style="text-align:center;">
     <div style="font-size:2.5rem;">🔀</div>
     <h3>启动 CC-Switch</h3>
@@ -30,10 +99,16 @@
     <p class="text-sm text-muted mt-1">在命令窗口运行 <code>claude update</code> 升级到最新版本</p>
     <p class="text-sm text-muted">建议定期更新以获得最新功能</p>
   </div>
+  <div class="card" style="text-align:center;">
+    <div style="font-size:2.5rem;">🎨</div>
+    <h3>终端美化</h3>
+    <p class="text-sm text-muted mt-1"><a href="https://github.com/JananZZZ/Color-cc" target="_blank">Color-cc</a> 一键美化终端</p>
+    <p class="text-sm text-muted">让 Claude Code 看起来更专业</p>
+  </div>
 </div>
 
 <div class="text-center mt-3">
-  <p class="text-muted mb-2">📚 推荐阅读以下教程以快速上手：</p>
+  <p class="text-muted mb-2">📚 推荐阅读：</p>
   <div class="flex flex-wrap gap-2" style="justify-content:center;">
     <a href="/tutorial/claude" target="_blank" class="btn btn-primary">📘 Claude Code 使用指南</a>
     <a href="/tutorial/apikey" target="_blank" class="btn btn-outline">🔑 获取 API Key</a>
@@ -42,23 +117,47 @@
   </div>
 </div>
 
-<div class="card mt-3" style="background: var(--bg);">
-  <div class="card-header">🖥️ 怎么打开"命令窗口"？</div>
-  <div class="grid-2">
-    <div>
-      <p class="text-sm"><strong>方法一：</strong>按键盘 <kbd>Win</kbd> + <kbd>R</kbd>，输入 <code>cmd</code>，回车</p>
-      <p class="text-sm mt-1"><strong>方法二：</strong>点击"开始"菜单，搜索 <code>cmd</code> 或 <code>命令提示符</code></p>
-      <p class="text-sm mt-1"><strong>方法三：</strong>在文件夹地址栏输入 <code>cmd</code> 并回车</p>
-    </div>
-    <div>
-      <p class="text-sm"><strong>启动 Claude Code：</strong></p>
-      <div class="log-window">cd 你的项目文件夹<br>claude</div>
-      <p class="text-sm text-muted mt-1">首次使用请先 <a href="/wizard/config">配置 API</a>，否则无法启动</p>
-    </div>
-  </div>
-</div>
-
 <div class="text-center mt-3">
   <a href="/" class="btn btn-outline">🏠 返回首页</a>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function launchClaudeCode() {
+  const btn = document.getElementById("launch-btn");
+  const hint = document.getElementById("launch-hint");
+  btn.disabled = true;
+  btn.textContent = "⏳ 正在启动 PowerShell...";
+
+  try {
+    const resp = await fetch("/api/install/launch-powershell", { method: "POST" });
+    const data = await resp.json();
+    if (data.success) {
+      hint.style.display = "block";
+      hint.textContent = "✅ PowerShell 已打开！在新窗口中输入 claude 并回车即可。";
+      showToast("PowerShell 已启动！", "success");
+    } else {
+      hint.style.display = "block";
+      hint.innerHTML = `请手动打开 PowerShell：<br>1. 按 <kbd>Win</kbd> + <kbd>R</kbd><br>2. 输入 <code>powershell</code><br>3. 进入项目文件夹，输入 <code>claude</code>`;
+      showToast("请手动打开 PowerShell", "warning");
+    }
+  } catch (e) {
+    hint.style.display = "block";
+    hint.innerHTML = `请手动打开 PowerShell：<br>1. 按 <kbd>Win</kbd> + <kbd>R</kbd><br>2. 输入 <code>powershell</code><br>3. 进入项目文件夹，输入 <code>claude</code>`;
+  }
+  btn.disabled = false;
+  btn.textContent = "🚀 开始尝试 Claude Code coding 吧！";
+}
+
+// 检测 API 是否已配置
+(async function() {
+  try {
+    const resp = await API.getCurrentConfig();
+    if (resp.success && !resp.data.configured) {
+      document.getElementById("api-warning-card").style.display = "block";
+    }
+  } catch (e) {}
+})();
+</script>
 {% endblock %}

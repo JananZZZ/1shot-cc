@@ -73,8 +73,10 @@ function selectMode(mode) {
 
 function startInstall() {
   if (!installMode) { showToast("请先选择安装方式", "warning"); return; }
-  const fn = installMode === "gui" ? API.installCCSwitchGUI : API.installCCSwitchCLI;
-  const wizard = new InstallWizard(() => fn(), {
+  const installFn = installMode === "gui"
+    ? () => API.installCCSwitchGUI()
+    : () => API.installCCSwitchCLI();
+  const wizard = new InstallWizard(installFn, {
     title: "安装 CC-Switch",
     successMsg: `CC-Switch (${installMode === "gui" ? "桌面版" : "CLI 版"}) 安装完成！`
   });

@@ -8,7 +8,6 @@
 </div>
 
 <div id="results" style="display:none;">
-
   <div id="check-cards"></div>
 
   <div class="card mt-2" id="summary-card" style="display:none;">
@@ -16,14 +15,37 @@
     <div class="flex flex-wrap gap-2" id="action-buttons"></div>
   </div>
 
-  <div class="text-center mt-3">
-    <button class="btn btn-outline" onclick="location.reload()">🔄 重新检测</button>
+  <div class="text-center mt-3 flex flex-wrap gap-2" style="justify-content:center;">
+    <button class="btn btn-outline" onclick="forceRecheck()">🔄 重新检测全部</button>
+    <span class="text-sm text-muted" style="align-self:center;">上次检测: <span id="last-check-time">-</span></span>
   </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
+const CACHE_KEY = "1shot-cc-check-cache";
+const CACHE_TTL = 5 * 60 * 1000; // 5 分钟缓存
+
+function getCache() {
+  try {
+    const raw = sessionStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const cache = JSON.parse(raw);
+    if (Date.now() - cache.ts > CACHE_TTL) { sessionStorage.removeItem(CACHE_KEY); return null; }
+    return cache.data;
+  } catch (e) { return null; }
+}
+
+function setCache(data) {
+  sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
+}
+
+function forceRecheck() {
+  sessionStorage.removeItem(CACHE_KEY);
+  location.reload();
+}
+
 const CHECK_ITEMS = [
   { key: "nodejs", name: "Node.js", icon: "🟢", desc: "JavaScript 运行环境，Claude Code 的核心依赖" },
   { key: "git", name: "Git", icon: "📦", desc: "版本管理工具，Windows 下 Claude Code 需要" },
@@ -36,79 +58,124 @@ const CHECK_ITEMS = [
 ];
 
 function renderCheckCard(item, data) {
-  let status = "ok", icon = "✅", detail = "";
+  let status = "ok", icon = "";
   if (item.key === "nodejs") {
     status = data.installed ? "ok" : "error";
-    detail = data.installed ? `v${data.version} (${data.path || "PATH"})` : "未安装";
+    icon = data.installed ? "✅" : "❌";
   } else if (item.key === "git") {
     status = data.installed ? "ok" : "error";
-    detail = data.installed ? data.version : "未安装";
+    icon = data.installed ? "✅" : "❌";
   } else if (item.key === "powershell_policy") {
     status = data.need_fix ? "warn" : "ok";
     icon = data.need_fix ? "⚠️" : "✅";
-    detail = `当前策略: ${data.policy}` + (data.need_fix ? " (需修复)" : "");
   } else if (item.key === "npm_registry") {
     status = data.is_mirror ? "ok" : "warn";
     icon = data.is_mirror ? "✅" : "⚠️";
-    detail = data.current || "未知";
-    if (!data.is_mirror) detail += " (建议设为淘宝镜像)";
   } else if (item.key === "claude_code") {
     status = data.installed ? "ok" : "error";
-    detail = data.installed ? data.version : "未安装";
+    icon = data.installed ? "✅" : "❌";
   } else if (item.key === "ccswitch") {
     status = data.installed ? "ok" : "warn";
     icon = data.installed ? "✅" : "⚠️";
-    detail = data.installed ? `已安装 (${data.type})` : "未安装 (可选)";
   } else if (item.key === "claude_config") {
     if (data.onboarding_done) {
-      status = "ok"; icon = "✅"; detail = "已配置，可正常使用";
+      status = "ok"; icon = "✅";
     } else if (data.settings_exists) {
-      status = "warn"; icon = "⚠️"; detail = "settings.json 存在但 .claude.json 未配置";
+      status = "warn"; icon = "⚠️";
     } else {
-      status = "warn"; icon = "⚠️"; detail = "未配置 (将在安装后自动配置)";
+      status = "warn"; icon = "⚠️";
     }
   } else if (item.key === "path_issues") {
     status = data.ok ? "ok" : "warn";
     icon = data.ok ? "✅" : "⚠️";
-    detail = data.ok ? "路径正常" : data.issues.map(i => `${i.path} 含中文`).join("; ");
+  }
+
+  let detail = "";
+  if (item.key === "nodejs") {
+    detail = data.installed ? `v${data.version} (${data.path || "PATH"})` : "未安装 — Claude Code 无法运行";
+  } else if (item.key === "git") {
+    detail = data.installed ? data.version : "未安装 — Windows 下 Claude Code 需要 Git";
+  } else if (item.key === "powershell_policy") {
+    detail = `当前策略: ${data.policy}` + (data.need_fix ? " (需修复)" : " ✓");
+  } else if (item.key === "npm_registry") {
+    detail = data.current || "未知";
+    if (!data.is_mirror) detail += " (建议设为淘宝镜像)";
+  } else if (item.key === "claude_code") {
+    detail = data.installed ? data.version : "未安装";
+  } else if (item.key === "ccswitch") {
+    detail = data.installed ? `已安装 (${data.type})` : "未安装 (可选工具)";
+  } else if (item.key === "claude_config") {
+    detail = data.onboarding_done ? "已配置，可正常使用" :
+      (data.settings_exists ? "settings.json 存在但 .claude.json 未配置" : "未配置 (将在安装后自动处理)");
+  } else if (item.key === "path_issues") {
+    detail = data.ok ? "路径正常 ✓" : data.issues.map(i => `${i.path} 含中文`).join("; ");
   }
 
   let actionBtn = "";
   if (item.key === "nodejs" && status === "error") actionBtn = `<a href="/wizard/nodejs" class="btn btn-primary btn-sm">安装</a>`;
   if (item.key === "git" && status === "error") actionBtn = `<a href="/wizard/git" class="btn btn-primary btn-sm">安装</a>`;
-  if (item.key === "powershell_policy" && status === "warn") actionBtn = `<button class="btn btn-primary btn-sm" onclick="quickFixPolicy()">修复</button>`;
-  if (item.key === "npm_registry" && status === "warn") actionBtn = `<button class="btn btn-primary btn-sm" onclick="quickFixRegistry()">修复</button>`;
+  if (item.key === "powershell_policy" && status === "warn") actionBtn = `<button class="btn btn-primary btn-sm" onclick="quickFixPolicy(this)">修复</button>`;
+  if (item.key === "npm_registry" && status === "warn") actionBtn = `<button class="btn btn-primary btn-sm" onclick="quickFixRegistry(this)">修复</button>`;
   if (item.key === "claude_code" && status === "error") actionBtn = `<a href="/wizard/claude" class="btn btn-primary btn-sm">安装</a>`;
   if (item.key === "claude_config" && status === "warn") actionBtn = `<span class="text-muted text-sm">安装后自动处理</span>`;
 
   let borderColor = status === "ok" ? "var(--success)" : status === "warn" ? "var(--warning)" : "var(--error)";
+  const cardId = `check-card-${item.key}`;
   return `
-    <div class="card" style="border-left:3px solid ${borderColor};">
+    <div class="card" id="${cardId}" style="border-left:3px solid ${borderColor};">
       <div class="flex-between">
         <div>
           <div class="card-header" style="margin-bottom:4px;">${icon} ${item.name}</div>
           <div class="text-sm text-muted">${item.desc}</div>
-          <div class="text-sm mt-1"><strong>${detail}</strong></div>
+          <div class="text-sm mt-1" id="${cardId}-detail"><strong>${detail}</strong></div>
         </div>
-        <div>${actionBtn}</div>
+        <div id="${cardId}-action">${actionBtn}</div>
       </div>
     </div>`;
 }
 
-async function quickFixPolicy() {
+async function quickFixPolicy(btn) {
+  btn.disabled = true;
+  btn.textContent = "⏳ 修复中...";
   showToast("正在修复 PowerShell 执行策略...", "warning");
   const r = await API.fixPolicy();
-  if (r.success) showToast("PowerShell 策略已修复！", "success");
-  else showToast(r.error || "修复失败", "error");
-  setTimeout(() => location.reload(), 1500);
+  if (r.success) {
+    showToast("PowerShell 策略已修复！", "success");
+    updateSingleCard("powershell_policy", { policy: "RemoteSigned", need_fix: false, ok: true });
+  } else {
+    showToast(r.error || "修复失败", "error");
+    btn.disabled = false;
+    btn.textContent = "修复";
+  }
 }
 
-async function quickFixRegistry() {
+async function quickFixRegistry(btn) {
+  btn.disabled = true;
+  btn.textContent = "⏳ 修复中...";
   showToast("正在设置 npm 淘宝镜像...", "warning");
   const r = await API.fixRegistry();
-  if (r.success) showToast("npm 镜像源已设为淘宝镜像！", "success");
-  else showToast(r.error || "设置失败", "error");
-  setTimeout(() => location.reload(), 1500);
+  if (r.success) {
+    showToast("npm 镜像源已设为淘宝镜像！", "success");
+    updateSingleCard("npm_registry", { current: "https://registry.npmmirror.com/", is_mirror: true, ok: true });
+  } else {
+    showToast(r.error || "设置失败", "error");
+    btn.disabled = false;
+    btn.textContent = "修复";
+  }
+}
+
+function updateSingleCard(key, data) {
+  const item = CHECK_ITEMS.find(i => i.key === key);
+  if (!item) return;
+  const newHtml = renderCheckCard(item, data);
+  const oldCard = document.getElementById(`check-card-${key}`);
+  if (oldCard) {
+    oldCard.outerHTML = newHtml;
+    // 更新缓存
+    const cache = getCache() || {};
+    if (cache[key]) Object.assign(cache[key], data);
+    setCache(cache);
+  }
 }
 
 function renderSummary(results) {
@@ -122,6 +189,7 @@ function renderSummary(results) {
     text.textContent = "环境完美就绪！可以开始使用 Claude Code 了。";
     btns.innerHTML = `
       <a href="/wizard/config" class="btn btn-primary">⚙️ 配置 API 提供商</a>
+      <a href="/wizard/final" class="btn btn-outline">🎯 完成向导</a>
       <a href="/tutorial/claude" target="_blank" class="btn btn-outline">📘 查看使用教程</a>`;
   } else {
     icon.textContent = "🔧";
@@ -130,7 +198,7 @@ function renderSummary(results) {
     if (!results.nodejs.installed) html += `<a href="/wizard/nodejs" class="btn btn-primary">安装 Node.js</a>`;
     if (!results.git.installed) html += `<a href="/wizard/git" class="btn btn-primary">安装 Git</a>`;
     if (!results.claude_code.installed && results.nodejs.installed) html += `<a href="/wizard/claude" class="btn btn-primary">安装 Claude Code</a>`;
-    if (results.powershell_policy.need_fix) html += `<button class="btn btn-outline" onclick="quickFixPolicy()">修复 PS 策略</button>`;
+    if (results.powershell_policy.need_fix) html += `<button class="btn btn-outline" onclick="quickFixPolicy(this)">修复 PS 策略</button>`;
     if (!results.ccswitch.installed) html += `<a href="/wizard/ccswitch" class="btn btn-outline">安装 CC-Switch</a>`;
     btns.innerHTML = html || '<span class="text-muted">请先安装 Node.js 和 Git</span>';
   }
@@ -138,22 +206,31 @@ function renderSummary(results) {
 }
 
 (async function() {
-  try {
-    const resp = await API.checkAll();
-    if (!resp.success) throw new Error("检测失败");
-    const data = resp.data;
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("results").style.display = "block";
+  // 优先使用缓存
+  let data = getCache();
 
-    let cards = "";
-    for (const item of CHECK_ITEMS) {
-      cards += renderCheckCard(item, data[item.key] || {});
+  if (!data) {
+    try {
+      const resp = await API.checkAll();
+      if (!resp.success) throw new Error("检测失败");
+      data = resp.data;
+      setCache(data);
+    } catch (e) {
+      document.getElementById("loading").innerHTML = `<p style="color:var(--error);">❌ 检测失败: ${e.message}</p><button class="btn btn-outline mt-1" onclick="location.reload()">🔄 重试</button>`;
+      return;
     }
-    document.getElementById("check-cards").innerHTML = cards;
-    renderSummary(data);
-  } catch (e) {
-    document.getElementById("loading").innerHTML = `<p style="color:var(--error);">❌ 检测失败: ${e.message}</p>`;
   }
+
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("results").style.display = "block";
+  document.getElementById("last-check-time").textContent = new Date().toLocaleTimeString();
+
+  let cards = "";
+  for (const item of CHECK_ITEMS) {
+    cards += renderCheckCard(item, data[item.key] || {});
+  }
+  document.getElementById("check-cards").innerHTML = cards;
+  renderSummary(data);
 })();
 </script>
 {% endblock %}

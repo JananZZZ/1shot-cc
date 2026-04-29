@@ -182,6 +182,25 @@ def install_zhipu_helper():
     return jsonify({"success": True, "task_id": task_id})
 
 
+@bp.route("/launch-powershell", methods=["POST"])
+def launch_powershell():
+    import subprocess
+    try:
+        script = (
+            'Start-Process powershell -ArgumentList \'-NoExit -Command '
+            '"Write-Host \\"============================================\\" -ForegroundColor Cyan; '
+            'Write-Host \\"  🚀 1shot-CC — Claude Code 启动就绪！\\" -ForegroundColor Green; '
+            'Write-Host \\"============================================\\" -ForegroundColor Cyan; '
+            'Write-Host \\"\\"; '
+            'Write-Host \\"📌 请在下方输入 claude 并按 Enter 开始：\\" -ForegroundColor Yellow; '
+            'Write-Host \\"\\""\''
+        )
+        subprocess.Popen(script, shell=True, creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, "CREATE_NO_WINDOW") else 0)
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+
+
 @bp.route("/progress/<task_id>")
 def progress(task_id):
     def stream():
