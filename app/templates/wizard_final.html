@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center" style="padding:40px 0;">
+  <div style="font-size:5rem;">🎉</div>
+  <h1 class="mt-1">1shot-CC 安装向导完成！</h1>
+  <p class="text-muted mt-1">您的 Claude Code 环境已准备就绪。</p>
+</div>
+
+<div class="grid-2 mb-2">
+  <div class="card" style="text-align:center;">
+    <div style="font-size:2.5rem;">🤖</div>
+    <h3>启动 Claude Code</h3>
+    <p class="text-sm text-muted mt-1">打开"命令窗口"（Win+R 输入 cmd），进入工作目录，输入 <code>claude</code> 即可启动</p>
+    <p class="text-sm text-muted">首次启动可能需要 10-30 秒加载</p>
+  </div>
+  <div class="card" style="text-align:center;">
+    <div style="font-size:2.5rem;">🔀</div>
+    <h3>启动 CC-Switch</h3>
+    <p class="text-sm text-muted mt-1">从开始菜单找到 CC-Switch，可一键切换 API 供应商</p>
+    <p class="text-sm text-muted">右键系统托盘图标可快速切换</p>
+  </div>
+  <div class="card" style="text-align:center;">
+    <div style="font-size:2.5rem;">📚</div>
+    <h3>教程指南</h3>
+    <p class="text-sm text-muted mt-1">查阅详细教程了解 Claude Code 的所有功能和使用技巧</p>
+  </div>
+  <div class="card" style="text-align:center;">
+    <div style="font-size:2.5rem;">🔄</div>
+    <h3>更新 Claude Code</h3>
+    <p class="text-sm text-muted mt-1">在命令窗口运行 <code>claude update</code> 升级到最新版本</p>
+    <p class="text-sm text-muted">建议定期更新以获得最新功能</p>
+  </div>
+</div>
+
+<div class="text-center mt-3">
+  <p class="text-muted mb-2">📚 推荐阅读以下教程以快速上手：</p>
+  <div class="flex flex-wrap gap-2" style="justify-content:center;">
+    <a href="/tutorial/claude" target="_blank" class="btn btn-primary">📘 Claude Code 使用指南</a>
+    <a href="/tutorial/apikey" target="_blank" class="btn btn-outline">🔑 获取 API Key</a>
+    <a href="/tutorial/ccswitch" target="_blank" class="btn btn-outline">🔀 CC-Switch 教程</a>
+    <a href="/tutorial/proxy" target="_blank" class="btn btn-outline">🌐 科学上网</a>
+  </div>
+</div>
+
+<div class="card mt-3" style="background: var(--bg);">
+  <div class="card-header">🖥️ 怎么打开"命令窗口"？</div>
+  <div class="grid-2">
+    <div>
+      <p class="text-sm"><strong>方法一：</strong>按键盘 <kbd>Win</kbd> + <kbd>R</kbd>，输入 <code>cmd</code>，回车</p>
+      <p class="text-sm mt-1"><strong>方法二：</strong>点击"开始"菜单，搜索 <code>cmd</code> 或 <code>命令提示符</code></p>
+      <p class="text-sm mt-1"><strong>方法三：</strong>在文件夹地址栏输入 <code>cmd</code> 并回车</p>
+    </div>
+    <div>
+      <p class="text-sm"><strong>启动 Claude Code：</strong></p>
+      <div class="log-window">cd 你的项目文件夹<br>claude</div>
+      <p class="text-sm text-muted mt-1">首次使用请先 <a href="/wizard/config">配置 API</a>，否则无法启动</p>
+    </div>
+  </div>
+</div>
+
+<div class="text-center mt-3">
+  <a href="/" class="btn btn-outline">🏠 返回首页</a>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>🔀 安装 CC-Switch</h2>
+<p class="text-muted mb-2">CC-Switch 是一款 Claude Code 多供应商管理工具，内置 50+ API 预设，一键切换。</p>
+
+<div class="card mb-2">
+  <div class="card-header">选择安装方式</div>
+  <div class="grid-2 mt-1">
+    <div class="card" style="border:2px solid var(--primary); cursor:pointer;" onclick="selectMode('gui')" id="mode-gui-card">
+      <div class="card-header">🖥️ 桌面版（推荐）</div>
+      <ul class="text-sm text-muted" style="padding-left:16px;">
+        <li>图形界面操作</li>
+        <li>系统托盘快捷切换</li>
+        <li>MCP 统一管理</li>
+        <li>用量统计可视化</li>
+      </ul>
+      <p class="text-sm text-muted mt-1">从 GitHub 下载 .msi 安装包</p>
+    </div>
+    <div class="card" style="cursor:pointer;" onclick="selectMode('cli')" id="mode-cli-card">
+      <div class="card-header">⌨️ 命令行版</div>
+      <ul class="text-sm text-muted" style="padding-left:16px;">
+        <li>npm 全局安装</li>
+        <li>交互式菜单</li>
+        <li>终端内快速切换</li>
+        <li>体积小巧</li>
+      </ul>
+      <p class="text-sm text-muted mt-1">通过 npm 安装 cc-switch-cli</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div id="install-status" class="text-center" style="padding:20px;">
+    <div id="install-status-icon" style="font-size:3rem;">🔀</div>
+    <h3 id="install-status-text" class="mt-1">准备安装 CC-Switch</h3>
+    <p id="install-mode-hint" class="text-muted text-sm">请先选择安装方式</p>
+
+    <div class="progress-bar mt-2">
+      <div class="fill" id="install-progress-bar" style="width:0%;"></div>
+    </div>
+    <p id="install-progress-text" class="text-sm text-muted">等待开始...</p>
+
+    <button class="btn btn-primary mt-2" id="install-start-btn" onclick="startInstall()" disabled>⬇️ 一键安装 CC-Switch</button>
+    <button class="btn btn-outline mt-2" id="install-retry-btn" style="display:none;" onclick="startInstall()">🔄 重试</button>
+
+    <div id="install-next-step" class="mt-2" style="display:none;">
+      <a href="/wizard/config" class="btn btn-primary">继续 → API 配置</a>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-2">
+  <div class="card-header">📋 说明</div>
+  <ul class="text-sm text-muted" style="padding-left:20px;">
+    <li>CC-Switch 开源地址：<a href="https://github.com/farion1231/cc-switch" target="_blank">github.com/farion1231/cc-switch</a></li>
+    <li>内置供应商：GLM、DeepSeek、MiniMax、MiMo、通义千问、OpenRouter 等 50+</li>
+    <li>也可在后续手动安装</li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let installMode = "";
+
+function selectMode(mode) {
+  installMode = mode;
+  document.getElementById("mode-gui-card").style.border = mode === "gui" ? "2px solid var(--primary)" : "1px solid var(--border)";
+  document.getElementById("mode-cli-card").style.border = mode === "cli" ? "2px solid var(--primary)" : "1px solid var(--border)";
+  document.getElementById("install-start-btn").disabled = false;
+  document.getElementById("install-mode-hint").textContent = `已选择：${mode === "gui" ? "桌面版 (.msi)" : "命令行版 (npm)"}`;
+}
+
+function startInstall() {
+  if (!installMode) { showToast("请先选择安装方式", "warning"); return; }
+  const fn = installMode === "gui" ? API.installCCSwitchGUI : API.installCCSwitchCLI;
+  const wizard = new InstallWizard(() => fn(), {
+    title: "安装 CC-Switch",
+    successMsg: `CC-Switch (${installMode === "gui" ? "桌面版" : "CLI 版"}) 安装完成！`
+  });
+  wizard.start();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="/static/css/tutorial.css">
+<div class="tutorial-content">
+<h1>🌐 科学上网简明指南</h1>
+<p class="text-muted">了解科学上网的概念、什么时候需要、以及安全使用建议</p>
+
+<div class="warning">
+  <strong>⚠️ 免责声明：</strong>本教程仅供学习和了解技术知识之用。请遵守当地法律法规，合理使用网络工具。使用国内中转 API（智谱/DeepSeek 等）即可正常使用 Claude Code，<strong>不一定需要科学上网</strong>。
+</div>
+
+<h2>一、我需要科学上网吗？</h2>
+
+<h3>✅ 不需要科学上网的情况</h3>
+<ul>
+  <li>使用<strong>国内 AI 供应商</strong>（智谱 GLM、DeepSeek、MiniMax、MiMo、通义千问）的 API — 国内服务器，直连访问</li>
+  <li>npm 安装包时使用<strong>淘宝镜像源</strong>（<code>registry.npmmirror.com</code>）</li>
+  <li>Node.js 和 Git 从<strong>国内镜像</strong>下载（npmmirror.com）</li>
+</ul>
+
+<h3>⚠️ 可能需要的情况</h3>
+<ul>
+  <li>访问 <strong>GitHub</strong>（下载 CC-Switch、查看开源项目）— 有时能直连</li>
+  <li>使用 <strong>Anthropic 官方 API</strong>（api.anthropic.com）— 被墙</li>
+  <li>访问部分<strong>国外技术文档</strong>和社区</li>
+</ul>
+
+<div class="info">
+  <strong>结论：</strong>对于大多数 Claude Code 用户，只要配置了国内供应商的 API，<strong>完全不需要科学上网</strong>。1shot-CC 已将 Node.js、Git 下载源指向国内镜像，npm 自动配置淘宝源。
+</div>
+
+<h2>二、什么是科学上网？</h2>
+<p>科学上网是指通过特定的网络工具和技术手段，访问因网络限制而无法直接访问的境外网站和服务。常见的技术方式包括 VPN、代理（Proxy）、隧道等。</p>
+
+<h2>三、Clash for Windows 安装指南</h2>
+<p>Clash 是目前最流行的代理客户端之一，支持 Windows/macOS/Linux。</p>
+
+<h3>下载与安装</h3>
+<ol>
+  <li>访问下载站：<a href="https://clashmetas.com.cn/clash-for-windows" target="_blank">https://clashmetas.com.cn/clash-for-windows</a></li>
+  <li>下载最新版 Clash for Windows 安装包（.exe 或 .zip）</li>
+  <li>双击安装，或解压 zip 直接运行 Clash for Windows.exe</li>
+  <li>首次启动可能被 Windows Defender 警告，点击"更多信息"→"仍要运行"</li>
+</ol>
+
+<h3>基本配置</h3>
+<ol>
+  <li>获取订阅链接（从你的服务提供商处获取，也称为"机场"）</li>
+  <li>打开 Clash for Windows → 点击左侧 <strong>"Profiles"（配置）</strong></li>
+  <li>粘贴订阅链接 → 点击 <strong>"Download"</strong></li>
+  <li>点击左侧 <strong>"Proxies"（代理）</strong>，选择一个节点</li>
+  <li>确保 <strong>"System Proxy"（系统代理）</strong>开关打开</li>
+</ol>
+
+<div class="tip">
+  <strong>💡 分流模式：</strong>Clash 默认使用 Rule（规则）模式，国内网站直连，国外网站走代理。不用手动切换，非常方便。
+</div>
+
+<h2>四、常用服务平台介绍</h2>
+
+<h3>魔戒</h3>
+<p>魔戒是国内知名的网络加速服务平台，提供稳定高速的线路。</p>
+<ul>
+  <li>官网：<a href="https://mojie.me" target="_blank">mojie.me</a>（可能有变，请自行搜索"魔戒"最新地址）</li>
+  <li>特点：线路稳定、价格透明、支持 Clash</li>
+  <li>付费方式：按月/按年订阅</li>
+</ul>
+
+<div class="warning">
+  <strong>⚠️ 选择服务商注意事项：</strong>
+  <ul>
+    <li>优先选择运营时间长、口碑好的服务商</li>
+    <li>不要一次性购买长期套餐，先月付试用</li>
+    <li>警惕价格过低的"免费"服务，可能窃取数据</li>
+    <li>使用独立的支付方式，不要绑定主力银行卡</li>
+  </ul>
+</div>
+
+<h2>五、npm 淘宝镜像 — 无需代理的替代方案</h2>
+<p>如果你只是想让 npm 安装更快，完全不需要科学上网，设置淘宝镜像即可：</p>
+
+<div class="log-window">
+# 设置淘宝镜像（1shot-CC 已自动配置）
+npm config set registry https://registry.npmmirror.com
+
+# 查看当前镜像源
+npm config get registry
+
+# 恢复官方源
+npm config delete registry
+</div>
+
+<h2>六、GitHub 访问替代方案</h2>
+<p>如果 GitHub 访问缓慢或无法打开，可以尝试以下方法：</p>
+<ul>
+  <li><strong>Watt Toolkit（原 Steam++）：</strong>免费开源的网络加速工具，支持 GitHub 加速</li>
+  <li><strong>FastGitHub：</strong>GitHub 镜像站</li>
+  <li><strong>Gitee：</strong>国内代码托管平台，很多开源项目有同步镜像</li>
+  <li><strong>修改 hosts 文件：</strong>添加 GitHub 的 CDN IP（需自行搜索最新 IP）</li>
+</ul>
+
+<h2>七、安全提示</h2>
+
+<div class="warning">
+  <strong>🔒 安全第一：</strong>
+  <ul>
+    <li>不要在代理环境下登录银行、支付等敏感账户</li>
+    <li>使用开源客户端（如 Clash Verge），避免使用不明来源的"定制版"</li>
+    <li>定期检查代理客户端的运行状态，不使用时关闭</li>
+    <li>Claude Code 配置了 <code>CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1</code>，可减少不必要的网络请求</li>
+  </ul>
+</div>
+
+<div class="info">
+  <strong>📌 总结：</strong>对于 Claude Code 用户来说，使用国内供应商 API + npm 淘宝镜像就可以完全正常工作。只有在需要访问 GitHub、使用 Anthropic 官方 API 等特殊情况时才需要科学上网。1shot-CC 已经帮你配置好了所有国内加速方案，开箱即用！
+</div>
+
+</div>
+{% endblock %}

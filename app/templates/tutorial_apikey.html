@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="/static/css/tutorial.css">
+<div class="tutorial-content">
+<h1>🔑 获取 API 密钥完整教程</h1>
+<p class="text-muted">国内主流 AI 大模型 API 获取指南 — 手把手图文教学</p>
+
+<div class="info">
+  <strong>什么是 API Key？</strong>API Key 是访问 AI 服务的"通行证"。把它配置到 Claude Code 中，就能通过国内供应商使用 Claude Code，无需科学上网，费用也更便宜。
+</div>
+
+<h2>一、智谱 AI（GLM 系列）</h2>
+<p>智谱 AI 是国内老牌大模型厂商，提供 GLM Coding Plan 套餐，专为 Claude Code 优化。</p>
+
+<h3>注册与获取步骤</h3>
+<ol>
+  <li>访问 <a href="https://open.bigmodel.cn" target="_blank">open.bigmodel.cn</a>，点击右上角"注册"</li>
+  <li>使用手机号或邮箱完成注册</li>
+  <li>完成实名认证（部分模型需要）</li>
+  <li>进入 <a href="https://bigmodel.cn/usercenter/proj-mgmt/apikeys" target="_blank">API Key 管理页</a></li>
+  <li>点击"创建新的 API Key"，命名后生成</li>
+  <li><strong>立即复制保存</strong>，关闭后无法再次查看</li>
+</ol>
+
+<h3>套餐选择</h3>
+<table>
+  <tr><th>套餐</th><th>价格</th><th>适合人群</th></tr>
+  <tr><td>Lite</td><td>¥22/月</td><td>轻度使用、尝鲜</td></tr>
+  <tr><td>Pro</td><td>¥99/月</td><td>日常开发使用</td></tr>
+  <tr><td>Max</td><td>¥399/月</td><td>重度使用、不限量</td></tr>
+</table>
+
+<div class="tip"><strong>💰 省钱技巧：</strong>GLM-4.7-Flash 模型完全免费。通过邀请链接注册可获赠 2000 万 Tokens 额度。</div>
+
+<hr>
+
+<h2>二、DeepSeek（深度求索）</h2>
+<p>DeepSeek 是目前性价比最高的选择，V4-Flash 低至 0.02 元/百万 tokens。</p>
+
+<h3>注册与获取步骤</h3>
+<ol>
+  <li>访问 <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a></li>
+  <li>使用手机号注册（国内手机号即可）</li>
+  <li>登录后左侧菜单找到 <strong>"API Keys"</strong></li>
+  <li>点击"创建 API Key"，命名后生成</li>
+  <li>立即复制保存</li>
+</ol>
+
+<div class="tip"><strong>💰 价格参考：</strong>V4-Flash 输入 ¥0.02/百万tokens（缓存命中），输出 ¥2/百万tokens。V4-Pro 限时 2.5 折优惠中。</div>
+
+<hr>
+
+<h2>三、MiniMax（海螺 AI）</h2>
+<p>MiniMax 的 Token Plan 套餐适合有稳定用量需求的开发者。</p>
+
+<h3>注册与获取步骤</h3>
+<ol>
+  <li>访问 <a href="https://platform.minimaxi.com" target="_blank">platform.minimaxi.com</a></li>
+  <li>使用手机号或邮箱注册</li>
+  <li>完成实名认证（姓名 + 身份证号）</li>
+  <li>进入"接口密钥"页面，点击"创建密钥"</li>
+  <li>复制 API Key，同时记下 <strong>Group ID</strong>（16 位字符串）</li>
+</ol>
+
+<table>
+  <tr><th>套餐</th><th>年费</th><th>日均成本</th></tr>
+  <tr><td>Starter</td><td>¥290/年</td><td>¥0.79/天</td></tr>
+  <tr><td>Plus</td><td>¥490/年</td><td>¥1.34/天</td></tr>
+  <tr><td>Max</td><td>¥1,190/年</td><td>¥3.26/天</td></tr>
+</table>
+
+<hr>
+
+<h2>四、小米 MiMo</h2>
+<p>小米推出的 AI 模型，Pro 版全球排名第八，还有百万亿 Token 激励计划。</p>
+
+<h3>注册与获取步骤</h3>
+<ol>
+  <li>访问 <a href="https://platform.xiaomimimo.com" target="_blank">platform.xiaomimimo.com</a></li>
+  <li>使用小米账号登录（需要先注册小米账号）</li>
+  <li>进入控制台 → <a href="https://platform.xiaomimimo.com/#/console/api-keys" target="_blank">API Keys</a></li>
+  <li>点击"新建 API Key"，复制保存</li>
+  <li>可同时申请"百万亿 Token 激励计划"获取免费额度</li>
+</ol>
+
+<div class="tip"><strong>💰 免费额度：</strong>MiMo-V2-Flash 曾多次延长免费试用。另可申请百万亿 Token 激励计划：<a href="https://100t.xiaomimimo.com" target="_blank">100t.xiaomimimo.com</a></div>
+
+<hr>
+
+<h2>五、通义千问 Qwen（阿里云百炼）</h2>
+<p>阿里云旗下 AI 平台，新用户赠送大量免费额度。</p>
+
+<h3>注册与获取步骤</h3>
+<ol>
+  <li>注册阿里云账号：<a href="https://www.aliyun.com" target="_blank">aliyun.com</a></li>
+  <li>开通百炼服务：<a href="https://bailian.console.aliyun.com" target="_blank">bailian.console.aliyun.com</a></li>
+  <li>进入 <a href="https://bailian.console.aliyun.com/#/api-key" target="_blank">API-KEY 管理</a></li>
+  <li>创建新的 API-KEY，复制保存</li>
+</ol>
+
+<div class="tip"><strong>💰 免费额度：</strong>新用户赠送最高 7000 万 Tokens 额度（有效期 180 天）。Coding Plan Pro 版 ¥200/月，每月 90,000 次请求。</div>
+
+<hr>
+
+<h2>API Key 安全提醒</h2>
+
+<div class="warning">
+  <strong>⚠️ 重要：</strong>
+  <ul>
+    <li><strong>切勿</strong>将 API Key 分享给他人或上传到 GitHub</li>
+    <li>API Key 创建后仅显示一次，务必立即保存</li>
+    <li>如果不慎泄露，立即在平台上删除旧 Key 并创建新 Key</li>
+    <li>建议定期轮换 API Key（每 3 个月换一次）</li>
+  </ul>
+</div>
+
+</div>
+{% endblock %}

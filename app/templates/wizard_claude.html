@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>🤖 安装 Claude Code</h2>
+<p class="text-muted mb-2">通过 npm 安装 Claude Code CLI，安装后会自动配置启动文件。</p>
+
+<div class="card">
+  <div id="install-status" class="text-center" style="padding:20px;">
+    <div id="install-status-icon" style="font-size:3rem;">🤖</div>
+    <h3 id="install-status-text" class="mt-1">准备安装 Claude Code</h3>
+    <p class="text-muted text-sm">npm 安装可能需要 2-5 分钟，请耐心等待</p>
+
+    <div class="progress-bar mt-2">
+      <div class="fill" id="install-progress-bar" style="width:0%;"></div>
+    </div>
+    <p id="install-progress-text" class="text-sm text-muted">等待开始...</p>
+
+    <button class="btn btn-primary mt-2" id="install-start-btn" onclick="startInstall()">⬇️ 一键安装 Claude Code</button>
+    <button class="btn btn-outline mt-2" id="install-retry-btn" style="display:none;" onclick="startInstall()">🔄 重试</button>
+
+    <div id="install-next-step" class="mt-2" style="display:none;">
+      <a href="/wizard/ccswitch" class="btn btn-primary">继续 → CC-Switch 安装</a>
+      <a href="/wizard/config" class="btn btn-outline">跳过，直接配置 API</a>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-2">
+  <div class="card-header">📋 安装细节</div>
+  <ul class="text-sm text-muted" style="padding-left:20px;">
+    <li>安装命令：<code>npm install -g @anthropic-ai/claude-code</code></li>
+    <li>使用淘宝镜像源加速下载</li>
+    <li>自动修复 PowerShell 执行策略（如需要）</li>
+    <li>自动写入 <code>~/.claude.json</code> 跳过首次引导</li>
+    <li>安装完成后可在终端输入 <code>claude</code> 启动</li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const wizard = new InstallWizard(
+  () => API.installClaudeCode(),
+  {
+    title: "安装 Claude Code",
+    successMsg: "Claude Code 安装完成！在终端输入 claude 即可启动。"
+  }
+);
+
+function startInstall() { wizard.start(); }
+</script>
+{% endblock %}

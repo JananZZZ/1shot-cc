@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1shot-CC — Claude Code 一键安装向导</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<link rel="stylesheet" href="/static/css/wizard.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="brand">🚀 1shot-CC</a>
+  <div class="nav-links">
+    <div class="tutorial-dropdown">
+      <button class="dropbtn">📚 教程指南 ▾</button>
+      <div class="dropdown-content">
+        <a href="/tutorial/claude" target="_blank">📘 Claude Code 使用指南</a>
+        <a href="/tutorial/apikey" target="_blank">🔑 获取 API 密钥教程</a>
+        <a href="/tutorial/ccswitch" target="_blank">🔀 CC-Switch 使用教程</a>
+        <a href="/tutorial/proxy" target="_blank">🌐 科学上网指南</a>
+      </div>
+    </div>
+    <a href="/wizard/check">🔍 系统检测</a>
+    <a href="/wizard/config">⚙️ API 配置</a>
+  </div>
+</nav>
+
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/wizard.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

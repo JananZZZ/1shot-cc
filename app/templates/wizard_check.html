@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>🔍 系统环境检测</h2>
+<p class="text-muted mb-2">正在检测您的系统环境，请稍候...</p>
+
+<div id="loading" class="text-center" style="padding:40px;">
+  <p>⏳ 检测中...</p>
+</div>
+
+<div id="results" style="display:none;">
+
+  <div id="check-cards"></div>
+
+  <div class="card mt-2" id="summary-card" style="display:none;">
+    <div class="card-header"><span id="summary-icon"></span> <span id="summary-text"></span></div>
+    <div class="flex flex-wrap gap-2" id="action-buttons"></div>
+  </div>
+
+  <div class="text-center mt-3">
+    <button class="btn btn-outline" onclick="location.reload()">🔄 重新检测</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const CHECK_ITEMS = [
+  { key: "nodejs", name: "Node.js", icon: "🟢", desc: "JavaScript 运行环境，Claude Code 的核心依赖" },
+  { key: "git", name: "Git", icon: "📦", desc: "版本管理工具，Windows 下 Claude Code 需要" },
+  { key: "powershell_policy", name: "PowerShell 策略", icon: "🛡️", desc: "执行策略需为非 Restricted，否则 npm 无法运行" },
+  { key: "npm_registry", name: "npm 镜像源", icon: "📡", desc: "国内加速，避免安装超时" },
+  { key: "claude_code", name: "Claude Code", icon: "🤖", desc: "AI 编程助手 CLI" },
+  { key: "ccswitch", name: "CC-Switch", icon: "🔀", desc: "多供应商切换管理工具" },
+  { key: "claude_config", name: "Claude 配置", icon: "⚙️", desc: "settings.json / .claude.json 状态" },
+  { key: "path_issues", name: "路径检测", icon: "📁", desc: "检查用户名路径是否含中文" },
+];
+
+function renderCheckCard(item, data) {
+  let status = "ok", icon = "✅", detail = "";
+  if (item.key === "nodejs") {
+    status = data.installed ? "ok" : "error";
+    detail = data.installed ? `v${data.version} (${data.path || "PATH"})` : "未安装";
+  } else if (item.key === "git") {
+    status = data.installed ? "ok" : "error";
+    detail = data.installed ? data.version : "未安装";
+  } else if (item.key === "powershell_policy") {
+    status = data.need_fix ? "warn" : "ok";
+    icon = data.need_fix ? "⚠️" : "✅";
+    detail = `当前策略: ${data.policy}` + (data.need_fix ? " (需修复)" : "");
+  } else if (item.key === "npm_registry") {
+    status = data.is_mirror ? "ok" : "warn";
+    icon = data.is_mirror ? "✅" : "⚠️";
+    detail = data.current || "未知";
+    if (!data.is_mirror) detail += " (建议设为淘宝镜像)";
+  } else if (item.key === "claude_code") {
+    status = data.installed ? "ok" : "error";
+    detail = data.installed ? data.version : "未安装";
+  } else if (item.key === "ccswitch") {
+    status = data.installed ? "ok" : "warn";
+    icon = data.installed ? "✅" : "⚠️";
+    detail = data.installed ? `已安装 (${data.type})` : "未安装 (可选)";
+  } else if (item.key === "claude_config") {
+    if (data.onboarding_done) {
+      status = "ok"; icon = "✅"; detail = "已配置，可正常使用";
+    } else if (data.settings_exists) {
+      status = "warn"; icon = "⚠️"; detail = "settings.json 存在但 .claude.json 未配置";
+    } else {
+      status = "warn"; icon = "⚠️"; detail = "未配置 (将在安装后自动配置)";
+    }
+  } else if (item.key === "path_issues") {
+    status = data.ok ? "ok" : "warn";
+    icon = data.ok ? "✅" : "⚠️";
+    detail = data.ok ? "路径正常" : data.issues.map(i => `${i.path} 含中文`).join("; ");
+  }
+
+  let actionBtn = "";
+  if (item.key === "nodejs" && status === "error") actionBtn = `<a href="/wizard/nodejs" class="btn btn-primary btn-sm">安装</a>`;
+  if (item.key === "git" && status === "error") actionBtn = `<a href="/wizard/git" class="btn btn-primary btn-sm">安装</a>`;
+  if (item.key === "powershell_policy" && status === "warn") actionBtn = `<button class="btn btn-primary btn-sm" onclick="quickFixPolicy()">修复</button>`;
+  if (item.key === "npm_registry" && status === "warn") actionBtn = `<button class="btn btn-primary btn-sm" onclick="quickFixRegistry()">修复</button>`;
+  if (item.key === "claude_code" && status === "error") actionBtn = `<a href="/wizard/claude" class="btn btn-primary btn-sm">安装</a>`;
+  if (item.key === "claude_config" && status === "warn") actionBtn = `<span class="text-muted text-sm">安装后自动处理</span>`;
+
+  let borderColor = status === "ok" ? "var(--success)" : status === "warn" ? "var(--warning)" : "var(--error)";
+  return `
+    <div class="card" style="border-left:3px solid ${borderColor};">
+      <div class="flex-between">
+        <div>
+          <div class="card-header" style="margin-bottom:4px;">${icon} ${item.name}</div>
+          <div class="text-sm text-muted">${item.desc}</div>
+          <div class="text-sm mt-1"><strong>${detail}</strong></div>
+        </div>
+        <div>${actionBtn}</div>
+      </div>
+    </div>`;
+}
+
+async function quickFixPolicy() {
+  showToast("正在修复 PowerShell 执行策略...", "warning");
+  const r = await API.fixPolicy();
+  if (r.success) showToast("PowerShell 策略已修复！", "success");
+  else showToast(r.error || "修复失败", "error");
+  setTimeout(() => location.reload(), 1500);
+}
+
+async function quickFixRegistry() {
+  showToast("正在设置 npm 淘宝镜像...", "warning");
+  const r = await API.fixRegistry();
+  if (r.success) showToast("npm 镜像源已设为淘宝镜像！", "success");
+  else showToast(r.error || "设置失败", "error");
+  setTimeout(() => location.reload(), 1500);
+}
+
+function renderSummary(results) {
+  const card = document.getElementById("summary-card");
+  const icon = document.getElementById("summary-icon");
+  const text = document.getElementById("summary-text");
+  const btns = document.getElementById("action-buttons");
+
+  if (results.ready) {
+    icon.textContent = "🎉";
+    text.textContent = "环境完美就绪！可以开始使用 Claude Code 了。";
+    btns.innerHTML = `
+      <a href="/wizard/config" class="btn btn-primary">⚙️ 配置 API 提供商</a>
+      <a href="/tutorial/claude" target="_blank" class="btn btn-outline">📘 查看使用教程</a>`;
+  } else {
+    icon.textContent = "🔧";
+    text.textContent = "检测到以下问题需要处理：";
+    let html = "";
+    if (!results.nodejs.installed) html += `<a href="/wizard/nodejs" class="btn btn-primary">安装 Node.js</a>`;
+    if (!results.git.installed) html += `<a href="/wizard/git" class="btn btn-primary">安装 Git</a>`;
+    if (!results.claude_code.installed && results.nodejs.installed) html += `<a href="/wizard/claude" class="btn btn-primary">安装 Claude Code</a>`;
+    if (results.powershell_policy.need_fix) html += `<button class="btn btn-outline" onclick="quickFixPolicy()">修复 PS 策略</button>`;
+    if (!results.ccswitch.installed) html += `<a href="/wizard/ccswitch" class="btn btn-outline">安装 CC-Switch</a>`;
+    btns.innerHTML = html || '<span class="text-muted">请先安装 Node.js 和 Git</span>';
+  }
+  card.style.display = "block";
+}
+
+(async function() {
+  try {
+    const resp = await API.checkAll();
+    if (!resp.success) throw new Error("检测失败");
+    const data = resp.data;
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("results").style.display = "block";
+
+    let cards = "";
+    for (const item of CHECK_ITEMS) {
+      cards += renderCheckCard(item, data[item.key] || {});
+    }
+    document.getElementById("check-cards").innerHTML = cards;
+    renderSummary(data);
+  } catch (e) {
+    document.getElementById("loading").innerHTML = `<p style="color:var(--error);">❌ 检测失败: ${e.message}</p>`;
+  }
+})();
+</script>
+{% endblock %}
