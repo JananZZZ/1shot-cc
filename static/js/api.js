@@ -25,6 +25,11 @@ const API = {
   installCCSwitchCLI() { return this.post("/api/install/ccswitch-cli"); },
   fixPolicy() { return this.post("/api/install/fix-policy"); },
   fixRegistry() { return this.post("/api/install/fix-registry"); },
+  launchPowerShell() { return this.post("/api/install/launch-powershell"); },
+  launchCCSwitch() { return this.post("/api/install/launch-ccswitch"); },
+  launchClaude() { return this.post("/api/install/launch-claude"); },
+  installColorCC() { return this.post("/api/install/colorcc"); },
+  checkColorCC() { return this.get("/api/install/colorcc-check"); },
 
   // 订阅 SSE 进度
   subscribeProgress(taskId, onUpdate, onComplete, onError) {

@@ -1,44 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>📦 安装 Git for Windows</h2>
-<p class="text-muted mb-2">Git 是版本管理工具，Windows 下 Claude Code 需要它。</p>
-
-<div class="card">
-  <div id="install-status" class="text-center" style="padding:20px;">
-    <div id="install-status-icon" style="font-size:3rem;">📦</div>
-    <h3 id="install-status-text" class="mt-1">准备安装 Git for Windows</h3>
-    <p class="text-muted text-sm">安装包约 60MB，将从国内镜像下载</p>
-
-    <div class="progress-bar mt-2">
-      <div class="fill" id="install-progress-bar" style="width:0%;"></div>
-    </div>
-    <p id="install-progress-text" class="text-sm text-muted">等待开始...</p>
-
-    <button class="btn btn-primary mt-2" id="install-start-btn" onclick="startInstall()">⬇️ 一键下载安装 Git</button>
-    <button class="btn btn-outline mt-2" id="install-retry-btn" style="display:none;" onclick="startInstall()">🔄 重试</button>
-
-    <div id="install-next-step" class="mt-2" style="display:none;">
-      <a href="/wizard/claude" class="btn btn-primary">继续 → Claude Code 安装</a>
-    </div>
+<div class="page-hero"><h1>📦 安装 Git</h1><p>版本管理小工具，Windows 上 Claude Code 好伙伴</p></div>
+<div class="install-panel">
+  <div class="install-icon" id="icon">📦</div>
+  <h3 id="status-text">准备帮你装 Git</h3>
+  <p class="text-sm text-muted">从国内镜像下载，大约 1-2 分钟</p>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="fill" id="bar" style="width:0"></div></div>
+    <p id="pct-text" class="text-xs text-muted">等待开始...</p>
+  </div>
+  <button class="btn btn-primary btn-lg" id="start-btn" onclick="doInstall()">📥 帮我装好 Git</button>
+  <button class="btn btn-outline mt-2" id="retry-btn" style="display:none" onclick="doInstall()">🔄 再试一次</button>
+  <div id="next-step" class="mt-2" style="display:none">
+    <a href="/wizard/claude" class="btn btn-accent">继续下一步 → Claude Code 安装</a>
   </div>
 </div>
-
-<div class="card mt-2">
-  <div class="card-header">📋 安装说明</div>
-  <ul class="text-sm text-muted" style="padding-left:20px;">
-    <li>下载源：<code>npmmirror.com</code> 国内镜像</li>
-    <li>如果已经安装了 Git，可<a href="/wizard/check">返回检测页</a></li>
-  </ul>
-</div>
+<div class="callout info">💡 <strong>小知识：</strong>Git 是程序员用来"记录代码变化"的工具，就像写文档的修订记录。Claude Code 在 Windows 上需要它来管理文件改动。</div>
 {% endblock %}
-
-{% block scripts %}
-<script>
-const wizard = new InstallWizard(
-  () => API.installGit(),
-  { title: "安装 Git", successMsg: "Git for Windows 安装完成！" }
-);
-
-function startInstall() { wizard.start(); }
-</script>
-{% endblock %}
+{% block scripts %}<script>
+const w = new InstallWizard(() => API.installGit(), { title:"安装 Git", successMsg:"Git 装好了！" });
+function doInstall(){ w.start(); }
+</script>{% endblock %}

@@ -1,86 +1,59 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>🔀 安装 CC-Switch</h2>
-<p class="text-muted mb-2">CC-Switch 是一款 Claude Code 多供应商管理工具，内置 50+ API 预设，一键切换。</p>
+<div class="page-hero"><h1>🔀 安装 CC-Switch</h1><p>有了它，切换不同 AI 服务商就像换插座一样简单</p></div>
 
 <div class="card mb-2">
-  <div class="card-header">选择安装方式</div>
+  <div class="card-header">选一种安装方式</div>
   <div class="grid-2 mt-1">
-    <div class="card" style="border:2px solid var(--primary); cursor:pointer;" onclick="selectMode('gui')" id="mode-gui-card">
+    <div class="card" style="border:2px solid var(--brand-400); cursor:pointer;" onclick="selectMode('gui')" id="mode-gui">
       <div class="card-header">🖥️ 桌面版（推荐）</div>
       <ul class="text-sm text-muted" style="padding-left:16px;">
-        <li>图形界面操作</li>
-        <li>系统托盘快捷切换</li>
-        <li>MCP 统一管理</li>
-        <li>用量统计可视化</li>
+        <li>有漂亮的界面，点鼠标就能操作</li>
+        <li>任务栏右下角小图标，随时切换</li>
+        <li>内置 50+ 服务商，选完填 Key 就行</li>
       </ul>
-      <p class="text-sm text-muted mt-1">从 GitHub 下载 .msi 安装包</p>
     </div>
-    <div class="card" style="cursor:pointer;" onclick="selectMode('cli')" id="mode-cli-card">
+    <div class="card" style="cursor:pointer;" onclick="selectMode('cli')" id="mode-cli">
       <div class="card-header">⌨️ 命令行版</div>
       <ul class="text-sm text-muted" style="padding-left:16px;">
-        <li>npm 全局安装</li>
-        <li>交互式菜单</li>
-        <li>终端内快速切换</li>
-        <li>体积小巧</li>
+        <li>在终端里用菜单选择</li>
+        <li>装起来更轻量</li>
+        <li>适合不介意敲键盘的用户</li>
       </ul>
-      <p class="text-sm text-muted mt-1">通过 npm 安装 cc-switch-cli</p>
     </div>
   </div>
 </div>
 
-<div class="card">
-  <div id="install-status" class="text-center" style="padding:20px;">
-    <div id="install-status-icon" style="font-size:3rem;">🔀</div>
-    <h3 id="install-status-text" class="mt-1">准备安装 CC-Switch</h3>
-    <p id="install-mode-hint" class="text-muted text-sm">请先选择安装方式</p>
-
-    <div class="progress-bar mt-2">
-      <div class="fill" id="install-progress-bar" style="width:0%;"></div>
-    </div>
-    <p id="install-progress-text" class="text-sm text-muted">等待开始...</p>
-
-    <button class="btn btn-primary mt-2" id="install-start-btn" onclick="startInstall()" disabled>⬇️ 一键安装 CC-Switch</button>
-    <button class="btn btn-outline mt-2" id="install-retry-btn" style="display:none;" onclick="startInstall()">🔄 重试</button>
-
-    <div id="install-next-step" class="mt-2" style="display:none;">
-      <a href="/wizard/config" class="btn btn-primary">继续 → API 配置</a>
-    </div>
+<div class="install-panel">
+  <div class="install-icon" id="icon">🔀</div>
+  <h3 id="status-text">准备帮你装 CC-Switch</h3>
+  <p id="mode-hint" class="text-sm text-muted">先选一个安装方式，再点下面的按钮</p>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="fill" id="bar" style="width:0"></div></div>
+    <p id="pct-text" class="text-xs text-muted">等待开始...</p>
+  </div>
+  <button class="btn btn-primary btn-lg" id="start-btn" onclick="doInstall()" disabled>📥 帮我装好 CC-Switch</button>
+  <button class="btn btn-outline mt-2" id="retry-btn" style="display:none" onclick="doInstall()">🔄 再试一次</button>
+  <div id="next-step" class="mt-2" style="display:none">
+    <a href="/wizard/config" class="btn btn-accent">继续下一步 → 配置 AI 服务</a>
   </div>
 </div>
 
-<div class="card mt-2">
-  <div class="card-header">📋 说明</div>
-  <ul class="text-sm text-muted" style="padding-left:20px;">
-    <li>CC-Switch 开源地址：<a href="https://github.com/farion1231/cc-switch" target="_blank">github.com/farion1231/cc-switch</a></li>
-    <li>内置供应商：GLM、DeepSeek、MiniMax、MiMo、通义千问、OpenRouter 等 50+</li>
-    <li>也可在后续手动安装</li>
-  </ul>
-</div>
+<div class="callout info">💡 <strong>小知识：</strong>CC-Switch 就是一个"遥控器"，让你在 Claude Code 里可以一键切换使用智谱、DeepSeek 还是 MiniMax。不用每次改配置文件，点一下就换好了。</div>
 {% endblock %}
-
-{% block scripts %}
-<script>
-let installMode = "";
-
-function selectMode(mode) {
-  installMode = mode;
-  document.getElementById("mode-gui-card").style.border = mode === "gui" ? "2px solid var(--primary)" : "1px solid var(--border)";
-  document.getElementById("mode-cli-card").style.border = mode === "cli" ? "2px solid var(--primary)" : "1px solid var(--border)";
-  document.getElementById("install-start-btn").disabled = false;
-  document.getElementById("install-mode-hint").textContent = `已选择：${mode === "gui" ? "桌面版 (.msi)" : "命令行版 (npm)"}`;
+{% block scripts %}<script>
+let mode = "";
+function selectMode(m) {
+  mode = m;
+  document.getElementById("mode-gui").style.border = m==="gui" ? "2px solid var(--brand-400)" : "";
+  document.getElementById("mode-cli").style.border = m==="cli" ? "2px solid var(--brand-400)" : "";
+  document.getElementById("start-btn").disabled = false;
+  document.getElementById("mode-hint").textContent = `已选择：${m==="gui"?"桌面版（.msi 安装包）":"命令行版（npm 安装）"}`;
 }
-
-function startInstall() {
-  if (!installMode) { showToast("请先选择安装方式", "warning"); return; }
-  const installFn = installMode === "gui"
-    ? () => API.installCCSwitchGUI()
-    : () => API.installCCSwitchCLI();
-  const wizard = new InstallWizard(installFn, {
-    title: "安装 CC-Switch",
-    successMsg: `CC-Switch (${installMode === "gui" ? "桌面版" : "CLI 版"}) 安装完成！`
-  });
-  wizard.start();
+function doInstall() {
+  if (!mode) { showToast("先选一种安装方式吧", "warning"); return; }
+  const fn = mode === "gui" ? () => API.installCCSwitchGUI() : () => API.installCCSwitchCLI();
+  const w = new InstallWizard(fn, { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！" });
+  w.start();
 }
-</script>
-{% endblock %}
+</script>{% endblock %}

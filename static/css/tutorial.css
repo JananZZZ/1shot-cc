@@ -1,104 +1,142 @@
-/* 教程页面专用样式 */
+/* ═══════════════════════════════
+   1shot-CC v2.0 — Tutorial Styles
+   ═══════════════════════════════ */
+
 .tutorial-content {
-  max-width: 800px;
+  max-width: 780px;
   margin: 0 auto;
-  line-height: 1.8;
+  line-height: 1.85;
+  padding: 16px 0;
 }
 
 .tutorial-content h1 {
-  font-size: 2rem;
-  margin-bottom: 16px;
-  color: var(--accent);
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: var(--t1);
 }
 
 .tutorial-content h2 {
-  font-size: 1.4rem;
-  margin-top: 32px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 36px;
   margin-bottom: 12px;
   padding-bottom: 6px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  color: var(--t1);
 }
 
 .tutorial-content h3 {
-  font-size: 1.1rem;
-  margin-top: 20px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  margin-top: 24px;
   margin-bottom: 8px;
+  color: var(--t2);
 }
 
-.tutorial-content p {
-  margin-bottom: 12px;
-}
+.tutorial-content p { margin-bottom: 12px; color: var(--t2); }
 
 .tutorial-content ul, .tutorial-content ol {
-  padding-left: 24px;
+  padding-left: 22px;
   margin-bottom: 12px;
+  color: var(--t2);
 }
 
-.tutorial-content li {
-  margin-bottom: 4px;
+.tutorial-content li { margin-bottom: 5px; }
+
+.tutorial-content a {
+  color: var(--brand-300);
+  text-decoration: none;
 }
+
+.tutorial-content a:hover { text-decoration: underline; }
 
 .tutorial-content table {
   width: 100%;
   border-collapse: collapse;
   margin: 16px 0;
+  font-size: 0.88rem;
 }
 
 .tutorial-content table th,
 .tutorial-content table td {
   padding: 10px 14px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.05);
   text-align: left;
-  font-size: 0.9rem;
 }
 
 .tutorial-content table th {
-  background: var(--bg-card);
-  font-weight: 600;
+  background: rgba(255,255,255,0.03);
+  font-weight: 700;
+  color: var(--t1);
+}
+
+.tutorial-content table td { color: var(--t2); }
+
+.tutorial-content .tip,
+.tutorial-content .warning,
+.tutorial-content .info {
+  padding: 14px 18px;
+  border-radius: var(--r-md);
+  margin: 14px 0;
+  font-size: 0.88rem;
 }
 
 .tutorial-content .tip {
-  background: rgba(0, 210, 160, 0.1);
-  border-left: 3px solid var(--success);
-  padding: 12px 16px;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  margin: 12px 0;
+  background: var(--green-soft);
+  border-left: 3px solid var(--green);
+  color: var(--green);
 }
 
 .tutorial-content .warning {
-  background: rgba(255, 94, 94, 0.1);
-  border-left: 3px solid var(--error);
-  padding: 12px 16px;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  margin: 12px 0;
+  background: var(--red-soft);
+  border-left: 3px solid var(--red);
+  color: var(--red);
 }
 
 .tutorial-content .info {
-  background: rgba(108, 92, 231, 0.1);
-  border-left: 3px solid var(--primary);
-  padding: 12px 16px;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  margin: 12px 0;
+  background: rgba(124,106,238,0.08);
+  border-left: 3px solid var(--brand-400);
+  color: var(--brand-300);
 }
 
 .tutorial-content .shortcut-table td:first-child {
   white-space: nowrap;
-  font-family: monospace;
+  font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--brand-300);
 }
 
 .tutorial-content .step-num {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 26px; height: 26px;
   border-radius: 50%;
-  background: var(--primary);
+  background: var(--brand-500);
   color: #fff;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   margin-right: 8px;
   flex-shrink: 0;
+}
+
+.tutorial-content hr {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  margin: 28px 0;
+}
+
+.tutorial-content .log-window {
+  background: #060610;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--r-md);
+  padding: 14px 18px;
+  font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: #a8a8c8;
+  margin: 12px 0;
 }

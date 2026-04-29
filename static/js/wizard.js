@@ -1,103 +1,98 @@
-/* 向导流程控制 */
+/* 安装向导流程控制 */
 class InstallWizard {
   constructor(installFn, options = {}) {
     this.installFn = installFn;
-    this.title = options.title || "正在安装...";
     this.successMsg = options.successMsg || "安装完成！";
     this.taskId = null;
     this.eventSource = null;
+    this.started = false;
   }
 
-  getElements() {
+  getEls() {
     return {
-      statusIcon: document.getElementById("install-status-icon"),
-      statusText: document.getElementById("install-status-text"),
-      progressBar: document.getElementById("install-progress-bar"),
-      progressText: document.getElementById("install-progress-text"),
-      logWindow: document.getElementById("install-log"),
-      startBtn: document.getElementById("install-start-btn"),
-      retryBtn: document.getElementById("install-retry-btn"),
+      icon: document.getElementById("icon"),
+      status: document.getElementById("status-text"),
+      bar: document.getElementById("bar"),
+      pct: document.getElementById("pct-text"),
+      start: document.getElementById("start-btn"),
+      retry: document.getElementById("retry-btn"),
+      next: document.getElementById("next-step"),
     };
   }
 
   async start() {
-    const els = this.getElements();
-    els.startBtn.disabled = true;
-    els.startBtn.textContent = "⏳ 准备中...";
-    if (els.retryBtn) els.retryBtn.style.display = "none";
-
-    els.statusIcon.textContent = "⏳";
-    els.statusText.textContent = "正在启动安装...";
+    if (this.started) return;
+    this.started = true;
+    const e = this.getEls();
+    if (e.start) { e.start.disabled = true; e.start.textContent = "⏳ 正在准备..."; }
+    if (e.retry) e.retry.style.display = "none";
+    if (e.next) e.next.style.display = "none";
+    if (e.icon) { e.icon.textContent = "⏳"; e.icon.classList.remove("done"); }
 
     try {
       const resp = await this.installFn();
-      if (!resp.success || !resp.task_id) {
-        this.showError(resp.error || "启动失败");
+      if (!resp || (!resp.success && !resp.task_id)) {
+        this._fail(resp?.error || "启动安装失败");
         return;
       }
       this.taskId = resp.task_id;
-      this.subscribe();
-    } catch (e) {
-      this.showError(e.message);
+      this._subscribe();
+    } catch (err) {
+      this._fail(err.message);
     }
   }
 
-  subscribe() {
+  _subscribe() {
     this.eventSource = API.subscribeProgress(
       this.taskId,
-      (data) => this.onUpdate(data),
-      (data) => this.onComplete(data),
-      (error) => this.showError(error),
+      (d) => this._onUpdate(d),
+      (d) => this._onDone(d),
+      (e) => this._fail(e),
     );
   }
 
-  onUpdate(data) {
-    const els = this.getElements();
-    if (els.progressBar) els.progressBar.style.width = data.progress + "%";
-    if (els.progressText) els.progressText.textContent = `${Math.round(data.progress)}%`;
-
-    if (data.message) {
-      if (els.statusText) els.statusText.textContent = data.message;
-    }
-
-    if (data.step === "installing" && data.progress >= 90) {
-      if (els.statusIcon) els.statusIcon.textContent = "✅";
+  _onUpdate(data) {
+    const e = this.getEls();
+    if (e.bar) e.bar.style.width = data.progress + "%";
+    if (e.pct) e.pct.textContent = `${Math.round(data.progress)}% — ${data.message || ""}`;
+    if (data.message && e.status) e.status.textContent = data.message;
+    if (data.progress >= 90 && e.icon) {
+      e.icon.textContent = "✅";
+      e.icon.classList.add("done");
     }
   }
 
-  onComplete(data) {
-    const els = this.getElements();
-    if (els.progressBar) els.progressBar.style.width = "100%";
-    if (els.progressText) els.progressText.textContent = "100%";
-    if (els.statusIcon) els.statusIcon.textContent = "✅";
-    if (els.statusText) els.statusText.textContent = this.successMsg;
-    if (els.startBtn) {
-      els.startBtn.textContent = "✅ 安装完成";
-      els.startBtn.classList.remove("btn-primary");
-      els.startBtn.classList.add("btn-success");
+  _onDone() {
+    const e = this.getEls();
+    if (e.bar) e.bar.style.width = "100%";
+    if (e.pct) e.pct.textContent = "100% — 完成！";
+    if (e.icon) { e.icon.textContent = "✅"; e.icon.classList.add("done"); }
+    if (e.status) e.status.textContent = this.successMsg;
+    if (e.start) {
+      e.start.textContent = "✅ 装好了！";
+      e.start.classList.remove("btn-primary");
+      e.start.classList.add("btn-accent");
+      e.start.disabled = true;
     }
-
-    // 显示下一步
-    const nextEl = document.getElementById("install-next-step");
-    if (nextEl) nextEl.style.display = "block";
-
+    if (e.next) e.next.style.display = "block";
     showToast(this.successMsg, "success");
   }
 
-  showError(error) {
-    const els = this.getElements();
-    els.statusIcon.textContent = "❌";
-    els.statusText.textContent = "安装失败";
-    if (els.progressText) els.progressText.textContent = error;
-    if (els.startBtn) {
-      els.startBtn.disabled = false;
-      els.startBtn.textContent = "🔄 重试";
+  _fail(error) {
+    this.started = false;
+    const e = this.getEls();
+    if (e.icon) e.icon.textContent = "❌";
+    if (e.status) e.status.textContent = "安装出错了";
+    if (e.pct) e.pct.textContent = error || "未知错误";
+    if (e.start) {
+      e.start.disabled = false;
+      e.start.textContent = "🔄 重试";
     }
-    if (els.retryBtn) els.retryBtn.style.display = "inline-flex";
-    showToast(error, "error");
+    if (e.retry) e.retry.style.display = "inline-flex";
+    showToast(error || "安装失败", "error");
   }
 
   destroy() {
-    if (this.eventSource) this.eventSource.close();
+    if (this.eventSource) { this.eventSource.close(); this.eventSource = null; }
   }
 }

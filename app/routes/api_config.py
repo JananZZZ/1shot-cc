@@ -33,14 +33,21 @@ def write_config():
 
     provider_key = body.get("provider", "")
     api_key = body.get("api_key", "").strip()
+    custom_base_url = body.get("base_url", "").strip()
 
-    if not provider_key or provider_key not in PROVIDERS:
+    if not provider_key:
+        return jsonify({"success": False, "error": "请选择提供商"})
+
+    if provider_key == "custom" and not custom_base_url:
+        return jsonify({"success": False, "error": "自定义模式需要填写 Base URL"})
+
+    if provider_key != "custom" and provider_key not in PROVIDERS:
         return jsonify({"success": False, "error": "无效的提供商"})
 
     if not api_key:
         return jsonify({"success": False, "error": "API Key 不能为空"})
 
-    result = write_claude_settings(provider_key, api_key)
+    result = write_claude_settings(provider_key, api_key, custom_base_url)
     return jsonify(result)
 
 

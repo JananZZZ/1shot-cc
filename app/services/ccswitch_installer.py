@@ -50,15 +50,15 @@ def download_ccswitch(callback=None) -> dict:
     info = get_latest_release_info()
     if not info["success"]:
         if callback:
-            callback(0, f"获取版本信息失败: {info.get('error', '')}，尝试使用备用链接...")
-        # 备用方案：固定下载链接
+            callback(0, f"GitHub API 连接失败，尝试备用下载方式...")
         info = {
-            "download_url": "https://github.com/farion1231/cc-switch/releases/latest",
-            "filename": "CC-Switch-Setup.msi",
+            "download_url": "https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
+            "filename": "CC-Switch-Setup-x64.msi",
+            "version": "latest",
         }
 
     if not info.get("download_url"):
-        return {"success": False, "error": "未找到下载链接，请手动安装 CC-Switch"}
+        return {"success": False, "error": "未找到 CC-Switch 下载链接。请访问 https://github.com/farion1231/cc-switch/releases 手动下载"}
 
     dest = os.path.join(tempfile.gettempdir(), "cc-switch-installer.msi")
     if callback:

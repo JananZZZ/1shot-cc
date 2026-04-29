@@ -1,10 +1,12 @@
 """/api/install/* — 安装操作 API + SSE 进度推送"""
 import json
 import os
+import subprocess
 import tempfile
 import threading
 import uuid
 import time
+
 from flask import Blueprint, jsonify, request, Response
 
 bp = Blueprint("install", __name__, url_prefix="/api/install")
@@ -16,12 +18,8 @@ _lock = threading.Lock()
 def _update_task(task_id: str, step: str, progress: float, message: str, done: bool = False, error: str = ""):
     with _lock:
         _tasks[task_id] = {
-            "step": step,
-            "progress": progress,
-            "message": message,
-            "done": done,
-            "error": error,
-            "updated_at": time.time(),
+            "step": step, "progress": progress, "message": message,
+            "done": done, "error": error, "updated_at": time.time(),
         }
 
 
@@ -29,28 +27,27 @@ def _sse_event(data: dict) -> str:
     return f"data: {json.dumps(data, ensure_ascii=False)}\n\n"
 
 
-def _run_in_thread(task_id: str, install_fn, callback=None):
-    def _run():
+def _bg(task_id: str, work):
+    """在后台线程运行 work(callback)，统一异常处理"""
+    def _runner():
+        def cb(pct, msg):
+            _update_task(task_id, "installing", pct, msg)
         try:
-            install_fn(
-                callback=lambda pct, msg: _update_task(task_id, "installing", pct, msg)
-                if not callback else callback(pct, msg)
-            )
-            _update_task(task_id, "complete", 100, "安装完成", done=True)
+            work(cb)
         except Exception as e:
             _update_task(task_id, "error", 0, str(e), done=True, error=str(e))
+    threading.Thread(target=_runner, daemon=True).start()
 
-    threading.Thread(target=_run, daemon=True).start()
 
+# ─── 系统依赖安装 ───
 
 @bp.route("/nodejs", methods=["POST"])
 def install_nodejs():
     task_id = str(uuid.uuid4())[:8]
-    _update_task(task_id, "preparing", 0, "准备下载 Node.js...")
+    _update_task(task_id, "preparing", 0, "准备安装 Node.js...")
 
-    def do_install(callback):
+    def work(callback):
         from app.services.node_installer import download_nodejs, install_nodejs, set_npm_registry_mirror, refresh_path_env
-
         dl = download_nodejs(callback=callback)
         if not dl["success"]:
             _update_task(task_id, "error", 0, dl["error"], done=True, error=dl["error"])
@@ -59,23 +56,22 @@ def install_nodejs():
         if not inst["success"]:
             _update_task(task_id, "error", 0, inst["error"], done=True, error=inst["error"])
             return
-        callback(95, "设置 npm 镜像源...")
+        callback(90, "正在配置国内加速镜像...")
         set_npm_registry_mirror()
         refresh_path_env()
-        callback(100, "Node.js 安装完成！")
+        _update_task(task_id, "complete", 100, "Node.js 安装完成！", done=True)
 
-    _run_in_thread(task_id, do_install)
+    _bg(task_id, work)
     return jsonify({"success": True, "task_id": task_id})
 
 
 @bp.route("/git", methods=["POST"])
 def install_git():
     task_id = str(uuid.uuid4())[:8]
-    _update_task(task_id, "preparing", 0, "准备下载 Git for Windows...")
+    _update_task(task_id, "preparing", 0, "准备安装 Git...")
 
-    def do_install(callback):
+    def work(callback):
         from app.services.git_installer import download_git, install_git
-
         dl = download_git(callback=callback)
         if not dl["success"]:
             _update_task(task_id, "error", 0, dl["error"], done=True, error=dl["error"])
@@ -84,9 +80,9 @@ def install_git():
         if not inst["success"]:
             _update_task(task_id, "error", 0, inst["error"], done=True, error=inst["error"])
             return
-        callback(100, "Git 安装完成！")
+        _update_task(task_id, "complete", 100, "Git 安装完成！", done=True)
 
-    _run_in_thread(task_id, do_install)
+    _bg(task_id, work)
     return jsonify({"success": True, "task_id": task_id})
 
 
@@ -95,30 +91,30 @@ def install_claude_code():
     task_id = str(uuid.uuid4())[:8]
     _update_task(task_id, "preparing", 0, "准备安装 Claude Code...")
 
-    def do_install(callback):
+    def work(callback):
         from app.services.claude_installer import fix_powershell_policy, install_claude_code
-
-        callback(0, "正在修复 PowerShell 执行策略...")
+        callback(0, "正在调整系统安全设置...")
         fix_powershell_policy()
-
+        callback(5, "正在从网络下载 Claude Code（需要几分钟）...")
         result = install_claude_code(callback=callback)
         if not result["success"]:
             _update_task(task_id, "error", 0, result["error"], done=True, error=result["error"])
             return
-        callback(100, "Claude Code 安装完成！")
+        _update_task(task_id, "complete", 100, "Claude Code 安装完成！", done=True)
 
-    _run_in_thread(task_id, do_install)
+    _bg(task_id, work)
     return jsonify({"success": True, "task_id": task_id})
 
+
+# ─── CC-Switch ───
 
 @bp.route("/ccswitch-gui", methods=["POST"])
 def install_ccswitch_gui():
     task_id = str(uuid.uuid4())[:8]
-    _update_task(task_id, "preparing", 0, "准备下载 CC-Switch...")
+    _update_task(task_id, "preparing", 0, "正在获取 CC-Switch 下载地址...")
 
-    def do_install(callback):
+    def work(callback):
         from app.services.ccswitch_installer import download_ccswitch, install_ccswitch
-
         dl = download_ccswitch(callback=callback)
         if not dl["success"]:
             _update_task(task_id, "error", 0, dl["error"], done=True, error=dl["error"])
@@ -127,79 +123,116 @@ def install_ccswitch_gui():
         if not inst["success"]:
             _update_task(task_id, "error", 0, inst["error"], done=True, error=inst["error"])
             return
-        callback(100, "CC-Switch 安装完成！")
+        _update_task(task_id, "complete", 100, "CC-Switch 安装完成！", done=True)
 
-    _run_in_thread(task_id, do_install)
+    _bg(task_id, work)
     return jsonify({"success": True, "task_id": task_id})
 
 
 @bp.route("/ccswitch-cli", methods=["POST"])
 def install_ccswitch_cli():
     task_id = str(uuid.uuid4())[:8]
-    _update_task(task_id, "preparing", 0, "准备安装 cc-switch-cli...")
+    _update_task(task_id, "preparing", 0, "准备安装 CC-Switch CLI...")
 
-    def do_install(callback):
+    def work(callback):
         from app.services.ccswitch_installer import install_ccswitch_cli
-
         result = install_ccswitch_cli(callback=callback)
         if not result["success"]:
             _update_task(task_id, "error", 0, result["error"], done=True, error=result["error"])
             return
-        callback(100, "cc-switch-cli 安装完成！")
+        _update_task(task_id, "complete", 100, "CC-Switch CLI 安装完成！", done=True)
 
-    _run_in_thread(task_id, do_install)
+    _bg(task_id, work)
     return jsonify({"success": True, "task_id": task_id})
 
+
+# ─── 快速修复 ───
 
 @bp.route("/fix-policy", methods=["POST"])
 def fix_policy():
     from app.services.claude_installer import fix_powershell_policy
-    result = fix_powershell_policy()
-    return jsonify(result)
+    return jsonify(fix_powershell_policy())
 
 
 @bp.route("/fix-registry", methods=["POST"])
 def fix_registry():
     from app.services.proxy_helper import set_npm_mirror
-    result = set_npm_mirror()
-    return jsonify(result)
+    return jsonify(set_npm_mirror())
 
 
 @bp.route("/zhipu-helper", methods=["POST"])
 def install_zhipu_helper():
     task_id = str(uuid.uuid4())[:8]
-    _update_task(task_id, "preparing", 0, "准备运行智谱一键配置...")
+    _update_task(task_id, "preparing", 0, "准备运行智谱配置工具...")
 
-    def do_install(callback):
+    def work(callback):
         from app.services.claude_installer import install_zhipu_helper
         result = install_zhipu_helper(callback=callback)
         if not result["success"]:
             _update_task(task_id, "error", 0, result["error"], done=True, error=result["error"])
             return
-        callback(100, "智谱配置完成！")
+        _update_task(task_id, "complete", 100, "智谱配置完成！", done=True)
 
-    _run_in_thread(task_id, do_install)
+    _bg(task_id, work)
     return jsonify({"success": True, "task_id": task_id})
 
 
+# ─── 一键启动 ───
+
 @bp.route("/launch-powershell", methods=["POST"])
 def launch_powershell():
-    import subprocess
-    try:
-        script = (
-            'Start-Process powershell -ArgumentList \'-NoExit -Command '
-            '"Write-Host \\"============================================\\" -ForegroundColor Cyan; '
-            'Write-Host \\"  🚀 1shot-CC — Claude Code 启动就绪！\\" -ForegroundColor Green; '
-            'Write-Host \\"============================================\\" -ForegroundColor Cyan; '
-            'Write-Host \\"\\"; '
-            'Write-Host \\"📌 请在下方输入 claude 并按 Enter 开始：\\" -ForegroundColor Yellow; '
-            'Write-Host \\"\\""\''
-        )
-        subprocess.Popen(script, shell=True, creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, "CREATE_NO_WINDOW") else 0)
-        return jsonify({"success": True})
-    except Exception as e:
-        return jsonify({"success": False, "error": str(e)})
+    """在新窗口打开带引导信息的 PowerShell"""
+    from app.services.launcher import launch_powershell_with_guide
+    result = launch_powershell_with_guide()
+    return jsonify(result)
 
+
+@bp.route("/launch-ccswitch", methods=["POST"])
+def launch_ccswitch():
+    """启动 CC-Switch 桌面应用"""
+    from app.services.launcher import launch_ccswitch_app
+    result = launch_ccswitch_app()
+    return jsonify(result)
+
+
+@bp.route("/launch-claude", methods=["POST"])
+def launch_claude():
+    """在 PowerShell 中启动 Claude Code"""
+    from app.services.launcher import launch_claude_in_powershell
+    result = launch_claude_in_powershell()
+    return jsonify(result)
+
+
+# ─── Color-cc ───
+
+@bp.route("/colorcc", methods=["POST"])
+def install_colorcc():
+    """安装 Color-cc 终端美化"""
+    from app.services.colorcc_installer import install_colorcc
+    task_id = str(uuid.uuid4())[:8]
+    _update_task(task_id, "preparing", 0, "准备安装 Color-cc...")
+
+    def work(callback):
+        result = install_colorcc(callback=callback)
+        if result.get("partial"):
+            _update_task(task_id, "complete", 100, result.get("message", "安装完成，请手动配置。"), done=True)
+        elif result["success"]:
+            _update_task(task_id, "complete", 100, result["message"], done=True)
+        else:
+            _update_task(task_id, "error", 0, result["error"], done=True, error=result["error"])
+
+    _bg(task_id, work)
+    return jsonify({"success": True, "task_id": task_id})
+
+
+@bp.route("/colorcc-check", methods=["GET"])
+def check_colorcc():
+    """检测 Windows Terminal 是否已安装"""
+    from app.services.colorcc_installer import check_windows_terminal
+    return jsonify(check_windows_terminal())
+
+
+# ─── SSE 进度 ───
 
 @bp.route("/progress/<task_id>")
 def progress(task_id):

@@ -1,163 +1,170 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="text-center" style="padding:40px 0;">
-  <div style="font-size:5rem;">🎉</div>
-  <h1 class="mt-1">1shot-CC 安装向导完成！</h1>
-  <p class="text-muted mt-1">您的 Claude Code 环境已准备就绪。</p>
+
+<div id="confetti-box" class="confetti-container"></div>
+
+<div class="celebrate-section">
+  <div class="celebrate-emoji">🎉</div>
+  <h1 style="font-size:2rem; margin-top:12px;">一切就绪！</h1>
+  <p class="text-muted">Claude Code 已经准备好了，开始你的第一次 Coding 吧</p>
 </div>
 
-<!-- API 未配置警告 -->
-<div id="api-warning-card" class="warning" style="max-width:650px; margin:0 auto 20px; display:none;">
-  <strong>⚠️ 重要提醒：您还没有配置 API 提供商！</strong>
-  <p class="text-sm mt-1">如果不配置可用的 API，Claude Code 将要求你使用 Anthropic 官方账号登录（需要科学上网），否则会显示 <strong>"Log in"</strong> 无法进行任何操作。</p>
-  <a href="/wizard/config" class="btn btn-primary btn-sm mt-1">⚙️ 立即配置 API →</a>
+<div id="api-warn" class="callout danger mb-3" style="max-width:600px; margin:0 auto 20px; display:none;">
+  <strong>⚠️ 等等！你还没配置 AI 服务</strong><br>
+  <span class="text-sm">不配 API，Claude Code 会卡在登录界面什么也干不了。建议先去配好再回来。</span>
+  <div class="mt-1"><a href="/wizard/config" class="btn btn-primary btn-sm">⚙️ 去配置 AI 服务</a></div>
 </div>
 
 <!-- 一键启动 Claude Code -->
-<div class="text-center mb-3" id="launch-section">
-  <button id="launch-btn" class="btn btn-primary" style="font-size:1.2rem; padding: 16px 40px;" onclick="launchClaudeCode()">
-    🚀 开始尝试 Claude Code coding 吧！
+<div class="text-center mb-4">
+  <button class="hero-cta" id="launch-cc-btn" onclick="launchClaudeCode()" style="font-size:1.15rem; padding:18px 48px;">
+    🚀 开始我的第一次 Coding
   </button>
-  <p id="launch-hint" class="text-sm text-muted mt-1" style="display:none;"></p>
+  <p id="launch-msg" class="text-sm text-muted mt-2" style="display:none;"></p>
 </div>
 
-<h2>🎨 终端美化（推荐）</h2>
-<div class="card mb-2" style="border:2px solid var(--accent);">
-  <div class="card-header">✨ Color-cc — 让终端界面赏心悦目</div>
-  <p class="text-sm">默认的命令窗口黑底白字，排版可能比较简陋。推荐安装 <strong>Color-cc</strong>，一键美化 Windows 终端界面，让 Claude Code 的排版更加清晰美观。</p>
-  <div class="flex flex-wrap gap-2 mt-1">
-    <a href="https://github.com/JananZZZ/Color-cc" target="_blank" class="btn btn-primary btn-sm">📦 查看 Color-cc 项目</a>
-    <span class="text-sm text-muted" style="align-self:center;">可选 · 安装后终端界面效果显著提升</span>
-  </div>
-</div>
-
-<h2>🖥️ 如何启动 Claude Code？</h2>
-
-<div class="grid-2 mb-2">
-  <!-- PowerShell 推荐 -->
-  <div class="card" style="border:2px solid var(--success);">
-    <div class="card-header">✅ 推荐：PowerShell（界面更好看）</div>
-    <p class="text-sm text-muted mb-1">PowerShell 对 Claude Code 的富文本渲染支持更好，排版不容易混乱。</p>
-    <ol class="text-sm" style="padding-left:18px;">
-      <li class="mb-1">在项目文件夹中，<strong>按住 Shift + 右键空白处</strong></li>
-      <li class="mb-1">选择 <strong>"在此处打开 PowerShell 窗口"</strong></li>
-      <li class="mb-1">或者按 <kbd>Win</kbd> + <kbd>R</kbd>，输入 <code>powershell</code>，回车</li>
-      <li class="mb-1">也可以在开始菜单搜索 <strong>PowerShell</strong></li>
-      <li>进入项目目录后输入 <code>claude</code> 并回车</li>
+<!-- 三步引导 -->
+<div class="grid-2 mb-3">
+  <div class="card" style="border:2px solid rgba(0,210,160,0.2);">
+    <div class="card-header" style="color:var(--green);">✅ 推荐：用 PowerShell（好看）</div>
+    <ol class="text-sm" style="padding-left:18px; color:var(--t2);">
+      <li class="mb-1">打开你的项目文件夹</li>
+      <li class="mb-1"><strong>按住 Shift</strong> + 在空白处<strong>点右键</strong></li>
+      <li class="mb-1">选「<strong>在此处打开 PowerShell 窗口</strong>」</li>
+      <li>输入 <code>claude</code> → 回车 ✨</li>
     </ol>
-    <div class="tip mt-1">
-      <strong>💡 技巧：</strong>在 PowerShell 中按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd> 可以放大字体，<kbd>Ctrl</kbd>+<kbd>-</kbd> 缩小。
-    </div>
+    <div class="text-xs text-muted mt-1">💡 按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>+</kbd> 可以放大字体</div>
   </div>
-
-  <!-- CMD 备选 -->
   <div class="card">
-    <div class="card-header">备选：命令提示符（CMD）</div>
-    <p class="text-sm text-muted mb-1">传统的 Windows 命令窗口，Claude Code 可以运行但可能出现排版问题。</p>
-    <ol class="text-sm" style="padding-left:18px;">
-      <li class="mb-1">按 <kbd>Win</kbd> + <kbd>R</kbd>，输入 <code>cmd</code>，回车</li>
-      <li class="mb-1">或在文件夹地址栏输入 <code>cmd</code> 回车</li>
-      <li class="mb-1">或在开始菜单搜索 <strong>cmd</strong> 或 <strong>命令提示符</strong></li>
-      <li>进入项目目录后输入 <code>claude</code> 并回车</li>
+    <div class="card-header">备选：用 CMD（传统）</div>
+    <ol class="text-sm" style="padding-left:18px; color:var(--t2);">
+      <li class="mb-1">按 <kbd>Win</kbd>+<kbd>R</kbd></li>
+      <li class="mb-1">输入 <code>cmd</code> → 回车</li>
+      <li>输入 <code>claude</code> → 回车</li>
     </ol>
-    <div class="warning mt-1">
-      <strong>⚠️ 注意：</strong>CMD 对 Unicode 和富文本支持较差，可能出现字符错位。建议优先使用 PowerShell。
+    <div class="text-xs text-muted mt-1">⚠️ CMD 下排版可能不太好看，建议用 PowerShell</div>
+  </div>
+</div>
+
+<!-- Color-cc 美化 -->
+<div class="card glass mb-3">
+  <div class="flex items-center justify-between flex-wrap gap-2">
+    <div>
+      <div class="card-header" style="margin-bottom:2px;">🎨 想让终端也有高颜值？</div>
+      <p class="text-sm text-muted">Color-cc 一键美化 Windows 终端界面，让黑白命令行变得赏心悦目</p>
     </div>
+    <button class="btn btn-outline" id="colorcc-btn" onclick="installColorCC()">🎨 一键美化终端</button>
   </div>
+  <div id="colorcc-msg" class="text-sm mt-1" style="display:none;"></div>
 </div>
 
-<!-- 首次使用指南 -->
-<div class="card mb-2">
-  <div class="card-header">👋 第一次使用 Claude Code</div>
-  <ol class="text-sm" style="padding-left:18px;">
-    <li class="mb-1">在终端输入 <code>claude</code> 并回车</li>
-    <li class="mb-1">Claude Code 会扫描当前文件夹，可能提示"是否信任此文件夹"——选 <strong>Yes</strong></li>
-    <li class="mb-1">等待几秒加载完成后，会出现对话界面</li>
-    <li>试试输入：<code>hello world！帮我写一个简单的 Python 脚本</code></li>
+<!-- 第一次使用 -->
+<div class="card mb-3">
+  <div class="card-header">👋 第一次用 Claude Code？试试这样</div>
+  <ol class="text-sm" style="padding-left:18px; color:var(--t2);">
+    <li>在终端输入 <code>claude</code> 并回车</li>
+    <li>出现提示「是否信任此文件夹」→ 选 <strong>Yes</strong></li>
+    <li>等几秒加载完，出现聊天界面</li>
+    <li>试着输入：<code>hello world！帮我看看这个文件夹里有什么</code></li>
   </ol>
-  <div class="info mt-1">
-    <strong>🎯 第一次对话建议：</strong>从一个简单任务开始。比如让 Claude Code 创建一个新文件、解释一段代码、或者帮你运行一条命令。熟悉了基本用法后，再尝试复杂的任务。
-  </div>
 </div>
 
-<!-- 其他功能卡片 -->
-<div class="grid-2 mb-2">
-  <div class="card" style="text-align:center;">
-    <div style="font-size:2.5rem;">🔀</div>
-    <h3>启动 CC-Switch</h3>
-    <p class="text-sm text-muted mt-1">从开始菜单找到 CC-Switch，可一键切换 API 供应商</p>
-    <p class="text-sm text-muted">右键系统托盘图标可快速切换</p>
+<div class="text-center mt-4">
+  <p class="text-muted text-sm mb-2">📖 推荐先看看这些教程：</p>
+  <div class="flex flex-wrap gap-2 justify-center">
+    <a href="/tutorial/claude" target="_blank" class="btn btn-outline btn-sm">📘 怎么用 Claude Code</a>
+    <a href="/tutorial/apikey" target="_blank" class="btn btn-outline btn-sm">🔑 哪里获取 API Key</a>
+    <a href="/tutorial/ccswitch" target="_blank" class="btn btn-outline btn-sm">🔀 CC-Switch 教程</a>
+    <a href="/tutorial/proxy" target="_blank" class="btn btn-outline btn-sm">🌐 科学上网指南</a>
   </div>
-  <div class="card" style="text-align:center;">
-    <div style="font-size:2.5rem;">📚</div>
-    <h3>教程指南</h3>
-    <p class="text-sm text-muted mt-1">查阅详细教程了解 Claude Code 的所有功能和使用技巧</p>
-  </div>
-  <div class="card" style="text-align:center;">
-    <div style="font-size:2.5rem;">🔄</div>
-    <h3>更新 Claude Code</h3>
-    <p class="text-sm text-muted mt-1">在命令窗口运行 <code>claude update</code> 升级到最新版本</p>
-    <p class="text-sm text-muted">建议定期更新以获得最新功能</p>
-  </div>
-  <div class="card" style="text-align:center;">
-    <div style="font-size:2.5rem;">🎨</div>
-    <h3>终端美化</h3>
-    <p class="text-sm text-muted mt-1"><a href="https://github.com/JananZZZ/Color-cc" target="_blank">Color-cc</a> 一键美化终端</p>
-    <p class="text-sm text-muted">让 Claude Code 看起来更专业</p>
-  </div>
-</div>
-
-<div class="text-center mt-3">
-  <p class="text-muted mb-2">📚 推荐阅读：</p>
-  <div class="flex flex-wrap gap-2" style="justify-content:center;">
-    <a href="/tutorial/claude" target="_blank" class="btn btn-primary">📘 Claude Code 使用指南</a>
-    <a href="/tutorial/apikey" target="_blank" class="btn btn-outline">🔑 获取 API Key</a>
-    <a href="/tutorial/ccswitch" target="_blank" class="btn btn-outline">🔀 CC-Switch 教程</a>
-    <a href="/tutorial/proxy" target="_blank" class="btn btn-outline">🌐 科学上网</a>
-  </div>
-</div>
-
-<div class="text-center mt-3">
-  <a href="/" class="btn btn-outline">🏠 返回首页</a>
+  <div class="mt-3"><a href="/" class="btn btn-ghost btn-sm">🏠 回到首页</a></div>
 </div>
 {% endblock %}
-
 {% block scripts %}
 <script>
-async function launchClaudeCode() {
-  const btn = document.getElementById("launch-btn");
-  const hint = document.getElementById("launch-hint");
-  btn.disabled = true;
-  btn.textContent = "⏳ 正在启动 PowerShell...";
+// 撒花动画
+(function confetti() {
+  const box = document.getElementById("confetti-box");
+  const colors = ["#8b7cf0","#00d2a0","#f5af37","#ff5e6e","#a78bfa","#7c6aee","#00d2a0","#f0b940"];
+  for (let i=0; i<60; i++) {
+    const p = document.createElement("div");
+    p.className = "confetti-piece";
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      width:${Math.random()*8+6}px;
+      height:${Math.random()*8+6}px;
+      animation-duration:${Math.random()*2+2.5}s;
+      animation-delay:${Math.random()*1.5}s;
+    `;
+    box.appendChild(p);
+  }
+  setTimeout(() => { box.innerHTML = ""; }, 4000);
+})();
 
+async function launchClaudeCode() {
+  const btn = document.getElementById("launch-cc-btn");
+  const msg = document.getElementById("launch-msg");
+  btn.disabled = true; btn.textContent = "⏳ 正在打开 PowerShell...";
   try {
-    const resp = await fetch("/api/install/launch-powershell", { method: "POST" });
-    const data = await resp.json();
-    if (data.success) {
-      hint.style.display = "block";
-      hint.textContent = "✅ PowerShell 已打开！在新窗口中输入 claude 并回车即可。";
-      showToast("PowerShell 已启动！", "success");
+    const r = await API.launchClaude();
+    if (r.success) {
+      msg.style.display = "block";
+      msg.innerHTML = '✅ <strong>Claude Code 正在新窗口中启动！</strong><br>如果是第一次使用，看到"信任此文件夹"选 Yes 就好';
+      showToast("Claude Code 正在启动！", "success");
     } else {
-      hint.style.display = "block";
-      hint.innerHTML = `请手动打开 PowerShell：<br>1. 按 <kbd>Win</kbd> + <kbd>R</kbd><br>2. 输入 <code>powershell</code><br>3. 进入项目文件夹，输入 <code>claude</code>`;
-      showToast("请手动打开 PowerShell", "warning");
+      msg.style.display = "block";
+      msg.innerHTML = `⚠️ 自动启动失败。<br>请手动操作：打开项目文件夹 → Shift+右键 → PowerShell → 输入 <code>claude</code>`;
+      showToast("请手动启动 PowerShell", "warning");
     }
-  } catch (e) {
-    hint.style.display = "block";
-    hint.innerHTML = `请手动打开 PowerShell：<br>1. 按 <kbd>Win</kbd> + <kbd>R</kbd><br>2. 输入 <code>powershell</code><br>3. 进入项目文件夹，输入 <code>claude</code>`;
+  } catch(e) {
+    msg.style.display = "block";
+    msg.innerHTML = `⚠️ 启动失败。请手动操作：打开项目文件夹 → Shift+右键 → PowerShell → 输入 <code>claude</code>`;
   }
   btn.disabled = false;
-  btn.textContent = "🚀 开始尝试 Claude Code coding 吧！";
+  btn.textContent = "🚀 开始我的第一次 Coding";
 }
 
-// 检测 API 是否已配置
+async function installColorCC() {
+  const btn = document.getElementById("colorcc-btn");
+  const msg = document.getElementById("colorcc-msg");
+  btn.disabled = true; btn.textContent = "⏳ 安装中...";
+  msg.style.display = "block"; msg.textContent = "正在下载 Color-cc...";
+  try {
+    const r = await API.installColorCC();
+    if (r.task_id) {
+      const es = new EventSource(`/api/install/progress/${r.task_id}`);
+      es.onmessage = (e) => {
+        const d = JSON.parse(e.data);
+        msg.textContent = d.message;
+        if (d.done) {
+          es.close();
+          if (d.error) {
+            msg.innerHTML = `<span style="color:var(--red);">安装失败：${d.error}</span>`;
+            btn.textContent = "🔄 重试";
+          } else {
+            msg.innerHTML = `<span style="color:var(--green);">✅ ${d.message}</span>`;
+            btn.textContent = "✅ 已安装";
+            showToast("Color-cc 安装完成！", "success");
+          }
+          btn.disabled = false;
+        }
+      };
+    }
+  } catch(e) {
+    msg.textContent = "安装失败：" + e.message;
+    btn.disabled = false; btn.textContent = "🎨 一键美化终端";
+  }
+}
+
+// 检测 API 配置状态
 (async function() {
   try {
-    const resp = await API.getCurrentConfig();
-    if (resp.success && !resp.data.configured) {
-      document.getElementById("api-warning-card").style.display = "block";
+    const r = await API.getCurrentConfig();
+    if (r.success && !r.data.configured) {
+      document.getElementById("api-warn").style.display = "block";
     }
-  } catch (e) {}
+  } catch(e) {}
 })();
 </script>
 {% endblock %}

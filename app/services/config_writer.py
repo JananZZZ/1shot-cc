@@ -28,10 +28,15 @@ def read_claude_settings() -> dict:
         return {"env": {}}
 
 
-def write_claude_settings(provider_key: str, api_key: str) -> dict:
-    provider = PROVIDERS.get(provider_key)
-    if not provider:
-        return {"success": False, "error": f"未知的提供商: {provider_key}"}
+def write_claude_settings(provider_key: str, api_key: str, custom_base_url: str = "") -> dict:
+    if provider_key == "custom":
+        if not custom_base_url:
+            return {"success": False, "error": "自定义提供商需要输入 Base URL"}
+        provider = {"name": "自定义", "base_url": custom_base_url}
+    else:
+        provider = PROVIDERS.get(provider_key)
+        if not provider:
+            return {"success": False, "error": f"未知的提供商: {provider_key}"}
 
     config_dir = get_claude_config_dir()
     os.makedirs(config_dir, exist_ok=True)

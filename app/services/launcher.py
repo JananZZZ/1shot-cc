@@ -1,0 +1,109 @@
+"""统一的应用/脚本启动器"""
+import os
+import subprocess
+import tempfile
+
+
+def find_ccswitch_exe() -> str | None:
+    """扫描常见安装位置查找 CC-Switch 可执行文件"""
+    import glob
+
+    search_paths = [
+        os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "CC-Switch"),
+        os.path.join(os.environ.get("PROGRAMFILES", "C:\\Program Files"), "CC-Switch"),
+        os.path.join(os.environ.get("PROGRAMFILES(X86)", "C:\\Program Files (x86)"), "CC-Switch"),
+        os.path.join(os.environ.get("APPDATA", ""), "CC-Switch"),
+    ]
+
+    for base in search_paths:
+        if not base or not os.path.isdir(base):
+            continue
+        for pattern in ["CC-Switch.exe", "cc-switch.exe", "CCSwitch.exe"]:
+            for root, _, files in os.walk(base):
+                for f in files:
+                    if f.lower() == pattern.lower():
+                        return os.path.join(root, f)
+
+    # 尝试从注册表查找
+    try:
+        result = subprocess.run(
+            ["reg", "query", r"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "/s", "/f", "CC-Switch"],
+            capture_output=True, text=True, timeout=15,
+            encoding="utf-8", errors="replace",
+        )
+        if result.returncode == 0:
+            for line in result.stdout.splitlines():
+                line_lower = line.lower()
+                if line_lower.endswith(".exe") and "cc" in line_lower and "switch" in line_lower:
+                    path = line.strip()
+                    if os.path.exists(path):
+                        return path
+    except Exception:
+        pass
+
+    return None
+
+
+def launch_powershell_with_guide() -> dict:
+    """在新窗口打开 PowerShell，显示引导信息"""
+    guide_content = r'''
+Write-Host ""
+Write-Host "╔══════════════════════════════════════════════╗" -ForegroundColor Cyan
+Write-Host "║                                              ║" -ForegroundColor Cyan
+Write-Host "║     Claude Code          !          ║" -ForegroundColor Green
+Write-Host "║                                              ║" -ForegroundColor Cyan
+Write-Host "╚══════════════════════════════════════════════╝" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "  👇   claude   Enter  ：" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "  💡  ：Ctrl+C  ，Ctrl+D  " -ForegroundColor DarkGray
+Write-Host ""
+'''
+    try:
+        tmpdir = tempfile.gettempdir()
+        ps1_path = os.path.join(tmpdir, "1shot-cc-welcome.ps1")
+        with open(ps1_path, "w", encoding="utf-8") as f:
+            f.write(guide_content)
+
+        subprocess.Popen(
+            ["powershell", "-NoExit", "-ExecutionPolicy", "Bypass", "-File", ps1_path],
+            creationflags=subprocess.CREATE_NEW_CONSOLE,
+        )
+        return {"success": True, "message": "PowerShell 已在新窗口打开"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+def launch_ccswitch_app() -> dict:
+    """启动 CC-Switch 桌面应用"""
+    path = find_ccswitch_exe()
+    if not path:
+        return {"success": False, "error": "找不到 CC-Switch 安装位置，请确认已安装。可以从开始菜单手动启动。"}
+    try:
+        subprocess.Popen([path], creationflags=subprocess.CREATE_NEW_CONSOLE if hasattr(subprocess, "CREATE_NEW_CONSOLE") else 0)
+        return {"success": True, "message": f"CC-Switch 已启动: {path}"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+def launch_claude_in_powershell() -> dict:
+    """在 PowerShell 中直接启动 claude"""
+    script = r'''
+Write-Host ""
+Write-Host "  Claude Code  ..." -ForegroundColor Green
+Write-Host ""
+claude
+'''
+    try:
+        tmpdir = tempfile.gettempdir()
+        ps1_path = os.path.join(tmpdir, "1shot-cc-run-claude.ps1")
+        with open(ps1_path, "w", encoding="utf-8") as f:
+            f.write(script)
+
+        subprocess.Popen(
+            ["powershell", "-NoExit", "-ExecutionPolicy", "Bypass", "-File", ps1_path],
+            creationflags=subprocess.CREATE_NEW_CONSOLE,
+        )
+        return {"success": True, "message": "Claude Code 正在启动..."}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
