@@ -39,6 +39,17 @@
   <img src="screenshots/05-final.png" alt="完成页" width="49%">
 </p>
 
+<p align="center">
+  <strong>📖 内置图文教程</strong>
+</p>
+
+<p align="center">
+  <img src="screenshots/06-tutorial-claude.png" alt="Claude Code 教程" width="24%">
+  <img src="screenshots/07-tutorial-apikey.png" alt="API Key 教程" width="24%">
+  <img src="screenshots/08-tutorial-ccswitch.png" alt="CC-Switch 教程" width="24%">
+  <img src="screenshots/09-tutorial-proxy.png" alt="科学上网教程" width="24%">
+</p>
+
 ---
 
 ## ✨ 它都能做什么
@@ -168,18 +179,30 @@ MIT © [1shot-CC Contributors](../../graphs/contributors)
 
 ---
 
-## ☕ 赞助
+## ☕ 请作者喝杯咖啡
 
-为了让零命令行经验的朋友也能轻松上手 AI 编程，这个项目用掉了不少 token 来做测试和迭代。
+如果这个项目对你有所帮助，欢迎请作者喝杯咖啡。**0.88 元即可！**
 
-如果你觉得它帮到了你，可以请我喝杯咖啡 👇
+一分也是爱，每天烧掉的 token 比代码还多 😭
 
-<p align="center">
-  <img src="screenshots/sponsor-wx.png" alt="微信赞赏" width="260">
-  <img src="screenshots/sponsor-alipay.png" alt="支付宝赞赏" width="260">
-</p>
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="50%">
+        <b>💚 微信</b><br><br>
+        <img src="assets/wechat-donate.png" width="220"><br>
+        <sub>微信扫码 → 0.88</sub>
+      </td>
+      <td align="center" width="50%">
+        <b>💙 支付宝</b><br><br>
+        <img src="assets/alipay-donate.jpg" width="220"><br>
+        <sub>支付宝扫码 → 0.88</sub>
+      </td>
+    </tr>
+  </table>
+</div>
 
-<p align="center">当然，给一颗 <strong>⭐ Star</strong> 也是很大的鼓励</p>
+> 💭 以上纯属良心自发，无任何功能限制，不给也完全不影响使用！好用的话给个 Star ⭐ 就很开心了
 
 ---
 

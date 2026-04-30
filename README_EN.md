@@ -39,6 +39,17 @@ New to AI coding? Feel overwhelmed by words like "terminal", "npm", or "environm
   <img src="screenshots/05-final.png" alt="Finish" width="49%">
 </p>
 
+<p align="center">
+  <strong>📖 Built-in Tutorials</strong>
+</p>
+
+<p align="center">
+  <img src="screenshots/06-tutorial-claude.png" alt="Claude Code Tutorial" width="24%">
+  <img src="screenshots/07-tutorial-apikey.png" alt="API Key Tutorial" width="24%">
+  <img src="screenshots/08-tutorial-ccswitch.png" alt="CC-Switch Tutorial" width="24%">
+  <img src="screenshots/09-tutorial-proxy.png" alt="Proxy Tutorial" width="24%">
+</p>
+
 ---
 
 ## ✨ Features
@@ -155,18 +166,30 @@ MIT © [1shot-CC Contributors](../../graphs/contributors)
 
 ---
 
-## ☕ Support
+## ☕ Buy Me a Coffee
 
-A fair amount of tokens were spent testing and iterating on this project — all to make AI coding accessible to everyone, regardless of their technical background.
+If this project has been helpful to you, consider buying the author a coffee. **Just ¥0.88!**
 
-If 1shot-CC has helped you, consider buying me a coffee 👇
+Every bit of support helps offset the tokens burned during development 😭
 
-<p align="center">
-  <img src="screenshots/sponsor-wx.png" alt="WeChat Sponsor" width="260">
-  <img src="screenshots/sponsor-alipay.png" alt="Alipay Sponsor" width="260">
-</p>
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="50%">
+        <b>💚 WeChat</b><br><br>
+        <img src="assets/wechat-donate.png" width="220"><br>
+        <sub>Scan with WeChat → ¥0.88</sub>
+      </td>
+      <td align="center" width="50%">
+        <b>💙 Alipay</b><br><br>
+        <img src="assets/alipay-donate.jpg" width="220"><br>
+        <sub>Scan with Alipay → ¥0.88</sub>
+      </td>
+    </tr>
+  </table>
+</div>
 
-<p align="center">A <strong>⭐ Star</strong> also goes a long way</p>
+> 💭 This is completely voluntary — no features are locked behind payment. A ⭐ Star means just as much!
 
 ---
 
