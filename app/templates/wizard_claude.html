@@ -1,27 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="page-hero"><h1>🤖 安装 Claude Code</h1><p>主角登场——你的 AI 编程伙伴来了</p></div>
+<div class="page-hero"><h1>安装 Claude Code</h1><p>主角登场——你的 AI 编程伙伴</p></div>
 <div class="install-panel">
   <div class="install-icon" id="icon">🤖</div>
   <h3 id="status-text">准备帮你装 Claude Code</h3>
-  <p class="text-sm text-muted">从网络下载安装，大概 2-5 分钟，请耐心等一下</p>
-  <div class="progress-wrap">
-    <div class="progress-bar"><div class="fill" id="bar" style="width:0"></div></div>
-    <p id="pct-text" class="text-xs text-muted">等待开始...</p>
-  </div>
+  <p class="text-sm text-muted">从网络下载安装，大概 2-5 分钟</p>
+  <div class="progress-wrap"><div class="progress-bar"><div class="fill" id="bar" style="width:0"></div></div><p id="pct-text" class="text-xs text-muted">等待开始...</p></div>
   <button class="btn btn-primary btn-lg" id="start-btn" onclick="doInstall()">📥 帮我装好 Claude Code</button>
   <button class="btn btn-outline mt-2" id="retry-btn" style="display:none" onclick="doInstall()">🔄 再试一次</button>
-  <div id="next-step" class="mt-2" style="display:none">
-    <a href="/wizard/ccswitch" class="btn btn-accent">继续下一步 → CC-Switch</a>
-    <a href="/wizard/config" class="btn btn-outline">跳过，直接去配置 AI</a>
-  </div>
+  <div id="next-step" class="mt-2" style="display:none"><a href="/wizard/ccswitch" class="btn btn-accent">继续 → 装 CC-Switch</a><a href="/wizard/config" class="btn btn-outline">跳过</a></div>
 </div>
-<div class="callout info">
-  💡 <strong>小知识：</strong>Claude Code 是一个在命令行里工作的 AI 伙伴。它会帮你写代码、改 bug、解释项目——就像有个懂编程的朋友坐在旁边帮你。<br>
-  装好后会自动帮你调整系统设置（安全策略），确保能正常启动。
-</div>
-{% endblock %}
-{% block scripts %}<script>
-const w = new InstallWizard(() => API.installClaudeCode(), { title:"安装 Claude Code", successMsg:"Claude Code 装好了！在终端输入 claude 就能召唤它" });
-function doInstall(){ w.start(); }
-</script>{% endblock %}
+<div class="callout info">💡 <strong>这是啥：</strong>Claude Code 就是你的 AI 编码搭档。在终端里和他对话，帮你写代码、改 bug、学项目。</div>
+{% endblock %}{% block scripts %}<script>const w=new InstallWizard(()=>API.installClaudeCode(),{successMsg:"Claude Code 装好了！在终端输入 claude 就能召唤它"});function doInstall(){w.start();}</script>{% endblock %}

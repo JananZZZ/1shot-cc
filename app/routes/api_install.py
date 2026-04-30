@@ -203,6 +203,41 @@ def launch_claude():
     return jsonify(result)
 
 
+# ─── Windows Terminal ───
+
+@bp.route("/winterm", methods=["POST"])
+def install_winterm():
+    """安装 Windows Terminal（winget 静默安装）"""
+    task_id = str(uuid.uuid4())[:8]
+    _update_task(task_id, "preparing", 0, "准备安装 Windows Terminal...")
+
+    def work(callback):
+        import subprocess
+        callback(5, "正在通过 winget 安装 Windows Terminal...")
+        try:
+            proc = subprocess.run(
+                ["winget", "install", "--silent", "--accept-package-agreements", "Microsoft.WindowsTerminal"],
+                capture_output=True, text=True, timeout=300,
+                encoding="utf-8", errors="replace",
+            )
+            if proc.returncode == 0:
+                _update_task(task_id, "complete", 100, "Windows Terminal 安装完成！", done=True)
+            else:
+                err = proc.stderr[:200] if proc.stderr else f"返回码: {proc.returncode}"
+                _update_task(task_id, "error", 0, f"安装失败: {err}", done=True, error=err)
+        except subprocess.TimeoutExpired:
+            _update_task(task_id, "error", 0, "安装超时", done=True, error="安装超时")
+        except FileNotFoundError:
+            _update_task(task_id, "error", 0,
+                "未找到 winget 命令。请确保系统已安装 App Installer。",
+                done=True, error="winget 不可用")
+        except Exception as e:
+            _update_task(task_id, "error", 0, str(e), done=True, error=str(e))
+
+    _bg(task_id, work)
+    return jsonify({"success": True, "task_id": task_id})
+
+
 # ─── Color-cc ───
 
 @bp.route("/colorcc", methods=["POST"])
@@ -229,7 +264,9 @@ def install_colorcc():
 def check_colorcc():
     """检测 Windows Terminal 是否已安装"""
     from app.services.colorcc_installer import check_windows_terminal
-    return jsonify(check_windows_terminal())
+    result = check_windows_terminal()
+    result["success"] = True
+    return jsonify(result)
 
 
 # ─── SSE 进度 ───

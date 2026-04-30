@@ -1,66 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div id="particles" class="particles-container"></div>
-
-<div class="page-hero mt-2">
-  <h1 style="font-size:2.8rem;">🚀 1shot-CC</h1>
-  <p style="font-size:1.05rem; margin-top:8px; color:var(--t2);">装上 Claude Code 这件事，交给我就行了</p>
-  <p class="text-muted text-sm">不用懂命令行，跟着点几下鼠标，几分钟就搞定</p>
+<div class="page-hero mt-3">
+  <h1 style="font-size:2.4rem;">Claude Code，装得明明白白</h1>
+  <p>不用懂命令行，不用查教程，跟着点几下就好</p>
 </div>
 
-<div style="max-width:600px; margin:28px auto;">
+<div style="max-width:560px; margin:32px auto;">
   <div class="grid-2">
     <div class="card fade-in-up stagger-1" style="text-align:center;">
-      <div style="font-size:2.2rem; margin-bottom:6px;">🔍</div>
-      <div style="font-weight:700;">先看看缺什么</div>
-      <div class="text-sm text-muted mt-1">自动检查电脑环境，哪里不够补哪里</div>
+      <div style="font-size:2rem; margin-bottom:4px;">🔍</div>
+      <div style="font-weight:700; font-size:0.95rem;">先看看缺什么</div>
+      <div class="text-sm text-muted mt-1">自动检查电脑环境</div>
     </div>
     <div class="card fade-in-up stagger-2" style="text-align:center;">
-      <div style="font-size:2.2rem; margin-bottom:6px;">📥</div>
-      <div style="font-weight:700;">一键全装好</div>
-      <div class="text-sm text-muted mt-1">点一下，需要的东西全部自动下载安装</div>
+      <div style="font-size:2rem; margin-bottom:4px;">📥</div>
+      <div style="font-weight:700; font-size:0.95rem;">一键全装好</div>
+      <div class="text-sm text-muted mt-1">缺什么点什么，自动装</div>
     </div>
     <div class="card fade-in-up stagger-3" style="text-align:center;">
-      <div style="font-size:2.2rem; margin-bottom:6px;">⚙️</div>
-      <div style="font-weight:700;">接上 AI 大脑</div>
-      <div class="text-sm text-muted mt-1">支持智谱 / DeepSeek / MiniMax 等主流服务</div>
+      <div style="font-size:2rem; margin-bottom:4px;">⚙️</div>
+      <div style="font-weight:700; font-size:0.95rem;">接上 AI 服务</div>
+      <div class="text-sm text-muted mt-1">支持 5 家国内主流服务商</div>
     </div>
     <div class="card fade-in-up stagger-4" style="text-align:center;">
-      <div style="font-size:2.2rem; margin-bottom:6px;">📖</div>
-      <div style="font-weight:700;">手把手教程</div>
-      <div class="text-sm text-muted mt-1">从入门到会用，不让你一个人迷茫</div>
+      <div style="font-size:2rem; margin-bottom:4px;">📖</div>
+      <div style="font-weight:700; font-size:0.95rem;">手把手教会</div>
+      <div class="text-sm text-muted mt-1">每一步都有图文教程</div>
     </div>
   </div>
 </div>
 
 <div class="text-center mt-4 fade-in-up stagger-5">
-  <a href="/wizard/check" class="hero-cta">
-    🔍 先看看电脑还缺什么
-  </a>
+  <a href="/wizard/check" class="hero-cta">🔍 先看看电脑还缺什么 →</a>
   <p class="text-muted text-sm mt-2">
-    或者先逛逛 📖 <a href="/tutorial/claude" target="_blank" style="color:var(--brand-300);">新手教程</a>
-    · <a href="/tutorial/apikey" target="_blank" style="color:var(--brand-300);">怎么申请 API Key</a>
+    或者先逛逛 <a href="/tutorial/claude" target="_blank" style="color:var(--brand);">新手教程</a>
   </p>
 </div>
-
-<script>
-(function() {
-  const container = document.getElementById('particles');
-  const colors = ['rgba(139,116,247,0.5)', 'rgba(167,139,250,0.4)', 'rgba(124,106,238,0.3)', 'rgba(0,210,160,0.3)'];
-  for (let i = 0; i < 32; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = Math.random() * 4 + 2;
-    p.style.cssText = `
-      width:${size}px; height:${size}px;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      left:${Math.random()*100}%;
-      animation-duration:${Math.random()*12+8}s;
-      animation-delay:${Math.random()*8}s;
-    `;
-    container.appendChild(p);
-  }
-})();
-</script>
 {% endblock %}

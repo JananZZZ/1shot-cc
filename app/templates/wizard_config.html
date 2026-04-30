@@ -1,171 +1,42 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="page-hero"><h1>⚙️ 接上 AI 大脑</h1><p>选一个 AI 服务商，填上你的"通行证"（API Key）就好了</p></div>
+<div class="page-hero"><h1>接上 AI 服务</h1><p>选一家服务商，填上你的 API Key 就行</p></div>
 
 <div id="current-cfg" class="callout success mb-2" style="display:none;">
-  <div style="font-weight:600;">📌 当前已连接：<span id="cfg-provider"></span></div>
-  <div class="text-sm">密钥：<code id="cfg-key"></code> · 地址：<code id="cfg-url"></code></div>
+  <strong>📌 当前已连接：</strong><span id="cfg-provider"></span> · 密钥 <code id="cfg-key"></code>
 </div>
 
-<div class="card highlight mb-2">
-  <div class="card-header">⚡ 新手推荐：智谱 AI 一键配置</div>
-  <p class="text-sm text-muted">智谱提供专门的配置工具，运行一下什么都不用填。</p>
-  <div class="mt-1">
-    <button class="btn btn-outline btn-sm" id="zhipu-btn" onclick="runZhipu()">🪄 一键自动配置</button>
-    <p id="zhipu-log" class="text-xs text-muted mt-1"></p>
-  </div>
-</div>
-
-<p class="text-sm text-muted mb-1">或者自己选一个：</p>
+<p class="text-sm text-muted mb-1">选一家你已经有 Key 的服务商（没有的话点下面教程去申请）：</p>
 <div class="provider-grid" id="provider-grid">
-  <div class="provider-card" data-p="zhipu" onclick="selectP('zhipu')">
-    <div class="provider-icon">🔵</div><div class="provider-name">智谱 GLM</div>
-    <div class="provider-hint">¥22/月 起</div>
-  </div>
-  <div class="provider-card" data-p="deepseek" onclick="selectP('deepseek')">
-    <div class="provider-icon">🟣</div><div class="provider-name">DeepSeek</div>
-    <div class="provider-hint">超低价，够实惠</div>
-  </div>
-  <div class="provider-card" data-p="minimax" onclick="selectP('minimax')">
-    <div class="provider-icon">🟠</div><div class="provider-name">MiniMax</div>
-    <div class="provider-hint">¥290/年 起</div>
-  </div>
-  <div class="provider-card" data-p="mimo" onclick="selectP('mimo')">
-    <div class="provider-icon">🟡</div><div class="provider-name">小米 MiMo</div>
-    <div class="provider-hint">有免费额度</div>
-  </div>
-  <div class="provider-card" data-p="qwen" onclick="selectP('qwen')">
-    <div class="provider-icon">🟢</div><div class="provider-name">通义千问</div>
-    <div class="provider-hint">阿里云 · 新用户送额度</div>
-  </div>
-  <div class="provider-card" data-p="custom" onclick="selectP('custom')">
-    <div class="provider-icon">⚪</div><div class="provider-name">其他服务商</div>
-    <div class="provider-hint">自己填地址</div>
-  </div>
+  <div class="provider-card" data-p="zhipu" onclick="selectP('zhipu')"><div class="provider-icon">🔵</div><div class="provider-name">智谱 GLM</div><div class="provider-hint">¥22/月 起</div></div>
+  <div class="provider-card" data-p="deepseek" onclick="selectP('deepseek')"><div class="provider-icon">🟣</div><div class="provider-name">DeepSeek</div><div class="provider-hint">超低价</div></div>
+  <div class="provider-card" data-p="minimax" onclick="selectP('minimax')"><div class="provider-icon">🟠</div><div class="provider-name">MiniMax</div><div class="provider-hint">¥290/年 起</div></div>
+  <div class="provider-card" data-p="mimo" onclick="selectP('mimo')"><div class="provider-icon">🟡</div><div class="provider-name">小米 MiMo</div><div class="provider-hint">有免费额度</div></div>
+  <div class="provider-card" data-p="qwen" onclick="selectP('qwen')"><div class="provider-icon">🟢</div><div class="provider-name">通义千问</div><div class="provider-hint">新用户送额度</div></div>
+  <div class="provider-card" data-p="custom" onclick="selectP('custom')"><div class="provider-icon">⚪</div><div class="provider-name">其他</div><div class="provider-hint">自己填地址</div></div>
 </div>
 
 <div id="config-form" class="card" style="display:none;">
   <div class="card-header" id="form-title">配置 API Key</div>
-  <div id="custom-url-wrap" style="display:none;" class="mb-1">
-    <label class="text-sm text-muted">服务地址（Anthropic Base URL）：</label>
-    <input type="text" id="custom-url" class="input-field" placeholder="https://api.xxx.com/anthropic">
-  </div>
-  <div class="mb-1">
-    <label class="text-sm text-muted">API Key（你的通行证）：</label>
-    <div class="flex gap-1">
-      <input type="password" id="api-key" class="input-field" placeholder="把 Key 粘贴到这里...">
-      <button class="btn btn-ghost btn-sm" onclick="toggleKey()">👁️</button>
-    </div>
-  </div>
+  <div id="custom-url-wrap" style="display:none;" class="mb-1"><label class="text-sm text-muted">服务地址：</label><input type="text" id="custom-url" class="input-field" placeholder="https://api.xxx.com/anthropic"></div>
+  <div class="mb-1"><label class="text-sm text-muted">API Key：</label><div class="flex gap-1"><input type="password" id="api-key" class="input-field" placeholder="粘贴 Key..."><button class="btn btn-ghost btn-sm" onclick="toggleKey()">👁️</button></div></div>
   <div class="flex flex-wrap gap-2 mt-1">
     <button class="btn btn-accent" id="save-btn" onclick="saveConfig()">💾 保存</button>
-    <a id="link-docs" href="#" target="_blank" class="btn btn-outline btn-sm">📖 怎么注册？</a>
     <a id="link-key" href="#" target="_blank" class="btn btn-outline btn-sm">🔑 去哪获取 Key？</a>
   </div>
   <div id="save-result" class="mt-2" style="display:none;"></div>
 </div>
 
-<div class="callout warning mt-2">
-  <strong>⚠️ 重要：</strong>不配置 API 的话，Claude Code 会要求你登录 Anthropic 官方账号（需要科学上网），否则会卡在 <strong>"Log in"</strong> 界面什么也做不了。建议先配好 API 再用。
-</div>
-
-<div class="text-center mt-3">
-  <a href="/wizard/final" class="btn btn-ghost">现在不想配，先去最后一步 →</a>
-</div>
+<div class="callout warning mt-2"><strong>⚠️ 重要：</strong>不配 API 的话，Claude Code 会卡在"Log in"界面。配好再开始！</div>
+<div class="text-center mt-3"><a href="/wizard/final" class="btn btn-ghost">稍后再说，先去最后一步 →</a></div>
 {% endblock %}
-{% block scripts %}
-<script>
-const INFO = {
-  zhipu:{name:"智谱 GLM", docs:"https://docs.bigmodel.cn/cn/coding-plan/tool/claude", register:"https://open.bigmodel.cn", key:"https://bigmodel.cn/usercenter/proj-mgmt/apikeys"},
-  deepseek:{name:"DeepSeek", docs:"https://api-docs.deepseek.com/zh-cn/", register:"https://platform.deepseek.com", key:"https://platform.deepseek.com/api_keys"},
-  minimax:{name:"MiniMax", docs:"https://platform.minimaxi.com/docs", register:"https://platform.minimaxi.com", key:"https://platform.minimaxi.com/user-center/basic-information/interface-key"},
-  mimo:{name:"小米 MiMo", docs:"https://github.com/XiaomiMiMo", register:"https://platform.xiaomimimo.com", key:"https://platform.xiaomimimo.com/#/console/api-keys"},
-  qwen:{name:"通义千问", docs:"https://www.aliyun.com/product/bailian", register:"https://bailian.console.aliyun.com", key:"https://bailian.console.aliyun.com/#/api-key"},
-  custom:{name:"自定义", docs:"#", register:"#", key:"#"},
-};
-let sel = "";
-
-function selectP(k) {
-  sel = k;
-  document.querySelectorAll(".provider-card").forEach(c => c.classList.remove("selected"));
-  document.querySelector(`[data-p="${k}"]`).classList.add("selected");
-  const form = document.getElementById("config-form");
-  form.style.display = "block";
-  const info = INFO[k];
-  document.getElementById("form-title").textContent = `配置 ${info.name}`;
-  document.getElementById("custom-url-wrap").style.display = k==="custom" ? "block" : "none";
-  document.getElementById("link-docs").href = info.docs;
-  document.getElementById("link-key").href = info.key;
-  document.getElementById("save-result").style.display = "none";
-}
-
-function toggleKey() {
-  const el = document.getElementById("api-key");
-  el.type = el.type === "password" ? "text" : "password";
-}
-
-async function saveConfig() {
-  const key = document.getElementById("api-key").value.trim();
-  if (!key) { showToast("请先把 API Key 粘贴进来", "warning"); return; }
-  if (!sel) { showToast("请先在上面选一个服务商", "warning"); return; }
-  const btn = document.getElementById("save-btn");
-  btn.disabled = true; btn.textContent = "⏳ 保存中...";
-  const payload = { provider:sel, api_key:key };
-  if (sel === "custom") {
-    payload.base_url = document.getElementById("custom-url").value.trim();
-    if (!payload.base_url) { showToast("自定义模式需要填写服务地址", "warning"); btn.disabled = false; btn.textContent = "💾 保存"; return; }
-  }
-  try {
-    const r = await API.writeConfig(sel, key);
-    const div = document.getElementById("save-result");
-    div.style.display = "block";
-    if (r.success) {
-      div.innerHTML = `<div class="callout success">✅ 配置已保存！以后在终端输入 <code>claude</code> 就能直接用 ${r.provider||INFO[sel].name} 的服务了</div>`;
-      showToast(`${INFO[sel].name} 配置成功！`, "success");
-      loadCfg();
-    } else {
-      div.innerHTML = `<div class="callout danger">❌ 保存失败：${r.error}</div>`;
-      showToast("保存失败：" + r.error, "error");
-    }
-  } catch(e) {
-    showToast("请求失败：" + e.message, "error");
-  }
-  btn.disabled = false; btn.textContent = "💾 保存";
-}
-
-async function runZhipu() {
-  const btn = document.getElementById("zhipu-btn");
-  btn.disabled = true; btn.textContent = "⏳ 运行中...";
-  const log = document.getElementById("zhipu-log");
-  log.textContent = "正在连接智谱配置服务器...";
-  try {
-    const r = await fetch("/api/install/zhipu-helper", {method:"POST"});
-    const d = await r.json();
-    if (d.success && d.task_id) {
-      const es = new EventSource(`/api/install/progress/${d.task_id}`);
-      es.onmessage = (e) => {
-        const dd = JSON.parse(e.data);
-        log.textContent = dd.message;
-        if (dd.done) { es.close(); btn.textContent = "✅ 配置完成"; showToast("智谱配置完成！", "success"); loadCfg(); }
-      };
-    } else {
-      log.textContent = "启动失败，请手动配置"; btn.disabled = false; btn.textContent = "🪄 一键自动配置";
-    }
-  } catch(e) { log.textContent = "错误：" + e.message; btn.disabled = false; btn.textContent = "🪄 一键自动配置"; }
-}
-
-async function loadCfg() {
-  try {
-    const r = await API.getCurrentConfig();
-    if (r.success && r.data.configured) {
-      const c = document.getElementById("current-cfg");
-      c.style.display = "block";
-      document.getElementById("cfg-provider").textContent = r.data.provider || "未知";
-      document.getElementById("cfg-key").textContent = r.data.api_key_masked;
-      document.getElementById("cfg-url").textContent = r.data.base_url;
-    }
-  } catch(e) {}
-}
-document.addEventListener("DOMContentLoaded", loadCfg);
-</script>
-{% endblock %}
+{% block scripts %}<script>
+const INFO={zhipu:{name:"智谱 GLM",key:"https://bigmodel.cn/usercenter/proj-mgmt/apikeys"},deepseek:{name:"DeepSeek",key:"https://platform.deepseek.com/api_keys"},minimax:{name:"MiniMax",key:"https://platform.minimaxi.com/user-center/basic-information/interface-key"},mimo:{name:"小米 MiMo",key:"https://platform.xiaomimimo.com/#/console/api-keys"},qwen:{name:"通义千问",key:"https://bailian.console.aliyun.com/#/api-key"},custom:{name:"自定义",key:"#"}};
+let sel="";
+function selectP(k){sel=k;document.querySelectorAll(".provider-card").forEach(c=>c.classList.remove("selected"));document.querySelector(`[data-p="${k}"]`).classList.add("selected");document.getElementById("config-form").style.display="block";document.getElementById("form-title").textContent="配置 "+INFO[k].name;document.getElementById("custom-url-wrap").style.display=k==="custom"?"block":"none";document.getElementById("link-key").href=INFO[k].key;document.getElementById("save-result").style.display="none";}
+function toggleKey(){const el=document.getElementById("api-key");el.type=el.type==="password"?"text":"password";}
+async function saveConfig(){const key=document.getElementById("api-key").value.trim();if(!key){showToast("请粘贴 API Key","warning");return;}if(!sel){showToast("请先选服务商","warning");return;}const btn=document.getElementById("save-btn");btn.disabled=true;btn.textContent="⏳";const p={provider:sel,api_key:key};if(sel==="custom"){p.base_url=document.getElementById("custom-url").value.trim();if(!p.base_url){showToast("请填写服务地址","warning");btn.disabled=false;btn.textContent="💾 保存";return;}}
+const r=await API.writeConfig(sel,key);const d=document.getElementById("save-result");d.style.display="block";if(r.success){d.innerHTML=`<div class="callout success">✅ 保存好了！以后在终端输入 <code>claude</code> 就会用 ${r.provider||INFO[sel].name} 的服务</div>`;showToast("配置成功！","success");loadCfg();}else{d.innerHTML=`<div class="callout danger">❌ ${r.error}</div>`;showToast(r.error,"error");}btn.disabled=false;btn.textContent="💾 保存";}
+async function loadCfg(){try{const r=await API.getCurrentConfig();if(r.success&&r.data.configured){const c=document.getElementById("current-cfg");c.style.display="block";document.getElementById("cfg-provider").textContent=r.data.provider||"未知";document.getElementById("cfg-key").textContent=r.data.api_key_masked;}}catch(e){}}
+document.addEventListener("DOMContentLoaded",loadCfg);
+</script>{% endblock %}

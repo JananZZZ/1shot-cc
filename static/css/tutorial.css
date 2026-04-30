@@ -1,142 +1,143 @@
 /* ═══════════════════════════════
-   1shot-CC v2.0 — Tutorial Styles
+   1shot-CC v2.1 — Tutorial Styles
+   Large type · Clean typography
    ═══════════════════════════════ */
 
 .tutorial-content {
-  max-width: 780px;
+  max-width: 700px;
   margin: 0 auto;
-  line-height: 1.85;
-  padding: 16px 0;
+  padding: 12px 0;
+  line-height: 1.9;
+  font-size: 1.02rem;
+  color: var(--t2);
 }
 
 .tutorial-content h1 {
-  font-size: 1.75rem;
-  font-weight: 800;
-  margin-bottom: 6px;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 4px;
   color: var(--t1);
 }
 
 .tutorial-content h2 {
-  font-size: 1.2rem;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.25rem;
   font-weight: 700;
-  margin-top: 36px;
-  margin-bottom: 12px;
+  margin-top: 40px;
+  margin-bottom: 14px;
   padding-bottom: 6px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid var(--border);
   color: var(--t1);
 }
 
 .tutorial-content h3 {
-  font-size: 1.02rem;
+  font-family: "Noto Serif SC", serif;
+  font-size: 1.05rem;
   font-weight: 600;
-  margin-top: 24px;
+  margin-top: 26px;
   margin-bottom: 8px;
-  color: var(--t2);
-}
-
-.tutorial-content p { margin-bottom: 12px; color: var(--t2); }
-
-.tutorial-content ul, .tutorial-content ol {
-  padding-left: 22px;
-  margin-bottom: 12px;
-  color: var(--t2);
-}
-
-.tutorial-content li { margin-bottom: 5px; }
-
-.tutorial-content a {
-  color: var(--brand-300);
-  text-decoration: none;
-}
-
-.tutorial-content a:hover { text-decoration: underline; }
-
-.tutorial-content table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 16px 0;
-  font-size: 0.88rem;
-}
-
-.tutorial-content table th,
-.tutorial-content table td {
-  padding: 10px 14px;
-  border: 1px solid rgba(255,255,255,0.05);
-  text-align: left;
-}
-
-.tutorial-content table th {
-  background: rgba(255,255,255,0.03);
-  font-weight: 700;
   color: var(--t1);
 }
 
-.tutorial-content table td { color: var(--t2); }
+.tutorial-content p { margin-bottom: 14px; line-height: 1.85; }
 
+.tutorial-content ul, .tutorial-content ol {
+  padding-left: 22px;
+  margin-bottom: 14px;
+}
+.tutorial-content li { margin-bottom: 6px; line-height: 1.75; }
+
+.tutorial-content a { color: var(--brand); text-decoration: none; }
+.tutorial-content a:hover { text-decoration: underline; }
+
+/* 表格 — 去线化 */
+.tutorial-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0;
+  font-size: 0.95rem;
+}
+.tutorial-content table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-family: "Noto Serif SC", serif;
+  font-weight: 700;
+  color: var(--t1);
+  border-bottom: 2px solid var(--border);
+}
+.tutorial-content table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--t2);
+}
+.tutorial-content table tr:last-child td { border-bottom: none; }
+
+/* 提示框 — 细边框风格 */
 .tutorial-content .tip,
 .tutorial-content .warning,
 .tutorial-content .info {
   padding: 14px 18px;
   border-radius: var(--r-md);
-  margin: 14px 0;
-  font-size: 0.88rem;
+  margin: 16px 0;
+  font-size: 0.93rem;
+  line-height: 1.7;
 }
 
 .tutorial-content .tip {
-  background: var(--green-soft);
+  background: var(--green-bg);
   border-left: 3px solid var(--green);
-  color: var(--green);
+  color: #3a6b38;
 }
-
 .tutorial-content .warning {
-  background: var(--red-soft);
+  background: var(--red-bg);
   border-left: 3px solid var(--red);
   color: var(--red);
 }
-
 .tutorial-content .info {
-  background: rgba(124,106,238,0.08);
-  border-left: 3px solid var(--brand-400);
-  color: var(--brand-300);
+  background: var(--brand-soft);
+  border-left: 3px solid var(--brand);
+  color: var(--brand-hover);
 }
 
+/* 快捷键表格高亮 */
 .tutorial-content .shortcut-table td:first-child {
   white-space: nowrap;
-  font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
+  font-family: "JetBrains Mono", "Cascadia Code", "Fira Code", monospace;
   font-weight: 600;
-  color: var(--brand-300);
+  color: var(--brand);
 }
 
+/* 步骤序号 */
 .tutorial-content .step-num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px; height: 26px;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px;
   border-radius: 50%;
-  background: var(--brand-500);
+  background: var(--brand);
   color: #fff;
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-family: "Noto Serif SC", serif;
+  font-size: 0.82rem; font-weight: 700;
   margin-right: 8px;
   flex-shrink: 0;
 }
 
 .tutorial-content hr {
   border: none;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  margin: 28px 0;
+  border-top: 1px solid var(--border);
+  margin: 30px 0;
 }
 
+/* 日志窗口 */
 .tutorial-content .log-window {
-  background: #060610;
-  border: 1px solid rgba(255,255,255,0.06);
+  background: #faf7f0;
+  border: 1px solid var(--border);
   border-radius: var(--r-md);
   padding: 14px 18px;
-  font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
-  font-size: 0.8rem;
+  font-family: "JetBrains Mono", "Cascadia Code", "Fira Code", monospace;
+  font-size: 0.82rem;
   line-height: 1.6;
   white-space: pre-wrap;
   word-break: break-all;
-  color: #a8a8c8;
+  color: var(--t2);
   margin: 12px 0;
 }

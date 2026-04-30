@@ -1,23 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="page-hero"><h1>📦 安装 Git</h1><p>版本管理小工具，Windows 上 Claude Code 好伙伴</p></div>
+<div class="page-hero"><h1>安装 Git</h1><p>管理代码变化的工具，Windows 上 Claude Code 需要它</p></div>
 <div class="install-panel">
   <div class="install-icon" id="icon">📦</div>
   <h3 id="status-text">准备帮你装 Git</h3>
   <p class="text-sm text-muted">从国内镜像下载，大约 1-2 分钟</p>
-  <div class="progress-wrap">
-    <div class="progress-bar"><div class="fill" id="bar" style="width:0"></div></div>
-    <p id="pct-text" class="text-xs text-muted">等待开始...</p>
-  </div>
+  <div class="progress-wrap"><div class="progress-bar"><div class="fill" id="bar" style="width:0"></div></div><p id="pct-text" class="text-xs text-muted">等待开始...</p></div>
   <button class="btn btn-primary btn-lg" id="start-btn" onclick="doInstall()">📥 帮我装好 Git</button>
   <button class="btn btn-outline mt-2" id="retry-btn" style="display:none" onclick="doInstall()">🔄 再试一次</button>
-  <div id="next-step" class="mt-2" style="display:none">
-    <a href="/wizard/claude" class="btn btn-accent">继续下一步 → Claude Code 安装</a>
-  </div>
+  <div id="next-step" class="mt-2" style="display:none"><a href="/wizard/claude" class="btn btn-accent">继续 → 装 Claude Code</a></div>
 </div>
-<div class="callout info">💡 <strong>小知识：</strong>Git 是程序员用来"记录代码变化"的工具，就像写文档的修订记录。Claude Code 在 Windows 上需要它来管理文件改动。</div>
-{% endblock %}
-{% block scripts %}<script>
-const w = new InstallWizard(() => API.installGit(), { title:"安装 Git", successMsg:"Git 装好了！" });
-function doInstall(){ w.start(); }
-</script>{% endblock %}
+{% endblock %}{% block scripts %}<script>const w=new InstallWizard(()=>API.installGit(),{successMsg:"Git 装好了！"});function doInstall(){w.start();}</script>{% endblock %}

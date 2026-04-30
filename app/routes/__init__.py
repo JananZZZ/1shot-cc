@@ -21,7 +21,7 @@ def register_blueprints(app):
 
     @app.route("/wizard/<step>")
     def wizard(step):
-        valid = ["check", "nodejs", "git", "claude", "ccswitch", "config", "final"]
+        valid = ["check", "nodejs", "git", "claude", "ccswitch", "ccswitch_guide", "config", "final"]
         if step not in valid:
             return render_template("index.html")
         return render_template(f"wizard_{step}.html")

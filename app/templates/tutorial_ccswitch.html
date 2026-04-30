@@ -1,134 +1,62 @@
 {% extends "base.html" %}
 {% block content %}
-<link rel="stylesheet" href="/static/css/tutorial.css">
 <div class="tutorial-content">
 <h1>🔀 CC-Switch 使用教程</h1>
-<p class="text-muted">多供应商一键切换 · 50+ 预设 · MCP 统一管理</p>
+<p class="text-muted">多服务商一键切换 · 50+ 预设 · 小白友好</p>
 
-<h2>什么是 CC-Switch？</h2>
-<p>CC-Switch 是一款开源的跨平台桌面应用（GitHub 40K+ Stars），专门用于管理 Claude Code 的 API 供应商配置。它解决了每次切换模型都要手动编辑 <code>settings.json</code> 的痛点。</p>
+<h2>CC-Switch 是什么？</h2>
 
-<div class="info">
-  <strong>核心价值：</strong>不用记 Base URL，不用手动编辑 JSON 文件，不用重启终端。选择 → 填 Key → 切换，三步搞定。
-</div>
+<p>CC-Switch 是一个桌面小工具，专门用来<strong>管理 Claude Code 的 AI 服务商配置</strong>。</p>
 
-<h2>主要功能一览</h2>
+<div class="info"><strong>简单说：</strong>有了它，你今天想用 DeepSeek，明天想试智谱，点一下就切过去了。不用每次去改配置文件，不用记各种 Base URL。</div>
 
-<h3>🔄 供应商管理</h3>
+<h2>怎么安装？</h2>
+
+<p>两种方式：</p>
 <ul>
-  <li>内置 <strong>50+ 供应商预设</strong>：智谱、DeepSeek、MiniMax、MiMo、通义千问、OpenRouter、SiliconFlow 等</li>
-  <li>选择供应商后只需填入 API Key 即可使用</li>
-  <li>支持自定义供应商（手动输入 Base URL）</li>
+  <li><strong>桌面版（推荐）：</strong>在 1shot-CC 向导里一键安装，或去 <a href="https://github.com/farion1231/cc-switch/releases" target="_blank">GitHub</a> 下载 <code>.msi</code> 文件双击安装</li>
+  <li><strong>命令行版：</strong>终端运行 <code>npm install -g cc-switch-cli</code></li>
 </ul>
 
-<h3>⚡ 一键切换</h3>
-<ul>
-  <li>主界面或<strong>系统托盘</strong>秒级切换供应商</li>
-  <li>Claude Code <strong>热重载</strong>：无需重启终端即可使用新配置</li>
-  <li>支持多应用：Claude Code、Codex、Gemini CLI、OpenCode</li>
-</ul>
+<h2>快速上手：3 步配好</h2>
 
-<h3>🔌 MCP 统一管理</h3>
-<ul>
-  <li>跨应用统一管理 MCP 服务器配置</li>
-  <li>一处编辑，多处同步（Claude Code / Codex / Gemini CLI）</li>
-</ul>
-
-<h3>📊 用量统计</h3>
-<ul>
-  <li>Token 消耗追踪、成本监控</li>
-  <li>趋势图表，直观查看使用情况</li>
-</ul>
-
-<h3>🛡️ 故障转移</h3>
-<ul>
-  <li>配置多个供应商的故障转移队列</li>
-  <li>主供应商故障时自动秒级切换到备用供应商</li>
-</ul>
-
-<h2>快速上手</h2>
-
-<h3>1. 启动 CC-Switch</h3>
-<ul>
-  <li><strong>桌面版：</strong>从开始菜单或桌面快捷方式启动</li>
-  <li><strong>CLI 版：</strong>在终端运行 <code>cc-switch</code>，进入交互式菜单</li>
-</ul>
-
-<h3>2. 添加供应商</h3>
 <ol>
-  <li>打开 CC-Switch 主界面</li>
-  <li>从预设列表中选择供应商（如"智谱 GLM"）</li>
-  <li>输入你的 API Key</li>
-  <li>点击"保存"</li>
+  <li><strong>打开 CC-Switch</strong> — 从开始菜单找，或点右下角任务栏图标</li>
+  <li><strong>添加服务商</strong> — 从内置列表里选一家（比如「智谱 GLM」），粘贴你的 API Key</li>
+  <li><strong>一键切换</strong> — 选中想用的服务商，点切换。Claude Code 会立刻用上</li>
 </ol>
 
-<h3>3. 切换供应商</h3>
-<ol>
-  <li>在主界面选中目标供应商</li>
-  <li>点击"切换到此供应商"</li>
-  <li>或右键系统托盘图标 → 选择供应商 → 秒级切换</li>
-</ol>
+<p>就这么简单。不用改任何文件，不用敲任何命令。</p>
 
-<h3>4. CLI 版命令</h3>
-<div class="log-window">
-# 交互模式（菜单选择）
-cc-switch
-
-# 列出所有已配置的供应商
-cc-switch provider list
-
-# 切换到指定供应商
-cc-switch provider switch 1
-
-# 添加新供应商
-cc-switch provider add
-
-# 删除供应商
-cc-switch provider delete 2
-
-# MCP 同步
-cc-switch mcp sync
-</div>
-
-<h2>常见供应商配置参考</h2>
+<h2>主要功能</h2>
 
 <table>
-  <tr><th>供应商</th><th>Anthropic Base URL</th></tr>
+  <tr><th>功能</th><th>说明</th></tr>
+  <tr><td>🔀 一键切换</td><td>主界面或任务栏右键，秒切服务商。Claude Code 不用重启</td></tr>
+  <tr><td>📋 50+ 预设</td><td>智谱、DeepSeek、MiniMax、MiMo、通义、SiliconFlow……选好填 Key 就行</td></tr>
+  <tr><td>🔌 MCP 管理</td><td>统一管理所有 AI 工具（Claude Code / Codex / Gemini）的 MCP 配置</td></tr>
+  <tr><td>📊 用量统计</td><td>看看用了多少 Token，花了多少钱</td></tr>
+  <tr><td>🛡️ 故障转移</td><td>主服务商挂了自动切到备用的，不影响使用</td></tr>
+</table>
+
+<h2>常见服务商配置参考</h2>
+
+<table>
+  <tr><th>服务商</th><th>Anthropic Base URL</th></tr>
   <tr><td>智谱 GLM</td><td><code>https://open.bigmodel.cn/api/anthropic</code></td></tr>
   <tr><td>DeepSeek</td><td><code>https://api.deepseek.com/anthropic</code></td></tr>
   <tr><td>MiniMax</td><td><code>https://api.minimaxi.com/anthropic</code></td></tr>
   <tr><td>小米 MiMo</td><td><code>https://api.xiaomimimo.com/anthropic</code></td></tr>
   <tr><td>通义千问</td><td><code>https://dashscope.aliyuncs.com/apps/anthropic</code></td></tr>
   <tr><td>SiliconFlow</td><td><code>https://api.siliconflow.cn/v1/anthropic</code></td></tr>
-  <tr><td>OpenRouter</td><td><code>https://openrouter.ai/api/anthropic</code></td></tr>
 </table>
-
-<h2>如何安装 CC-Switch</h2>
-
-<h3>桌面版（推荐）</h3>
-<ul>
-  <li><strong>Windows：</strong>在 1shot-CC 向导中一键安装，或从 <a href="https://github.com/farion1231/cc-switch/releases" target="_blank">GitHub Releases</a> 下载 <code>.msi</code> 文件</li>
-  <li><strong>macOS：</strong><code>brew tap farion1231/ccswitch && brew install --cask cc-switch</code></li>
-</ul>
-
-<h3>CLI 版</h3>
-<div class="log-window">npm install -g cc-switch-cli</div>
 
 <h2>常见问题</h2>
 
-<div class="tip">
-  <strong>Q：切换供应商后 Claude Code 需要重启吗？</strong><br>
-  A：不需要。CC-Switch 桌面版支持热重载，Claude Code 会自动使用新配置。如果没生效，重启终端即可。
-</div>
+<div class="tip"><strong>Q：切换服务商后，Claude Code 需要重启吗？</strong><br>A：不需要。CC-Switch 桌面版支持热切换，Claude Code 会自动用新配置。</div>
 
-<div class="warning">
-  <strong>Q：为什么切换后 Claude Code 报错？</strong><br>
-  A：检查 API Key 是否正确、Base URL 是否匹配、账户是否有余额。建议先用对应平台的官方测试工具验证 API Key 可用性。
-</div>
+<div class="warning"><strong>Q：为什么切换后 Claude Code 报错？</strong><br>A：检查三件事：① API Key 有没有复制完整 ② 账户里还有没有余额 ③ 网络能不能连上服务商。</div>
 
-<div class="info">
-  <strong>💡 推荐策略：</strong>配置 2-3 个供应商，使用故障转移功能。例如：日常用 DeepSeek（便宜），高峰期自动切换到智谱 GLM（稳定）。
-</div>
-
+<div class="info"><strong>💡 推荐策略：</strong>配 2-3 个服务商，开故障转移。日常用 DeepSeek（便宜），关键时刻切智谱（稳定）。</div>
 </div>
 {% endblock %}

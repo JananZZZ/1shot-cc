@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-hero">
+  <h1>🎉 CC-Switch 装好了！</h1>
+  <p>最后一步——告诉 CC-Switch 你想用哪家 AI 服务</p>
+</div>
+
+<div class="callout info mb-3">
+  <strong>💡 CC-Switch 是个桌面小工具</strong>，藏在屏幕右下角任务栏里（一个小图标）。它的作用就是帮你管理不同的 AI 服务商，你想用哪个就切到哪个。
+</div>
+
+<div class="grid-3 mb-3">
+  <div class="guide-step">
+    <div class="step-num">①</div>
+    <div class="step-title">右键点图标</div>
+    <p class="text-sm text-muted">在屏幕<strong>右下角任务栏</strong>找到 CC-Switch 图标，右键点击它</p>
+  </div>
+  <div class="guide-step">
+    <div class="step-num">②</div>
+    <div class="step-title">选一家服务商</div>
+    <p class="text-sm text-muted">点「添加供应商」，从列表里选你申请的（比如<strong>智谱 GLM</strong>）</p>
+  </div>
+  <div class="guide-step">
+    <div class="step-num">③</div>
+    <div class="step-title">粘贴 API Key</div>
+    <p class="text-sm text-muted">把你申请到的 <strong>API Key</strong> 粘贴进去保存，就完成了！</p>
+  </div>
+</div>
+
+<div class="text-center mb-3">
+  <button class="hero-cta" id="launch-btn" onclick="launchCC()" style="font-size:1rem;">
+    ▶ 打开 CC-Switch，现在开始配置
+  </button>
+  <p id="launch-msg" class="text-sm text-muted mt-1"></p>
+</div>
+
+<div class="card">
+  <div class="card-header">🤔 还没有 API Key？</div>
+  <p class="text-sm text-muted">看看这篇教程，手把手教你如何免费或低价获取 Key：</p>
+  <div class="flex flex-wrap gap-2 mt-1">
+    <a href="/tutorial/apikey" target="_blank" class="btn btn-outline btn-sm">🔑 获取 API Key 完整教程</a>
+    <a href="/tutorial/ccswitch" target="_blank" class="btn btn-outline btn-sm">🔀 CC-Switch 详细教程</a>
+  </div>
+</div>
+
+<div class="text-center mt-3">
+  <a href="/wizard/config" class="btn btn-accent">我已经配好了，继续下一步 →</a>
+  <p class="text-muted text-sm mt-1">或者不通过 CC-Switch，<a href="/wizard/config">直接在这里配置 API</a></p>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+async function launchCC() {
+  const btn = document.getElementById("launch-btn"), msg = document.getElementById("launch-msg");
+  btn.disabled = true; btn.textContent = "⏳ 正在启动...";
+  const r = await API.launchCCSwitch();
+  if (r.success) {
+    msg.innerHTML = "✅ CC-Switch 已打开！<br>按照上面 ①②③ 的步骤操作就好";
+    showToast("CC-Switch 已启动！","success");
+  } else {
+    msg.innerHTML = "CC-Switch 可能已启动，请检查右下角任务栏。<br>如果没看到，从开始菜单里找「CC-Switch」打开。";
+    showToast("请检查任务栏","warning");
+  }
+  btn.textContent = "▶ 打开 CC-Switch，现在开始配置";
+  btn.disabled = false;
+}
+// 自动尝试启动 CC-Switch
+setTimeout(() => launchCC(), 600);
+</script>
+{% endblock %}

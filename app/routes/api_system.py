@@ -109,6 +109,24 @@ def check_all():
         except Exception:
             pass
 
+    # Windows Terminal
+    wt_installed = False
+    r = run_cmd("where wt", timeout=8)
+    if r["success"] and r["stdout"].strip():
+        wt_installed = True
+    else:
+        # 备用检测：检查注册表
+        r2 = run_cmd(
+            r'reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wt.exe" /ve',
+            timeout=8,
+        )
+        if r2["success"] and "wt.exe" in r2["stdout"]:
+            wt_installed = True
+    results["windows_terminal"] = {
+        "installed": wt_installed,
+        "ok": wt_installed,
+    }
+
     # 汇总：计算 ready 状态
     results["ready"] = all([
         nodejs_installed,

@@ -30,6 +30,7 @@ const API = {
   launchClaude() { return this.post("/api/install/launch-claude"); },
   installColorCC() { return this.post("/api/install/colorcc"); },
   checkColorCC() { return this.get("/api/install/colorcc-check"); },
+  installWinTerm() { return this.post("/api/install/winterm"); },
 
   // 订阅 SSE 进度
   subscribeProgress(taskId, onUpdate, onComplete, onError) {

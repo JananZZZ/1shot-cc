@@ -13,9 +13,9 @@
 <nav class="navbar">
   <a href="/" class="brand">🚀 1shot-CC</a>
   <div class="nav-links">
-    <div class="tutorial-dropdown">
-      <button class="dropbtn">📚 教程指南 ▾</button>
-      <div class="dropdown-content">
+    <div class="tutorial-dropdown" id="tutorial-dropdown">
+      <button class="dropbtn" id="tutorial-toggle">📚 教程指南 ▾</button>
+      <div class="dropdown-content" id="tutorial-menu">
         <a href="/tutorial/claude" target="_blank">📘 Claude Code 使用指南</a>
         <a href="/tutorial/apikey" target="_blank">🔑 获取 API 密钥教程</a>
         <a href="/tutorial/ccswitch" target="_blank">🔀 CC-Switch 使用教程</a>
@@ -35,6 +35,21 @@
 
 <script src="/static/js/api.js"></script>
 <script src="/static/js/wizard.js"></script>
+<script>
+// 教程下拉菜单 — click toggle
+(function() {
+  const toggle = document.getElementById("tutorial-toggle");
+  const menu = document.getElementById("tutorial-menu");
+  if (!toggle || !menu) return;
+  toggle.addEventListener("click", function(e) {
+    e.stopPropagation();
+    menu.classList.toggle("show");
+  });
+  document.addEventListener("click", function() {
+    menu.classList.remove("show");
+  });
+})();
+</script>
 {% block scripts %}{% endblock %}
 </body>
 </html>
