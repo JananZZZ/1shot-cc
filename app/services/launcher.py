@@ -44,43 +44,9 @@ def launch_in_terminal(ps1_path: str) -> dict:
 
 
 def find_ccswitch_exe() -> str | None:
-    """扫描常见安装位置查找 CC-Switch 可执行文件"""
-    import glob
-
-    search_paths = [
-        os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "CC-Switch"),
-        os.path.join(os.environ.get("PROGRAMFILES", "C:\\Program Files"), "CC-Switch"),
-        os.path.join(os.environ.get("PROGRAMFILES(X86)", "C:\\Program Files (x86)"), "CC-Switch"),
-        os.path.join(os.environ.get("APPDATA", ""), "CC-Switch"),
-    ]
-
-    for base in search_paths:
-        if not base or not os.path.isdir(base):
-            continue
-        for pattern in ["CC-Switch.exe", "cc-switch.exe", "CCSwitch.exe"]:
-            for root, _, files in os.walk(base):
-                for f in files:
-                    if f.lower() == pattern.lower():
-                        return os.path.join(root, f)
-
-    # 尝试从注册表查找
-    try:
-        result = subprocess.run(
-            ["reg", "query", r"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall", "/s", "/f", "CC-Switch"],
-            capture_output=True, text=True, timeout=15,
-            encoding="utf-8", errors="replace",
-        )
-        if result.returncode == 0:
-            for line in result.stdout.splitlines():
-                line_lower = line.lower()
-                if line_lower.endswith(".exe") and "cc" in line_lower and "switch" in line_lower:
-                    path = line.strip()
-                    if os.path.exists(path):
-                        return path
-    except Exception:
-        pass
-
-    return None
+    """通过注册表 + 文件系统查找 CC-Switch 可执行文件"""
+    from app.utils.registry_reader import _find_ccswitch_exe_path
+    return _find_ccswitch_exe_path()
 
 
 def launch_powershell_with_guide() -> dict:
