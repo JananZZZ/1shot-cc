@@ -20,6 +20,20 @@
   <div class="card-header" id="form-title">配置 API Key</div>
   <div id="custom-url-wrap" style="display:none;" class="mb-1"><label class="text-sm text-muted">服务地址：</label><input type="text" id="custom-url" class="input-field" placeholder="https://api.xxx.com/anthropic"></div>
   <div class="mb-1"><label class="text-sm text-muted">API Key：</label><div class="flex gap-1"><input type="password" id="api-key" class="input-field" placeholder="粘贴 Key..."><button class="btn btn-ghost btn-sm" onclick="toggleKey()">👁️</button></div></div>
+
+  <details class="mt-1" id="advanced-section">
+    <summary class="text-sm" id="models-summary" style="cursor:pointer; color:var(--t2);">🔧 高级：自定义模型（可选）</summary>
+    <div class="mt-1">
+      <div class="text-xs text-muted mb-1">默认已根据当前厂商推荐填写。如果你清楚自己需要什么模型，可以在这里修改：</div>
+      <div class="mb-1"><label class="text-sm text-muted">Haiku 模型（快速/便宜）：</label>
+      <input type="text" id="haiku-model" class="input-field" placeholder="自动选择默认"></div>
+      <div class="mb-1"><label class="text-sm text-muted">Sonnet 模型（主力/平衡）：</label>
+      <input type="text" id="sonnet-model" class="input-field" placeholder="自动选择默认"></div>
+      <div class="mb-1"><label class="text-sm text-muted">Opus 模型（最强/深推理）：</label>
+      <input type="text" id="opus-model" class="input-field" placeholder="自动选择默认"></div>
+    </div>
+  </details>
+
   <div class="flex flex-wrap gap-2 mt-1">
     <button class="btn btn-accent" id="save-btn" onclick="saveConfig()">💾 保存</button>
     <a id="link-key" href="#" target="_blank" class="btn btn-outline btn-sm">🔑 去哪获取 Key？</a>
@@ -31,12 +45,14 @@
 <div class="text-center mt-3"><a href="/wizard/final" class="btn btn-ghost">稍后再说，先去最后一步 →</a></div>
 {% endblock %}
 {% block scripts %}<script>
-const INFO={zhipu:{name:"智谱 GLM",key:"https://bigmodel.cn/usercenter/proj-mgmt/apikeys"},deepseek:{name:"DeepSeek",key:"https://platform.deepseek.com/api_keys"},minimax:{name:"MiniMax",key:"https://platform.minimaxi.com/user-center/basic-information/interface-key"},mimo:{name:"小米 MiMo",key:"https://platform.xiaomimimo.com/#/console/api-keys"},qwen:{name:"通义千问",key:"https://bailian.console.aliyun.com/#/api-key"},custom:{name:"自定义",key:"#"}};
+const INFO={zhipu:{name:"智谱 GLM",key:"https://bigmodel.cn/usercenter/proj-mgmt/apikeys",haiku:"glm-4.5",sonnet:"glm-4.7",opus:"glm-4.7"},deepseek:{name:"DeepSeek",key:"https://platform.deepseek.com/api_keys",haiku:"deepseek-v4-flash[1m]",sonnet:"deepseek-v4-pro[1m]",opus:"deepseek-v4-pro[1m]"},minimax:{name:"MiniMax",key:"https://platform.minimaxi.com/user-center/basic-information/interface-key",haiku:"MiniMax-M1-40k",sonnet:"MiniMax-M2",opus:"MiniMax-M2"},mimo:{name:"小米 MiMo",key:"https://platform.xiaomimimo.com/#/console/api-keys",haiku:"mimo-v2-flash",sonnet:"mimo-v2-flash",opus:"mimo-v2-flash"},qwen:{name:"通义千问",key:"https://bailian.console.aliyun.com/#/api-key",haiku:"qwen3.6-flash",sonnet:"qwen3.6-plus",opus:"qwen3.6-plus"},custom:{name:"自定义",key:"#",haiku:"",sonnet:"",opus:""}};
 let sel="";
-function selectP(k){sel=k;document.querySelectorAll(".provider-card").forEach(c=>c.classList.remove("selected"));document.querySelector(`[data-p="${k}"]`).classList.add("selected");document.getElementById("config-form").style.display="block";document.getElementById("form-title").textContent="配置 "+INFO[k].name;document.getElementById("custom-url-wrap").style.display=k==="custom"?"block":"none";document.getElementById("link-key").href=INFO[k].key;document.getElementById("save-result").style.display="none";}
+function selectP(k){sel=k;document.querySelectorAll(".provider-card").forEach(c=>c.classList.remove("selected"));document.querySelector(`[data-p="${k}"]`).classList.add("selected");document.getElementById("config-form").style.display="block";document.getElementById("form-title").textContent="配置 "+INFO[k].name;document.getElementById("custom-url-wrap").style.display=k==="custom"?"block":"none";document.getElementById("link-key").href=INFO[k].key;document.getElementById("save-result").style.display="none";
+const info=INFO[k];document.getElementById("haiku-model").placeholder=info.haiku||"无默认模型";document.getElementById("sonnet-model").placeholder=info.sonnet||"无默认模型";document.getElementById("opus-model").placeholder=info.opus||"无默认模型";
+const summary=document.getElementById("models-summary");if(summary){const d=[info.haiku,info.sonnet,info.opus].filter(Boolean);summary.textContent=info.haiku?`🔧 高级：自定义模型（可选）— 默认: ${d.join(" / ")}`:"🔧 高级：自定义模型（可选）";}}
 function toggleKey(){const el=document.getElementById("api-key");el.type=el.type==="password"?"text":"password";}
-async function saveConfig(){const key=document.getElementById("api-key").value.trim();if(!key){showToast("请粘贴 API Key","warning");return;}if(!sel){showToast("请先选服务商","warning");return;}const btn=document.getElementById("save-btn");btn.disabled=true;btn.textContent="⏳";const p={provider:sel,api_key:key};if(sel==="custom"){p.base_url=document.getElementById("custom-url").value.trim();if(!p.base_url){showToast("请填写服务地址","warning");btn.disabled=false;btn.textContent="💾 保存";return;}}
-const r=await API.writeConfig(sel,key);const d=document.getElementById("save-result");d.style.display="block";if(r.success){d.innerHTML=`<div class="callout success">✅ 保存好了！以后在终端输入 <code>claude</code> 就会用 ${r.provider||INFO[sel].name} 的服务</div>`;showToast("配置成功！","success");loadCfg();}else{d.innerHTML=`<div class="callout danger">❌ ${r.error}</div>`;showToast(r.error,"error");}btn.disabled=false;btn.textContent="💾 保存";}
+async function saveConfig(){const key=document.getElementById("api-key").value.trim();if(!key){showToast("请粘贴 API Key","warning");return;}if(!sel){showToast("请先选服务商","warning");return;}const btn=document.getElementById("save-btn");btn.disabled=true;btn.textContent="⏳";const models={haiku:document.getElementById("haiku-model").value.trim(),sonnet:document.getElementById("sonnet-model").value.trim(),opus:document.getElementById("opus-model").value.trim()};
+const r=await API.writeConfig(sel,key,models);const d=document.getElementById("save-result");d.style.display="block";if(r.success){d.innerHTML=`<div class="callout success">✅ 保存好了！以后在终端输入 <code>claude</code> 就会用 ${r.provider||INFO[sel].name} 的服务</div>`;showToast("配置成功！","success");loadCfg();}else{d.innerHTML=`<div class="callout danger">❌ ${r.error}</div>`;showToast(r.error,"error");}btn.disabled=false;btn.textContent="💾 保存";}
 async function loadCfg(){try{const r=await API.getCurrentConfig();if(r.success&&r.data.configured){const c=document.getElementById("current-cfg");c.style.display="block";document.getElementById("cfg-provider").textContent=r.data.provider||"未知";document.getElementById("cfg-key").textContent=r.data.api_key_masked;}}catch(e){}}
 document.addEventListener("DOMContentLoaded",loadCfg);
 </script>{% endblock %}

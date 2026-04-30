@@ -53,7 +53,7 @@ function selectMode(m) {
 function doInstall() {
   if (!mode) { showToast("先选一种安装方式吧", "warning"); return; }
   const fn = mode === "gui" ? () => API.installCCSwitchGUI() : () => API.installCCSwitchCLI();
-  const w = new InstallWizard(fn, { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！" });
+  const w = new InstallWizard(fn, { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！", onSuccess: () => { sessionStorage.setItem("ccswitch-just-installed", "1"); } });
   w.start();
 }
 </script>{% endblock %}

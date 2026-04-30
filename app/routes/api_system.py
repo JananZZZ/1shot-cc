@@ -173,6 +173,25 @@ def check_policy():
     return jsonify({"success": True, "policy": r["stdout"] if r["success"] else "Unknown"})
 
 
+@bp.route("/check-winterm")
+def check_winterm():
+    """轻量检测 Windows Terminal 是否已安装"""
+    from app.utils.subprocess_runner import run_cmd
+
+    wt_installed = False
+    r = run_cmd("where wt", timeout=8)
+    if r["success"] and r["stdout"].strip():
+        wt_installed = True
+    else:
+        r2 = run_cmd(
+            r'reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\wt.exe" /ve',
+            timeout=8,
+        )
+        if r2["success"] and "wt.exe" in r2["stdout"]:
+            wt_installed = True
+    return jsonify({"success": True, "installed": wt_installed})
+
+
 @bp.route("/check-config")
 def check_config():
     from app.utils.path_helper import get_claude_settings_path, get_claude_json_path

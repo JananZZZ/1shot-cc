@@ -3,6 +3,7 @@ class InstallWizard {
   constructor(installFn, options = {}) {
     this.installFn = installFn;
     this.successMsg = options.successMsg || "安装完成！";
+    this.onSuccess = options.onSuccess || null;
     this.taskId = null;
     this.eventSource = null;
     this.started = false;
@@ -76,6 +77,7 @@ class InstallWizard {
     }
     if (e.next) e.next.style.display = "block";
     showToast(this.successMsg, "success");
+    if (this.onSuccess) this.onSuccess();
   }
 
   _fail(error) {

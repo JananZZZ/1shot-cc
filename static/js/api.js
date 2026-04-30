@@ -31,6 +31,7 @@ const API = {
   installColorCC() { return this.post("/api/install/colorcc"); },
   checkColorCC() { return this.get("/api/install/colorcc-check"); },
   installWinTerm() { return this.post("/api/install/winterm"); },
+  checkWinTerm() { return this.get("/api/system/check-winterm"); },
 
   // 订阅 SSE 进度
   subscribeProgress(taskId, onUpdate, onComplete, onError) {
@@ -53,8 +54,14 @@ const API = {
 
   // 配置管理
   getProviders() { return this.get("/api/config/providers"); },
-  writeConfig(provider, apiKey) {
-    return this.post("/api/config/write", { provider, api_key: apiKey });
+  writeConfig(provider, apiKey, models = {}) {
+    return this.post("/api/config/write", {
+      provider,
+      api_key: apiKey,
+      haiku_model: models.haiku || "",
+      sonnet_model: models.sonnet || "",
+      opus_model: models.opus || "",
+    });
   },
   getCurrentConfig() { return this.get("/api/config/current"); },
 

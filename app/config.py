@@ -38,9 +38,9 @@ PROVIDERS = {
     "deepseek": {
         "name": "DeepSeek",
         "base_url": "https://api.deepseek.com/anthropic",
-        "default_haiku": "deepseek-v4-flash",
-        "default_sonnet": "deepseek-v4-pro",
-        "default_opus": "deepseek-v4-pro",
+        "default_haiku": "deepseek-v4-flash[1m]",
+        "default_sonnet": "deepseek-v4-pro[1m]",
+        "default_opus": "deepseek-v4-pro[1m]",
         "register_url": "https://platform.deepseek.com",
         "api_key_url": "https://platform.deepseek.com/api_keys",
         "docs_url": "https://api-docs.deepseek.com/zh-cn/",

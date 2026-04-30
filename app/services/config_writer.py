@@ -28,7 +28,7 @@ def read_claude_settings() -> dict:
         return {"env": {}}
 
 
-def write_claude_settings(provider_key: str, api_key: str, custom_base_url: str = "") -> dict:
+def write_claude_settings(provider_key: str, api_key: str, custom_base_url: str = "", haiku_model: str = "", sonnet_model: str = "", opus_model: str = "") -> dict:
     if provider_key == "custom":
         if not custom_base_url:
             return {"success": False, "error": "自定义提供商需要输入 Base URL"}
@@ -59,12 +59,16 @@ def write_claude_settings(provider_key: str, api_key: str, custom_base_url: str 
         "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": 1,
     })
 
-    if provider.get("default_haiku"):
-        env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = provider["default_haiku"]
-    if provider.get("default_sonnet"):
-        env["ANTHROPIC_DEFAULT_SONNET_MODEL"] = provider["default_sonnet"]
-    if provider.get("default_opus"):
-        env["ANTHROPIC_DEFAULT_OPUS_MODEL"] = provider["default_opus"]
+    # 模型：用户手动填的优先，否则用提供商默认值
+    haiku = haiku_model or provider.get("default_haiku", "")
+    sonnet = sonnet_model or provider.get("default_sonnet", "")
+    opus = opus_model or provider.get("default_opus", "")
+    if haiku:
+        env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = haiku
+    if sonnet:
+        env["ANTHROPIC_DEFAULT_SONNET_MODEL"] = sonnet
+    if opus:
+        env["ANTHROPIC_DEFAULT_OPUS_MODEL"] = opus
 
     existing["env"] = env
 

@@ -34,6 +34,9 @@ def write_config():
     provider_key = body.get("provider", "")
     api_key = body.get("api_key", "").strip()
     custom_base_url = body.get("base_url", "").strip()
+    haiku_model = body.get("haiku_model", "").strip()
+    sonnet_model = body.get("sonnet_model", "").strip()
+    opus_model = body.get("opus_model", "").strip()
 
     if not provider_key:
         return jsonify({"success": False, "error": "请选择提供商"})
@@ -47,7 +50,7 @@ def write_config():
     if not api_key:
         return jsonify({"success": False, "error": "API Key 不能为空"})
 
-    result = write_claude_settings(provider_key, api_key, custom_base_url)
+    result = write_claude_settings(provider_key, api_key, custom_base_url, haiku_model, sonnet_model, opus_model)
     return jsonify(result)
 
 
