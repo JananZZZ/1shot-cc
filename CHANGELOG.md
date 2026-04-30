@@ -1,5 +1,21 @@
 # 1shot-CC 开发记录
 
+## v2.2 — 2026-05-01 · 关键修复 + 开源准备
+
+### 修复
+- Color-cc: 重写安装器，改用官方 `install.ps1` 替代错误的 git clone + schemes 逻辑；安装前自动创建 `settings.json`；非零退出码正确报告失败；新增安装后验证
+- Windows Terminal: winget 安装后等 3 秒重新验证，失败恢复按钮，避免误导用户
+- CC-Switch: 新增 Tauri 注册表键查询（`HKCU\Software\farion1231\CC-Switch`）+ `DisplayIcon` 解析 + 文件系统三层 fallback；安装后自动清检测缓存
+- 启动: `launcher.py` 新增 `_find_wt_exe()` 检测，优先使用 Windows Terminal，不可用时回退 PowerShell
+
+### 改进
+- API 配置页新增可折叠「高级模型选择」区域，显示默认推荐并可自定义覆盖
+- DeepSeek 模型名更新为 `deepseek-v4-pro[1m]` / `deepseek-v4-flash[1m]`
+- CC-Switch `registry_reader` 与 `launcher` 消除重复代码
+- 新增中英文 README、软件截图
+
+---
+
 ## v2.1 — 2026-04-30 · Light主题重构
 
 ### 新功能
