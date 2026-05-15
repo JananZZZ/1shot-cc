@@ -81,6 +81,14 @@ def check_policy():
     return jsonify({"success": True, "data": _detect_powershell_policy()})
 
 
+@bp.route("/clear-detect-cache", methods=["POST"])
+def clear_detect_cache():
+    """清除后端检测缓存（卸载/安装后调用）"""
+    from app.services.detector import clear_cache
+    clear_cache()
+    return jsonify({"success": True})
+
+
 @bp.route("/check-winterm")
 def check_winterm():
     from app.services.detector import _detect_windows_terminal

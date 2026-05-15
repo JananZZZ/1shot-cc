@@ -10,8 +10,10 @@ from app.config import CCSWITCH_RELEASES_API
 from app.utils.downloader import download_file
 
 # 下载回退 URL 列表（按优先级）
+# jsDelivr 的 gh 端点无法提供 GitHub Release 附件，故用国内加速代理
 _CCSWITCH_FALLBACK_URLS = [
-    "https://cdn.jsdelivr.net/gh/farion1231/cc-switch@latest/CC-Switch-Setup-x64.msi",
+    "https://ghproxy.com/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
+    "https://gh.api.99988866.xyz/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
     "https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
 ]
 

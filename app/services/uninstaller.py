@@ -141,6 +141,10 @@ def uninstall_all(selected: list[str], callback=None) -> dict:
 
         time.sleep(0.5)  # 让 SSE 有时间推送
 
+    # 清除检测缓存，确保重新检测时反映真实状态
+    from app.services.detector import clear_cache as _clear_detect_cache
+    _clear_detect_cache()
+
     if callback:
         callback(100, "卸载完成")
 

@@ -182,6 +182,8 @@ async function doUninstall() {
           document.getElementById("pct-text").innerHTML = `<span style="color:var(--green);">✅ ${d.message}</span>`;
         }
         showToast(d.error ? '卸载完成（有部分失败）' : '卸载完成！', d.error ? 'warning' : 'success');
+        clearCheckCache();
+        API.clearCheckCache().catch(function(){});
         if (!d.error) {
           setTimeout(function() { window.location.href = '/wizard/uninstall_done'; }, 2000);
         } else {

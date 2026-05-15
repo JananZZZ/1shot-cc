@@ -32,6 +32,7 @@ const API = {
   autoFix(fixes) { return this.post("/api/install/auto-fix", { fixes }); },
   upgradeComponent(comp) { return this.post("/api/install/upgrade/" + comp); },
   launchPowerShell() { return this.post("/api/install/launch-powershell"); },
+  clearCheckCache() { return this.post("/api/system/clear-detect-cache"); },
   launchCCSwitch() { return this.post("/api/install/launch-ccswitch"); },
   launchClaude() { return this.post("/api/install/launch-claude"); },
   installColorCC() { return this.post("/api/install/colorcc"); },

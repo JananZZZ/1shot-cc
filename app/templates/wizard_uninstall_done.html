@@ -15,6 +15,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-async function exitApp(){try{await fetch('/api/system/shutdown',{method:'POST'});showToast('程序已退出','success');}catch(e){}}
+clearCheckCache();
+async function exitApp(){clearCheckCache();try{await fetch('/api/system/shutdown',{method:'POST'});showToast('程序已退出','success');}catch(e){}}
 </script>
 {% endblock %}
