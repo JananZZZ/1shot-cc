@@ -49,7 +49,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-function forceRecheck() { clearCheckCache(); location.reload(); }
+function forceRecheck() { clearCheckCache(); API.clearCheckCache(); location.reload(); }
 
 const ITEMS = [
   { key:"nodejs",   name:"Node.js — 运行环境",          desc:"让 Claude Code 能跑起来的基础",   installUrl:"/wizard/nodejs" },

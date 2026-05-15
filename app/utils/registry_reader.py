@@ -94,7 +94,7 @@ def _find_ccswitch_exe_path() -> str | None:
         uninstall_base = f"{hive_key}\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
         try:
             r = subprocess.run(
-                ["reg", "query", uninstall_base, "/s", "/f", "CC-Switch"],
+                ["reg", "query", uninstall_base, "/s", "/f", "CC-Switch", "/d"],
                 capture_output=True, text=True, timeout=30,
             )
             if r.returncode != 0 or "CC-Switch" not in r.stdout:

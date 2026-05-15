@@ -9,17 +9,8 @@ import urllib.error
 from app.config import CCSWITCH_RELEASES_API
 from app.utils.downloader import download_file
 
-# 下载回退 URL 列表（按优先级）
-# jsDelivr 的 gh 端点无法提供 GitHub Release 附件，故用国内加速代理
-_CCSWITCH_FALLBACK_URLS = [
-    "https://ghproxy.com/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
-    "https://mirror.ghproxy.com/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
-    "https://gh.llkk.cc/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
-    "https://gh.api.99988866.xyz/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
-    "https://gh.con.sh/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
-    "https://github.ur1.fun/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
-    "https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
-]
+# 唯一验证可用的国内加速代理（2026-05 实测）
+_CCSWITCH_PROXY = "https://gh.llkk.cc"
 
 
 def preflight_ccswitch() -> dict:
@@ -107,39 +98,77 @@ def _try_download_urls(urls: list[str], dest: str, callback=None, min_size: int 
     return {"success": False, "error": last_error or "所有下载源均失败"}
 
 
-def download_ccswitch(callback=None) -> dict:
-    """下载 CC-Switch MSI 安装包（多源快速回退）"""
-    dest = os.path.join(tempfile.gettempdir(), "cc-switch-installer.msi")
-    MSI_MIN_SIZE = 1024 * 1024  # MSI 至少 1MB
+def _get_release_info_via_proxy() -> dict:
+    """通过代理下载 latest.json 获取真实文件名（GitHub API 不可达时的轻量回退）"""
+    latest_json_url = (
+        f"{_CCSWITCH_PROXY}/https://github.com/farion1231/cc-switch"
+        "/releases/latest/download/latest.json"
+    )
+    try:
+        req = urllib.request.Request(latest_json_url, headers={"User-Agent": "1shot-CC/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            version = data.get("tag_name", "latest")
+            for asset in data.get("assets", []):
+                name = asset.get("name", "")
+                if name.endswith(".msi"):
+                    return {
+                        "success": True,
+                        "version": version,
+                        "filename": name,
+                        "download_url": asset.get("browser_download_url", ""),
+                    }
+    except Exception:
+        pass
+    return {"success": False}
 
-    # 第1层：GitHub API 获取真实下载 URL 和文件名
+
+def download_ccswitch(callback=None) -> dict:
+    """下载 CC-Switch MSI 安装包（三层智能回退）
+    1) GitHub API → 真实文件名 → 直连+代理双路下载
+    2) gh.llkk.cc 代理 latest.json → 解析文件名 → 代理下载
+    3) 失败则返回 hint_cli 建议 CLI 安装
+    """
+    dest = os.path.join(tempfile.gettempdir(), "cc-switch-installer.msi")
+    MSI_MIN_SIZE = 1024 * 1024
+
     info = get_latest_release_info()
     version = "latest"
+    filename = None
 
-    # 构建回退列表：API 返回的真实 URL 优先，然后硬编码镜像兜底
-    fallback_urls = list(_CCSWITCH_FALLBACK_URLS)
-    if info["success"] and info.get("download_url"):
+    if info["success"] and info.get("filename"):
         version = info.get("version", "latest")
-        # 把 API 返回的真实 URL 插到列表最前面
-        fallback_urls.insert(0, info["download_url"])
+        filename = info["filename"]
+    else:
+        # API 不可达 → 尝试 latest.json 轻量回退
+        if callback:
+            callback(0, "GitHub API 不可达，尝试加速通道...")
+        proxy_info = _get_release_info_via_proxy()
+        if proxy_info["success"]:
+            version = proxy_info.get("version", "latest")
+            filename = proxy_info.get("filename")
+
+    if filename:
+        # 用真实文件名拼接下载 URL：直连 + 代理双路
+        urls = [
+            f"https://github.com/farion1231/cc-switch/releases/download/{version}/{filename}",
+            f"{_CCSWITCH_PROXY}/https://github.com/farion1231/cc-switch/releases/download/{version}/{filename}",
+        ]
         if callback:
             callback(0, f"正在下载 CC-Switch {version}...")
-    elif callback:
-        callback(0, "GitHub API 不可达，使用 CDN 加速源...")
+        result = _try_download_urls(urls, dest, callback=callback, min_size=MSI_MIN_SIZE)
+        if result["success"]:
+            return {"success": True, "path": result["path"], "version": version}
 
-    result = _try_download_urls(fallback_urls, dest, callback=callback, min_size=MSI_MIN_SIZE)
-    if not result["success"]:
-        return {
-            "success": False,
-            "error": (
-                "CC-Switch 桌面版下载失败，所有下载源均不可用。\n"
-                "可尝试下方「命令行版」安装（npm 国内镜像，更稳定）：\n"
-                "https://github.com/farion1231/cc-switch/releases"
-            ),
-            "hint_cli": True,
-        }
-
-    return {"success": True, "path": result["path"], "version": version}
+    return {
+        "success": False,
+        "error": (
+            "CC-Switch 桌面版下载失败，下载源暂时不可用。\n"
+            "可尝试下方「命令行版」安装（npm 国内镜像，更稳定）：\n"
+            "https://github.com/farion1231/cc-switch/releases"
+        ),
+        "hint_cli": True,
+    }
 
 
 def install_ccswitch(msi_path: str, callback=None) -> dict:

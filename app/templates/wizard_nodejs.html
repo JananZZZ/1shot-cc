@@ -49,7 +49,7 @@
   <a href="/wizard/git" class="btn btn-accent">下一步 →</a>
 </div>
 {% endblock %}{% block scripts %}<script>
-const w=new InstallWizard(()=>API.installNodeJS(),{successMsg:"Node.js 装好了！",onSuccess:()=>clearCheckCache()});
+const w=new InstallWizard(()=>API.installNodeJS(),{successMsg:"Node.js 装好了！",onSuccess:()=>{clearCheckCache();API.clearCheckCache()}});
 function doInstall(){w.start();}
 // 统一检测缓存 — 已安装则显示绿色完成卡片
 (function(){

@@ -9,20 +9,23 @@ from app.utils.subprocess_runner import run_cmd
 
 
 def detect_all() -> dict:
-    """探测所有组件的安装状态，返回 {component: {installed, version, path, uninstall_method}}"""
+    """探测所有组件的安装状态（复用 detector 统一引擎 + 追加卸载专用字段）"""
+    from app.services.detector import detect_all as base_detect
+    base = base_detect()
+
     results = {}
 
-    # 1. Claude Code (npm global)
-    r = run_cmd("claude --version", timeout=10)
+    # Claude Code
+    cc = base.get("claude_code", {})
     results["claude_code"] = {
         "name": "Claude Code",
-        "installed": r["success"] and not r["stderr"],
-        "version": r["stdout"] if r["success"] else "",
+        "installed": cc.get("installed", False),
+        "version": cc.get("version", ""),
         "uninstall_cmd": 'npm uninstall -g @anthropic-ai/claude-code',
         "category": "software",
     }
 
-    # 2. CC-Switch CLI (npm global)
+    # CC-Switch CLI (npm global)
     r = run_cmd("cc-switch --version", timeout=10)
     results["ccswitch_cli"] = {
         "name": "CC-Switch CLI",
@@ -32,66 +35,62 @@ def detect_all() -> dict:
         "category": "software",
     }
 
-    # 3. CC-Switch GUI (使用 detector 统一检测，含开始菜单扫描)
-    from app.services.detector import _detect_ccswitch
-    cc_info = _detect_ccswitch()
-    cc_path = cc_info.get("paths", [None])[0] if cc_info.get("installed") else None
+    # CC-Switch GUI (复用 detector 统一检测)
+    csc = base.get("ccswitch", {})
+    cc_paths = csc.get("paths", [])
     results["ccswitch_gui"] = {
         "name": "CC Switch 桌面版",
-        "installed": cc_info.get("installed", False),
-        "path": cc_path or "",
+        "installed": csc.get("installed", False),
+        "path": cc_paths[0] if cc_paths else "",
         "uninstall_method": "msi",
         "category": "software",
     }
 
-    # 4. Node.js
-    r = run_cmd("node --version", timeout=10)
+    # Node.js
+    nd = base.get("nodejs", {})
     from app.utils.registry_reader import get_nodejs_install_path
-    node_path = get_nodejs_install_path()
     results["nodejs"] = {
         "name": "Node.js",
-        "installed": r["success"] and r["stdout"].startswith("v"),
-        "version": r["stdout"] if r["success"] else "",
-        "path": node_path or "",
+        "installed": nd.get("installed", False),
+        "version": nd.get("version", ""),
+        "path": get_nodejs_install_path() or "",
         "uninstall_method": "msi",
         "category": "software",
     }
 
-    # 5. Git
-    r = run_cmd("git --version", timeout=10)
+    # Git
+    git = base.get("git", {})
     from app.utils.registry_reader import get_git_install_path
-    git_path = get_git_install_path()
     results["git"] = {
         "name": "Git",
-        "installed": r["success"] and "git version" in r["stdout"].lower(),
-        "version": r["stdout"].replace("git version ", "") if r["success"] else "",
-        "path": git_path or "",
+        "installed": git.get("installed", False),
+        "version": git.get("version", ""),
+        "path": get_git_install_path() or "",
         "uninstall_method": "inno",
         "category": "software",
     }
 
-    # 6. Color-cc (Oh My Posh 主题配置)
-    omp_config = os.path.join(os.path.expanduser("~"), ".claude", "claude-dashboard.omp.json")
+    # Color-cc
+    color = base.get("colorcc", {})
     results["colorcc"] = {
         "name": "Color-cc 终端美化",
-        "installed": os.path.exists(omp_config),
-        "path": omp_config if os.path.exists(omp_config) else "",
+        "installed": color.get("installed", False),
+        "path": color.get("paths", [""])[0] if color.get("paths") else "",
         "uninstall_method": "file",
         "category": "config",
     }
 
-    # 7. Claude 配置
-    settings_path = os.path.join(os.path.expanduser("~"), ".claude", "settings.json")
-    claude_json = os.path.join(os.path.expanduser("~"), ".claude.json")
+    # Claude 配置
+    cfg = base.get("claude_config", {})
     results["claude_config"] = {
         "name": "Claude Code 配置文件",
-        "installed": os.path.exists(settings_path) or os.path.exists(claude_json),
-        "path": settings_path if os.path.exists(settings_path) else claude_json,
+        "installed": cfg.get("installed", False),
+        "path": cfg.get("paths", [""])[0] if cfg.get("paths") else "",
         "uninstall_method": "file",
         "category": "config",
     }
 
-    # 8. 日志文件
+    # 日志文件
     log_dir = os.path.join(os.environ.get("TEMP", "."), "1shot-cc")
     results["logs"] = {
         "name": "1shot-CC 诊断日志",
@@ -245,7 +244,7 @@ def _uninstall_from_registry(search_name: str) -> bool:
         uninstall_base = f"{hive}\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
         try:
             r = subprocess.run(
-                ["reg", "query", uninstall_base, "/s", "/f", search_name, "/k"],
+                ["reg", "query", uninstall_base, "/s", "/f", search_name, "/d"],
                 capture_output=True, text=True, timeout=30,
             )
             if r.returncode != 0:
@@ -265,6 +264,11 @@ def _uninstall_from_registry(search_name: str) -> bool:
                         if r2.returncode == 0:
                             cmd = _parse_reg_sz(r2.stdout, val_name)
                             if cmd:
+                                # UninstallString 格式为 MsiExec.exe /I{GUID}，需转换为 /x 才是卸载
+                                import re as _re
+                                _m = _re.search(r'\{[A-Fa-f0-9\-]+\}', cmd)
+                                if _m:
+                                    cmd = f'msiexec /x {_m.group()} /quiet /norestart'
                                 info(f"注册表卸载 {search_name}: {cmd}")
                                 subprocess.run(cmd, shell=True, capture_output=True, timeout=120)
                                 return True
@@ -349,6 +353,16 @@ def _manual_cleanup_ccswitch(item: dict):
                 info(f"已删除安装目录: {path}")
         except Exception as e:
             warning(f"清理安装目录失败 [{path}]: {e}")
+
+    # 删除 Tauri 注册表残留
+    try:
+        subprocess.run(
+            ["reg", "delete", r"HKCU\Software\farion1231\CC-Switch", "/f"],
+            capture_output=True, timeout=15,
+        )
+        info("已删除 CC-Switch 注册表残留")
+    except Exception as e:
+        warning(f"清理注册表残留失败: {e}")
 
 
 def _uninstall_inno(item: dict):

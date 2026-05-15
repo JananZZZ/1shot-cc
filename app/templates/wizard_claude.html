@@ -47,7 +47,7 @@
   <a href="/wizard/config" class="btn btn-accent">下一步 →</a>
 </div>
 {% endblock %}{% block scripts %}<script>
-const w=new InstallWizard(()=>API.installClaudeCode(),{successMsg:"Claude Code 装好了！在终端输入 claude 就能召唤它",onSuccess:()=>clearCheckCache()});
+const w=new InstallWizard(()=>API.installClaudeCode(),{successMsg:"Claude Code 装好了！在终端输入 claude 就能召唤它",onSuccess:()=>{clearCheckCache();API.clearCheckCache()}});
 function doInstall(){w.start();}
 (function(){
   var cached = getCheckCache();

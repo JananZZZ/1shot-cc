@@ -71,12 +71,12 @@ async function quickFix(action){
   if(action === 'policy'){
     var btn = event.target; btn.disabled = true; btn.textContent = '⏳ 修复中...';
     var r = await API.fixPolicy();
-    if(r.success){ btn.textContent = '✅ 已修复'; setTimeout(function(){loadAll();},500); }
+    if(r.success){ clearCheckCache(); API.clearCheckCache(); btn.textContent = '✅ 已修复'; setTimeout(function(){loadAll();},500); }
     else { btn.textContent = '❌ 修复失败'; btn.disabled = false; }
   }else if(action === 'registry'){
     var btn = event.target; btn.disabled = true; btn.textContent = '⏳ 切换中...';
     var r = await API.fixRegistry();
-    if(r.success){ btn.textContent = '✅ 已切换'; setTimeout(function(){loadAll();},500); }
+    if(r.success){ clearCheckCache(); API.clearCheckCache(); btn.textContent = '✅ 已切换'; setTimeout(function(){loadAll();},500); }
     else { btn.textContent = '❌ 切换失败'; btn.disabled = false; }
   }
 }

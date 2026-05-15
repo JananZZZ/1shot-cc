@@ -91,11 +91,11 @@ function doInstall() {
   if (!mode) { showToast("先选一种安装方式吧", "warning"); return; }
   const fn = mode === "gui" ? () => API.installCCSwitchGUI() : () => API.installCCSwitchCLI();
   if (!ccWizard) {
-    ccWizard = new InstallWizard(fn, { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！", onSuccess: () => { clearCheckCache(); function tryShow(n){ API.checkAll().then(function(r){ if(r.success){var i=r.data.ccswitch; if(i&&i.installed){showInstalledCard('CC Switch',i.version,i.outdated,true);return;}} if(n<3) setTimeout(function(){tryShow(n+1);},1500); }); } setTimeout(function(){tryShow(0);},800); } });
+    ccWizard = new InstallWizard(fn, { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！", onSuccess: () => { clearCheckCache(); API.clearCheckCache(); function tryShow(n){ API.checkAll().then(function(r){ if(r.success){var i=r.data.ccswitch; if(i&&i.installed){showInstalledCard('CC Switch',i.version,i.outdated,true);return;}} if(n<3) setTimeout(function(){tryShow(n+1);},1500); }); } setTimeout(function(){tryShow(0);},800); } });
   }
   if (ccWizard.installFn.toString() !== fn.toString()) {
     ccWizard.destroy();
-    ccWizard = new InstallWizard(fn, { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！", onSuccess: () => { clearCheckCache(); function tryShow(n){ API.checkAll().then(function(r){ if(r.success){var i=r.data.ccswitch; if(i&&i.installed){showInstalledCard('CC Switch',i.version,i.outdated,true);return;}} if(n<3) setTimeout(function(){tryShow(n+1);},1500); }); } setTimeout(function(){tryShow(0);},800); } });
+    ccWizard = new InstallWizard(fn, { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！", onSuccess: () => { clearCheckCache(); API.clearCheckCache(); function tryShow(n){ API.checkAll().then(function(r){ if(r.success){var i=r.data.ccswitch; if(i&&i.installed){showInstalledCard('CC Switch',i.version,i.outdated,true);return;}} if(n<3) setTimeout(function(){tryShow(n+1);},1500); }); } setTimeout(function(){tryShow(0);},800); } });
   }
   ccWizard.start();
 }

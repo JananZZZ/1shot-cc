@@ -46,7 +46,7 @@
   <a href="/wizard/claude" class="btn btn-accent">下一步 →</a>
 </div>
 {% endblock %}{% block scripts %}<script>
-const w=new InstallWizard(()=>API.installGit(),{successMsg:"Git 装好了！",onSuccess:()=>clearCheckCache()});
+const w=new InstallWizard(()=>API.installGit(),{successMsg:"Git 装好了！",onSuccess:()=>{clearCheckCache();API.clearCheckCache()}});
 function doInstall(){w.start();}
 (function(){
   var cached = getCheckCache();
