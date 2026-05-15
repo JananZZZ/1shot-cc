@@ -63,25 +63,35 @@ const ITEMS = [
   { key:"path_issues", name:"用户名检查",               desc:"检查电脑用户名有没有中文",         fixUrl:"/wizard/summary" },
 ];
 
+var OPTIONAL = ["ccswitch", "colorcc", "windows_terminal", "claude_config"];
 function renderCard(item, data) {
-  var status = data ? (data.ok ? "ok" : "err") : "warn";
-  // CC-Switch 未安装不标红，用橙色提醒即可
-  if (item.key === "ccswitch" && status === "err") status = "warn";
-  var icon = {ok:"✅", err:"❌", warn:"⚠️"}[status];
-  var detail = "";
-  if (status === "ok" && data.version) {
-    detail = `<span class="check-detail ok">v${data.version} 已安装</span>`;
-    if (data.outdated) detail += ` <span class="check-detail warn">（可升级到 v${data.latest_version}）</span>`;
-  } else if (status === "err") {
-    detail = `<span class="check-detail err">未安装</span>`;
-  } else if (data && data.installed) {
+  var status, icon, detail;
+  if (!data) {
+    status = "warn"; icon = "⚠️";
+    detail = `<span class="check-detail warn">检测失败</span>`;
+  } else if (data.ok) {
+    status = "ok"; icon = "✅";
+    if (data.version) {
+      detail = `<span class="check-detail ok">v${data.version} 已安装</span>`;
+      if (data.outdated) detail += ` <span class="check-detail warn">（可升级到 v${data.latest_version}）</span>`;
+    } else {
+      detail = `<span class="check-detail ok">已配置</span>`;
+    }
+  } else if (data.installed) {
+    status = "warn"; icon = "⚠️";
     detail = `<span class="check-detail warn">已安装，按需调整</span>`;
-  } else {
+  } else if (OPTIONAL.indexOf(item.key) >= 0) {
+    status = "warn"; icon = "⚠️";
     detail = `<span class="check-detail warn">未安装（非必需）</span>`;
+  } else {
+    status = "err"; icon = "❌";
+    detail = `<span class="check-detail err">未安装</span>`;
   }
   var action = "";
   if (status === "err" && item.installUrl) {
     action = `<a href="${item.installUrl}" class="btn btn-primary btn-sm">📥 去安装</a>`;
+  } else if (status === "err" && item.fixUrl) {
+    action = `<a href="${item.fixUrl}" class="btn btn-outline btn-sm">🔧 去修复</a>`;
   } else if (status === "warn" && item.fixUrl) {
     action = `<a href="${item.fixUrl}" class="btn btn-outline btn-sm">🔧 去修复</a>`;
   } else if (status === "warn" && item.installUrl) {

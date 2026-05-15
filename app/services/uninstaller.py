@@ -196,9 +196,23 @@ def _run_silent(cmd: str, timeout: int = 120):
 
 
 def _uninstall_msi(key: str, item: dict):
-    """通过 MSI product code 卸载"""
+    """通过 MSI product code 卸载（四层回退）
+    1) 注册表 UninstallString（最可靠）
+    2) PowerShell Get-Package（现代 Windows）
+    3) wmic 命令行（兼容旧系统）
+    4) 手动清理快捷方式 + 安装目录
+    """
     search_name = {"nodejs": "Node.js", "ccswitch_gui": "CC-Switch"}.get(key, key)
-    # 尝试通过 wmic 查找 product code
+
+    # 第1层：注册表查找 UninstallString
+    if _uninstall_from_registry(search_name):
+        return
+
+    # 第2层：PowerShell Get-Package（仅 CC-Switch）
+    if key == "ccswitch_gui" and _uninstall_via_powershell():
+        return
+
+    # 第3层：wmic 回退
     try:
         proc = subprocess.run(
             f'wmic product where "Name like \'%{search_name}%\'" get IdentifyingNumber',
@@ -207,7 +221,7 @@ def _uninstall_msi(key: str, item: dict):
         for line in proc.stdout.splitlines():
             line = line.strip()
             if line and line != "IdentifyingNumber" and "{" in line:
-                info(f"找到 {search_name} product code: {line}")
+                info(f"wmic 找到 {search_name} product code: {line}")
                 subprocess.run(
                     f'msiexec /x {line} /quiet /norestart',
                     shell=True, capture_output=True, timeout=120,
@@ -216,10 +230,125 @@ def _uninstall_msi(key: str, item: dict):
     except Exception as e:
         warning(f"wmic 查询失败 [{search_name}]: {e}")
 
-    # 回退：通过路径推断卸载命令
+    # 第4层：手动清理（仅 CC-Switch）
+    if key == "ccswitch_gui":
+        _manual_cleanup_ccswitch(item)
+    else:
+        path = item.get("path", "")
+        if path and os.path.exists(path):
+            info(f"MSI product code 未找到，跳过 {search_name}（路径: {path}）")
+
+
+def _uninstall_from_registry(search_name: str) -> bool:
+    """在注册表 Uninstall 键中搜索应用并执行卸载命令"""
+    for hive in ["HKLM", "HKCU"]:
+        uninstall_base = f"{hive}\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
+        try:
+            r = subprocess.run(
+                ["reg", "query", uninstall_base, "/s", "/f", search_name, "/k"],
+                capture_output=True, text=True, timeout=30,
+            )
+            if r.returncode != 0:
+                continue
+
+            current_key = None
+            for line in r.stdout.splitlines():
+                stripped = line.strip()
+                if stripped.startswith("HKEY_"):
+                    current_key = stripped
+                elif current_key and ("QuietUninstallString" in stripped or "UninstallString" in stripped):
+                    for val_name in ["QuietUninstallString", "UninstallString"]:
+                        r2 = subprocess.run(
+                            ["reg", "query", current_key, "/v", val_name],
+                            capture_output=True, text=True, timeout=15,
+                        )
+                        if r2.returncode == 0:
+                            cmd = _parse_reg_sz(r2.stdout, val_name)
+                            if cmd:
+                                info(f"注册表卸载 {search_name}: {cmd}")
+                                subprocess.run(cmd, shell=True, capture_output=True, timeout=120)
+                                return True
+        except Exception as e:
+            warning(f"注册表卸载查询失败 [{hive}]: {e}")
+    return False
+
+
+def _parse_reg_sz(output: str, value_name: str) -> str | None:
+    """从 reg query /v 输出中提取 REG_SZ 值"""
+    for line in output.splitlines():
+        if value_name in line:
+            parts = line.strip().split("    ")
+            if len(parts) >= 3:
+                return parts[-1].strip()
+    return None
+
+
+def _uninstall_via_powershell() -> bool:
+    """使用 PowerShell Get-Package 卸载 CC-Switch"""
+    try:
+        ps_cmd = (
+            'Get-Package -Name "*CC-Switch*" -ErrorAction SilentlyContinue '
+            '| Uninstall-Package -Force -ErrorAction SilentlyContinue'
+        )
+        r = subprocess.run(
+            ["powershell", "-NoProfile", "-Command", ps_cmd],
+            capture_output=True, text=True, timeout=120,
+        )
+        return r.returncode == 0
+    except Exception as e:
+        warning(f"PowerShell 卸载失败: {e}")
+        return False
+
+
+def _manual_cleanup_ccswitch(item: dict):
+    """手动清理 CC-Switch：删除开始菜单快捷方式 + 安装目录"""
+    _CC_NAMES = ["cc-switch", "cc switch", "ccswitch"]
+
+    # 删除开始菜单快捷方式
+    for sm_base in [
+        os.path.join(os.environ.get("APPDATA", ""), r"Microsoft\Windows\Start Menu\Programs"),
+        os.path.join(os.environ.get("PROGRAMDATA", ""), r"Microsoft\Windows\Start Menu\Programs"),
+    ]:
+        if not os.path.isdir(sm_base):
+            continue
+        try:
+            for root, dirs, files in os.walk(sm_base):
+                for f in files:
+                    if f.endswith(".lnk"):
+                        fn = f.lower().replace(".lnk", "")
+                        if any(name in fn for name in _CC_NAMES):
+                            p = os.path.join(root, f)
+                            os.remove(p)
+                            info(f"已删除快捷方式: {p}")
+        except Exception as e:
+            warning(f"清理快捷方式失败 [{sm_base}]: {e}")
+
+    # 尝试删除安装目录
     path = item.get("path", "")
+    if not path:
+        try:
+            from app.utils.registry_reader import _reg_query_value
+            path = _reg_query_value(r"HKCU\Software\farion1231\CC-Switch", "InstallDir")
+        except Exception:
+            pass
+    if not path:
+        for base in [
+            os.path.join(os.environ.get("PROGRAMFILES", "C:\\Program Files"), "CC-Switch"),
+            os.path.join(os.environ.get("PROGRAMFILES(X86)", "C:\\Program Files (x86)"), "CC-Switch"),
+            os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "CC-Switch"),
+        ]:
+            if os.path.isdir(base):
+                path = base
+                break
     if path and os.path.exists(path):
-        info(f"MSI product code 未找到，跳过 {search_name}（路径: {path}）")
+        try:
+            if os.path.isfile(path):
+                path = os.path.dirname(path)
+            if os.path.isdir(path):
+                shutil.rmtree(path, ignore_errors=True)
+                info(f"已删除安装目录: {path}")
+        except Exception as e:
+            warning(f"清理安装目录失败 [{path}]: {e}")
 
 
 def _uninstall_inno(item: dict):

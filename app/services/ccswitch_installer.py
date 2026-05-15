@@ -13,7 +13,9 @@ from app.utils.downloader import download_file
 # jsDelivr 的 gh 端点无法提供 GitHub Release 附件，故用国内加速代理
 _CCSWITCH_FALLBACK_URLS = [
     "https://ghproxy.com/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
+    "https://mirror.ghproxy.com/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
     "https://gh.api.99988866.xyz/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
+    "https://gh.con.sh/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
     "https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
 ]
 
@@ -133,10 +135,11 @@ def download_ccswitch(callback=None) -> dict:
         return {
             "success": False,
             "error": (
-                "CC-Switch 下载失败，所有下载源均不可用。\n"
-                "请检查网络连接后重试，或手动下载：\n"
+                "CC-Switch 桌面版下载失败，所有下载源均不可用。\n"
+                "可尝试下方「命令行版」安装（npm 国内镜像，更稳定）：\n"
                 "https://github.com/farion1231/cc-switch/releases"
             ),
+            "hint_cli": True,
         }
 
     return {"success": True, "path": result["path"], "version": version}

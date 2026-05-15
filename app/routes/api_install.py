@@ -182,6 +182,8 @@ def install_ccswitch_gui():
         dl = download_ccswitch(callback=callback)
         if not dl["success"]:
             diag = resolve(dl["error"])
+            if dl.get("hint_cli"):
+                diag["hint_cli"] = True
             _update_task(task_id, "error", 0, dl["error"], done=True, error=json.dumps(diag, ensure_ascii=False))
             return
         inst = install_ccswitch(dl["path"], callback=callback)
@@ -424,6 +426,8 @@ def upgrade_component(component: str):
             dl = download_ccswitch(callback=callback)
             if not dl["success"]:
                 diag = resolve(dl["error"])
+                if dl.get("hint_cli"):
+                    diag["hint_cli"] = True
                 _update_task(task_id, "error", 0, dl["error"], done=True, error=json.dumps(diag, ensure_ascii=False))
                 return
             inst = install_ccswitch(dl["path"], callback=callback)

@@ -264,7 +264,7 @@ def _detect_colorcc() -> dict:
         "outdated": False,
         "paths": paths,
         "method": "script",
-        "ok": True,  # optional component
+        "ok": installed,
     }
 
 
@@ -296,7 +296,7 @@ def _detect_claude_config() -> dict:
         "outdated": False,
         "paths": paths,
         "method": "file",
-        "ok": True,
+        "ok": settings_exists or claude_json_exists,
         "settings_exists": settings_exists,
         "claude_json_exists": claude_json_exists,
         "onboarding_done": onboarding_done,
@@ -394,7 +394,7 @@ def _detect_path_issues() -> dict:
     data = check_appdata_path()
     issues = data.get("issues", [])
     return {
-        "installed": len(issues) == 0,  # True means no issues
+        "installed": True,
         "version": "",
         "latest_version": "",
         "outdated": False,
