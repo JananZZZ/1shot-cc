@@ -1,5 +1,80 @@
 # 1shot-CC 开发记录
 
+## v4.0.10 — 2026-05-15 · UI 对齐修复
+
+### 修复
+- callout 卡片居中修复：CSS 级联冲突（`.callout` shorthand margin 覆盖 `max-w-*` 的 auto-centering）
+- 检测页文案修正："需要调整" → "按需调整"
+- API 配置页 callout 宽度与 provider 六宫格统一
+
+
+## v4.0.9 — 2026-05-15 · 两处对齐
+
+### 修复
+- 检测页 callout info 添加 `max-w-560` 居中
+- API 配置页 success callout 添加 `max-w-560` 对齐
+
+
+## v4.0.8 — 2026-05-15 · 宽度统一 + API 网格 + .lnk 修复
+
+### 修复
+- 全局宽度统一：`max-w-560` 同时约束左右 margin（`margin-left: auto; margin-right: auto`）
+- CC-Switch `.lnk` 快捷方式改用 `os.startfile()` 启动
+- API 配置页 provider 网格改为 3 列（`repeat(3, 1fr)`）
+- custom 厂商默认模型设为 DeepSeek 系列
+
+### 改进
+- 全部 wizard 页面 callout/summary-box/cards-container 统一 `max-w-560` 居中
+
+
+## v4.0.7 — 2026-05-15 · 检测状态修复 + CC Switch 启动
+
+### 修复
+- CC-Switch 检测改用开始菜单扫描（多名称匹配）
+- CC-Switch 未安装状态降级为 ⚠️ 橙色警告
+- 卸载检测与主检测引擎同步
+
+### 改进
+- wizard_check.html 结构重组：wizard-nav → summary-box → callout → loading → results
+
+
+## v4.0.6 — 2026-05-15 · CC Switch 启动 + 指南按钮
+
+### 新增
+- 完成页新增「📖 使用指南」按钮
+
+### 修复
+- CC-Switch 启动逻辑修复（开始菜单 .lnk + `os.startfile`）
+
+
+## v4.0.5 — 2026-05-15 · 错误温和化 + 多名称检测
+
+### 修复
+- 所有错误提示从 ❌ 红色改为 ⚠️ 橙色警告
+- CC-Switch 开始菜单多名称检测（cc-switch / cc switch / ccswitch）
+
+
+## v4.0.0 ~ v4.0.4 — 2026-05-14~15 · 9 步向导重构
+
+### 新增
+- 9 步渐进式安装向导：检测 → Node.js → Git → Claude → API → Switch → 美化 → 收尾 → 完成
+- 收尾检查页（wizard_summary.html）
+- 终端美化页（wizard_terminal.html）
+- CC-Switch 安装引导页（wizard_ccswitch.html）
+- 页面生命周期管理（page-open / page-closed / heartbeat）
+- SSE 实时安装进度推送
+- 检测结果 sessionStorage 缓存（5 分钟 TTL）
+
+### 修复
+- 6 个 wizard 页面导航链路全部修正
+- 卡片样式统一：`border-left` 替代 `::before`
+- 导航栏按钮风格全局统一
+
+### 改进
+- 开始菜单扫描替代纯注册表检测
+- 卸载引擎与检测引擎同步
+
+
 ## v3.4 — 2026-05-15 · 图文教程 + Color-cc 修复 + 退出自动关标签
 
 ### 新增

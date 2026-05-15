@@ -2,7 +2,7 @@
   <img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Platform-Windows-0078D6.svg" alt="Platform">
-  <img src="https://img.shields.io/badge/Release-v3.4-eb5e28.svg" alt="Release">
+  <img src="https://img.shields.io/badge/Release-v4.0.10-eb5e28.svg" alt="Release">
 </p>
 
 <h1 align="center">🚀 1shot-CC</h1>
@@ -35,19 +35,22 @@
 ### 2. 首页介绍
 <p align="center"><img src="assets/2-介绍页.png" width="80%"></p>
 
-### 3. 系统环境检测
+### 3. 系统环境检测（第①步）
 <p align="center"><img src="assets/3-检测页.png" width="80%"></p>
 
-### 4. 一键安装 Node.js / Git / Claude Code
+### 4. 一键安装 Node.js / Git / Claude Code（第②~④步）
 <p align="center"><img src="assets/4-安装页.png" width="80%"></p>
 
-### 5. API 配置（支持 5 家国内厂商）
+### 5. API 配置（第⑤步，支持 5 家国内厂商）
 <p align="center"><img src="assets/5-api配置页.png" width="80%"></p>
 
-### 6. 完成页
+### 6. CC-Switch + 终端美化（第⑥⑦步）
 <p align="center"><img src="assets/6-完成页.png" width="80%"></p>
 
-### 7. 内置图文教程
+### 7. 收尾检查 + 完成撒花（第⑧⑨步）
+<p align="center"><img src="assets/7-完成页.png" width="80%"></p>
+
+### 8. 内置图文教程
 <p align="center">
   <img src="assets/7-教程1.png" width="24%">
   <img src="assets/7-教程2.png" width="24%">
@@ -55,18 +58,19 @@
   <img src="assets/7-教程4.png" width="24%">
 </p>
 
-### 8. 一键卸载
+### 9. 一键卸载
 <p align="center"><img src="assets/8-卸载页.png" width="80%"></p>
 
 ---
 
 ## ✨ 它都能做什么
 
-- 🔍 **智能环境检测** — 13 项全方位扫描，CLI + 注册表双重回退，准确率极高
+- 🧭 **9 步向导流程** — 检测 → Node.js → Git → Claude → API → Switch → 美化 → 收尾 → 完成，一条龙
+- 🔍 **智能环境检测** — 13 项全方位扫描，CLI + 注册表 + 开始菜单三重回退，准确率极高
 - 📥 **多层下载回退** — CC-Switch 三层回退（GitHub API → 国内加速代理 → 直连），Node.js/Git 双镜像源
 - 🤖 **Claude Code 一键安装** — 自动设置执行策略、配置国内镜像、跳过 onboarding 引导
-- 🔀 **CC-Switch 安装** — 桌面版和命令行版任选，安装前后自动检测环境
-- ⚙️ **5 家国内 AI 服务商** — DeepSeek · 智谱 GLM · MiniMax · 小米 MiMo · 通义千问
+- 🔀 **CC-Switch 安装** — 桌面版和命令行版任选，安装前后自动检测环境，开始菜单智能发现
+- ⚙️ **5 家国内 AI 服务商** — DeepSeek · 智谱 GLM · MiniMax · 小米 MiMo · 通义千问，支持自定义地址
 - 🎨 **Color-cc 终端美化** — 官方一键命令 `irm | iex`，自动 GitHub→Gitee 回退
 - 📖 **图文教程** — 4 篇完整教程，每步都有截图
 - 🗑️ **一键卸载** — 卸载前自动检测环境，配置自动备份，干净利落
@@ -151,7 +155,7 @@ python -m PyInstaller build.spec --clean --noconfirm
 | Web 框架 | Flask 3.x + Jinja2 |
 | 前端 | Vanilla JS + CSS Custom Properties（暖白主题） |
 | 实时推送 | Server-Sent Events (SSE) |
-| 打包 | PyInstaller（单文件 exe，约 47MB） |
+| 打包 | PyInstaller（单文件 exe，约 46MB） |
 | 平台 | Windows 10/11 |
 | 欢迎页 | 独立 HTTP Server + 鼠标视差动效 |
 
