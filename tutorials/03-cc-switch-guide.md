@@ -16,12 +16,6 @@
 3. 输入 API Key 并保存
 4. 右键系统托盘图标切换
 
-## CLI 版命令
-- `cc-switch` - 交互模式
-- `cc-switch provider list` - 列出供应商
-- `cc-switch provider switch <id>` - 切换供应商
-
 ## 安装
 - GitHub: github.com/farion1231/cc-switch
 - Windows: 下载 .msi 安装
-- npm: npm install -g cc-switch-cli

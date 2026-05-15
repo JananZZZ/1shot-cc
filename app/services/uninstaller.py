@@ -25,17 +25,7 @@ def detect_all() -> dict:
         "category": "software",
     }
 
-    # CC-Switch CLI (npm global)
-    r = run_cmd("cc-switch --version", timeout=10)
-    results["ccswitch_cli"] = {
-        "name": "CC-Switch CLI",
-        "installed": r["success"],
-        "version": r["stdout"] if r["success"] else "",
-        "uninstall_cmd": 'npm uninstall -g cc-switch-cli',
-        "category": "software",
-    }
-
-    # CC-Switch GUI (复用 detector 统一检测)
+    # CC-Switch 桌面版 (复用 detector 统一检测)
     csc = base.get("ccswitch", {})
     cc_paths = csc.get("paths", [])
     results["ccswitch_gui"] = {
@@ -112,7 +102,7 @@ def uninstall_all(selected: list[str], callback=None) -> dict:
     errors = []
 
     # 按顺序卸载：先软件后配置
-    order = ["claude_code", "ccswitch_cli", "ccswitch_gui", "colorcc", "nodejs", "git", "claude_config", "logs"]
+    order = ["claude_code", "ccswitch_gui", "colorcc", "nodejs", "git", "claude_config", "logs"]
     ordered = [k for k in order if k in selected]
 
     total = len(ordered)

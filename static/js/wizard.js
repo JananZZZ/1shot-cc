@@ -107,11 +107,7 @@ class InstallWizard {
           e.errorCauses.innerHTML = causesHtml;
         }
         if (e.errorManual && errorDetail.manual_fix) {
-          var manualItems = errorDetail.manual_fix.slice();
-          if (errorDetail.hint_cli) {
-            manualItems.push("💡 也可以试试「命令行版」安装（npm 国内镜像，更稳定）：返回本页，选择命令行版后重试");
-          }
-          e.errorManual.innerHTML = manualItems.map(s => {
+          e.errorManual.innerHTML = errorDetail.manual_fix.map(s => {
             const escaped = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             return `<li>${escaped}</li>`;
           }).join("");

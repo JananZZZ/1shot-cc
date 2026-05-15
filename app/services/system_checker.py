@@ -47,11 +47,7 @@ def check_claude_code() -> dict:
 def check_ccswitch() -> dict:
     ccswitch_path = reg_ccswitch()
     installed = ccswitch_path is not None
-    if not installed:
-        r = run_cmd("cc-switch --version", timeout=10)
-        installed = r["success"]
-    atype = "desktop" if ccswitch_path else ("cli" if installed else "none")
-    return {"installed": installed or atype != "none", "type": atype, "path": ccswitch_path or "", "ok": installed or atype != "none"}
+    return {"installed": installed, "type": "desktop" if installed else "none", "path": ccswitch_path or "", "ok": installed}
 
 
 def check_powershell_policy() -> dict:

@@ -124,10 +124,9 @@ def _get_release_info_via_proxy() -> dict:
 
 
 def download_ccswitch(callback=None) -> dict:
-    """下载 CC-Switch MSI 安装包（三层智能回退）
+    """下载 CC-Switch MSI 安装包（两层智能回退）
     1) GitHub API → 真实文件名 → 直连+代理双路下载
     2) gh.llkk.cc 代理 latest.json → 解析文件名 → 代理下载
-    3) 失败则返回 hint_cli 建议 CLI 安装
     """
     dest = os.path.join(tempfile.gettempdir(), "cc-switch-installer.msi")
     MSI_MIN_SIZE = 1024 * 1024
@@ -163,11 +162,10 @@ def download_ccswitch(callback=None) -> dict:
     return {
         "success": False,
         "error": (
-            "CC-Switch 桌面版下载失败，下载源暂时不可用。\n"
-            "可尝试下方「命令行版」安装（npm 国内镜像，更稳定）：\n"
+            "CC-Switch 下载失败，下载源暂时不可用。\n"
+            "请检查网络连接后重试，或手动下载安装：\n"
             "https://github.com/farion1231/cc-switch/releases"
         ),
-        "hint_cli": True,
     }
 
 
@@ -196,40 +194,3 @@ def install_ccswitch(msi_path: str, callback=None) -> dict:
         callback(100, "CC-Switch 安装完成！")
 
     return {"success": True}
-
-
-def install_ccswitch_cli(callback=None) -> dict:
-    """通过 npm 安装 CC-Switch CLI 版"""
-    if callback:
-        callback(0, "正在安装 cc-switch-cli...")
-    try:
-        env = os.environ.copy()
-        env["npm_config_registry"] = "https://registry.npmmirror.com"
-        process = subprocess.Popen(
-            "npm install -g cc-switch-cli",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            shell=True,
-            encoding="utf-8",
-            errors="replace",
-            env=env,
-        )
-        out = []
-        for line in iter(process.stdout.readline, ""):
-            if line:
-                out.append(line.rstrip())
-                if callback and len(out) % 5 == 0:
-                    callback(min(90, 10 + len(out)), line.rstrip()[:120])
-        process.wait(timeout=300)
-        if process.returncode == 0:
-            if callback:
-                callback(100, "cc-switch-cli 安装完成！")
-            return {"success": True}
-        return {"success": False, "error": "\n".join(out[-10:])}
-    except subprocess.TimeoutExpired:
-        return {"success": False, "error": "安装超时，npm 下载可能较慢，请检查网络后重试"}
-    except FileNotFoundError:
-        return {"success": False, "error": "未找到 npm 命令，请先安装 Node.js"}
-    except Exception as e:
-        return {"success": False, "error": str(e)}

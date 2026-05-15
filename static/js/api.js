@@ -26,7 +26,6 @@ const API = {
   installGit() { return this.post("/api/install/git"); },
   installClaudeCode() { return this.post("/api/install/claude-code"); },
   installCCSwitchGUI() { return this.post("/api/install/ccswitch-gui"); },
-  installCCSwitchCLI() { return this.post("/api/install/ccswitch-cli"); },
   fixPolicy() { return this.post("/api/install/fix-policy"); },
   fixRegistry() { return this.post("/api/install/fix-registry"); },
   autoFix(fixes) { return this.post("/api/install/auto-fix", { fixes }); },

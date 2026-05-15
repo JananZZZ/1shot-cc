@@ -182,8 +182,6 @@ def install_ccswitch_gui():
         dl = download_ccswitch(callback=callback)
         if not dl["success"]:
             diag = resolve(dl["error"])
-            if dl.get("hint_cli"):
-                diag["hint_cli"] = True
             _update_task(task_id, "error", 0, dl["error"], done=True, error=json.dumps(diag, ensure_ascii=False))
             return
         inst = install_ccswitch(dl["path"], callback=callback)
@@ -194,25 +192,6 @@ def install_ccswitch_gui():
         import time as _time
         _time.sleep(1)
         _update_task(task_id, "complete", 100, "CC-Switch 安装完成！", done=True)
-
-    _bg(task_id, work)
-    return jsonify({"success": True, "task_id": task_id})
-
-
-@bp.route("/ccswitch-cli", methods=["POST"])
-def install_ccswitch_cli():
-    task_id = str(uuid.uuid4())[:8]
-    _update_task(task_id, "preparing", 0, "准备安装 CC-Switch CLI...")
-
-    def work(callback):
-        from app.services.ccswitch_installer import install_ccswitch_cli
-        from app.services.error_resolver import resolve
-        result = install_ccswitch_cli(callback=callback)
-        if not result["success"]:
-            diag = resolve(result["error"])
-            _update_task(task_id, "error", 0, result["error"], done=True, error=json.dumps(diag, ensure_ascii=False))
-            return
-        _update_task(task_id, "complete", 100, "CC-Switch CLI 安装完成！", done=True)
 
     _bg(task_id, work)
     return jsonify({"success": True, "task_id": task_id})
@@ -373,7 +352,7 @@ def check_colorcc():
 @bp.route("/upgrade/<component>", methods=["POST"])
 def upgrade_component(component: str):
     """升级指定组件"""
-    valid = {"nodejs", "git", "claude", "ccswitch", "ccswitch-cli"}
+    valid = {"nodejs", "git", "claude", "ccswitch"}
     if component not in valid:
         return jsonify({"success": False, "error": f"不支持的升级组件: {component}"})
 
@@ -428,8 +407,6 @@ def upgrade_component(component: str):
             dl = download_ccswitch(callback=callback)
             if not dl["success"]:
                 diag = resolve(dl["error"])
-                if dl.get("hint_cli"):
-                    diag["hint_cli"] = True
                 _update_task(task_id, "error", 0, dl["error"], done=True, error=json.dumps(diag, ensure_ascii=False))
                 return
             inst = install_ccswitch(dl["path"], callback=callback)
@@ -438,15 +415,6 @@ def upgrade_component(component: str):
                 _update_task(task_id, "error", 0, inst["error"], done=True, error=json.dumps(diag, ensure_ascii=False))
                 return
             _update_task(task_id, "complete", 100, "CC-Switch 升级完成！", done=True)
-
-        elif component == "ccswitch-cli":
-            from app.services.ccswitch_installer import install_ccswitch_cli
-            result = install_ccswitch_cli(callback=callback)
-            if not result["success"]:
-                diag = resolve(result["error"])
-                _update_task(task_id, "error", 0, result["error"], done=True, error=json.dumps(diag, ensure_ascii=False))
-                return
-            _update_task(task_id, "complete", 100, "CC-Switch CLI 升级完成！", done=True)
 
     _bg(task_id, work)
     return jsonify({"success": True, "task_id": task_id})

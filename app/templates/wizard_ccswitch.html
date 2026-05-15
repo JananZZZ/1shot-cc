@@ -19,36 +19,14 @@
   <span class="step-line"></span>
   <a href="/wizard/final" class="step"><span class="step-dot">9</span><span class="step-label">完成</span></a>
 </div>
-<div class="page-hero"><h1>🔀 更方便的切换方式</h1><p>你已经配好 API 了！如果只用一家服务，可以跳过这步</p></div>
+<div class="page-hero"><h1>🔀 更方便的切换方式</h1><p>CC-Switch 让你在多家 AI 服务间一键切换。如果只用一家，可以跳过这步</p></div>
 
 <div class="callout info">💡 <strong>啥时候需要它：</strong>同时使用 DeepSeek + 智谱等多家服务时，CC-Switch 让你在它们之间一键切换，不用每次改配置文件。</div>
 
-<div class="card mb-2">
-  <div class="card-header">选一种安装方式</div>
-  <div class="grid-2 mt-1">
-    <div class="card" style="border:2px solid var(--brand); cursor:pointer;" onclick="selectMode('gui')" id="mode-gui">
-      <div class="card-header">🖥️ 桌面版（推荐）</div>
-      <ul class="text-sm text-muted" style="padding-left:16px;">
-        <li>有漂亮的界面，点鼠标就能操作</li>
-        <li>任务栏右下角小图标，随时切换</li>
-        <li>内置 50+ 服务商，选完填 Key 就行</li>
-      </ul>
-    </div>
-    <div class="card" style="cursor:pointer;" onclick="selectMode('cli')" id="mode-cli">
-      <div class="card-header">⌨️ 命令行版</div>
-      <ul class="text-sm text-muted" style="padding-left:16px;">
-        <li>在终端里用菜单选择</li>
-        <li>装起来更轻量</li>
-        <li>适合不介意敲键盘的用户</li>
-      </ul>
-    </div>
-  </div>
-</div>
-
 <div class="install-panel">
   <div class="install-icon" id="icon">🔀</div>
-  <h3 id="status-text">准备帮你装 CC-Switch</h3>
-  <p id="mode-hint" class="text-sm text-muted">先选一个安装方式，再点下面的按钮</p>
+  <h3 id="status-text">准备帮你装 CC-Switch 桌面版</h3>
+  <p class="text-sm text-muted">任务栏右下角小图标，内置 50+ 服务商，随时切换</p>
   <div class="progress-wrap">
     <div class="progress-bar"><div class="fill" id="bar" style="width:0"></div></div>
     <p id="pct-text" class="text-xs text-muted">等待开始...</p>
@@ -63,7 +41,7 @@
       <button class="btn-auto-fix" id="err-auto-fix-btn" style="display:none">🔧 自动修复</button>
     </div>
   </div>
-  <button class="btn btn-primary btn-lg" id="start-btn" onclick="doInstall()" disabled>📥 帮我装好 CC-Switch</button>
+  <button class="btn btn-primary btn-lg" id="start-btn" onclick="doInstall()">📥 帮我装好 CC-Switch</button>
   <button class="btn btn-outline mt-2" id="retry-btn" style="display:none" onclick="doInstall()">🔄 再试一次</button>
   <div id="next-step" class="mt-2" style="display:none"><a href="/wizard/terminal" class="btn btn-accent">继续 → 终端美化</a></div>
 </div>
@@ -77,25 +55,10 @@
 </div>
 {% endblock %}
 {% block scripts %}<script>
-let mode = "";
 let ccWizard = null;
-document.addEventListener('DOMContentLoaded', function() { selectMode('gui'); });
-function selectMode(m) {
-  mode = m;
-  document.getElementById("mode-gui").style.border = m==="gui" ? "2px solid var(--brand)" : "";
-  document.getElementById("mode-cli").style.border = m==="cli" ? "2px solid var(--brand)" : "";
-  document.getElementById("start-btn").disabled = false;
-  document.getElementById("mode-hint").textContent = `已选择：${m==="gui"?"桌面版（.msi 安装包）":"命令行版（npm 安装）"}`;
-}
 function doInstall() {
-  if (!mode) { showToast("先选一种安装方式吧", "warning"); return; }
-  const fn = mode === "gui" ? () => API.installCCSwitchGUI() : () => API.installCCSwitchCLI();
   if (!ccWizard) {
-    ccWizard = new InstallWizard(fn, { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！", onSuccess: () => { clearCheckCache(); API.clearCheckCache(); function tryShow(n){ API.checkAll().then(function(r){ if(r.success){var i=r.data.ccswitch; if(i&&i.installed){showInstalledCard('CC Switch',i.version,i.outdated,true);return;}} if(n<3) setTimeout(function(){tryShow(n+1);},1500); }); } setTimeout(function(){tryShow(0);},800); } });
-  }
-  if (ccWizard.installFn.toString() !== fn.toString()) {
-    ccWizard.destroy();
-    ccWizard = new InstallWizard(fn, { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！", onSuccess: () => { clearCheckCache(); API.clearCheckCache(); function tryShow(n){ API.checkAll().then(function(r){ if(r.success){var i=r.data.ccswitch; if(i&&i.installed){showInstalledCard('CC Switch',i.version,i.outdated,true);return;}} if(n<3) setTimeout(function(){tryShow(n+1);},1500); }); } setTimeout(function(){tryShow(0);},800); } });
+    ccWizard = new InstallWizard(() => API.installCCSwitchGUI(), { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！", onSuccess: () => { clearCheckCache(); API.clearCheckCache(); function tryShow(n){ API.checkAll().then(function(r){ if(r.success){var i=r.data.ccswitch; if(i&&i.installed){showInstalledCard('CC Switch',i.version,i.outdated,true);return;}} if(n<3) setTimeout(function(){tryShow(n+1);},1500); }); } setTimeout(function(){tryShow(0);},800); } });
   }
   ccWizard.start();
 }

@@ -200,17 +200,6 @@ def _detect_ccswitch() -> dict:
             installed = True
             ctype = "desktop"
 
-    # 3) CLI 检测
-    if not installed:
-        r = run_cmd("cc-switch --version", timeout=10)
-        if r["success"]:
-            installed = True
-            vers = _ver(r["stdout"])
-            ctype = "cli"
-        elif path:
-            installed = True
-            ctype = "desktop"
-
     # 从 GitHub API 获取最新版本
     latest = ""
     try:
@@ -233,7 +222,7 @@ def _detect_ccswitch() -> dict:
         "latest_version": latest,
         "outdated": _outdated(vers, latest) if vers and latest else False,
         "paths": paths,
-        "method": "msi" if ctype == "desktop" else ("npm" if ctype == "cli" else "none"),
+        "method": "msi",
         "ok": installed,
     }
 
