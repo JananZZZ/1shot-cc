@@ -2,7 +2,7 @@
   <img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Platform-Windows-0078D6.svg" alt="Platform">
-  <img src="https://img.shields.io/badge/Release-v2.2-eb5e28.svg" alt="Release">
+  <img src="https://img.shields.io/badge/Release-v3.4-eb5e28.svg" alt="Release">
 </p>
 
 <h1 align="center">🚀 1shot-CC</h1>
@@ -27,43 +27,52 @@
 
 ---
 
-## 📸 界面预览
+## 📸 软件截图
 
+### 1. 欢迎页
+<p align="center"><img src="assets/1-欢迎页.png" width="80%"></p>
+
+### 2. 首页介绍
+<p align="center"><img src="assets/2-介绍页.png" width="80%"></p>
+
+### 3. 系统环境检测
+<p align="center"><img src="assets/3-检测页.png" width="80%"></p>
+
+### 4. 一键安装 Node.js / Git / Claude Code
+<p align="center"><img src="assets/4-安装页.png" width="80%"></p>
+
+### 5. API 配置（支持 5 家国内厂商）
+<p align="center"><img src="assets/5-api配置页.png" width="80%"></p>
+
+### 6. 完成页
+<p align="center"><img src="assets/6-完成页.png" width="80%"></p>
+
+### 7. 内置图文教程
 <p align="center">
-  <img src="screenshots/01-home.png" alt="首页" width="49%">
-  <img src="screenshots/04-config.png" alt="配置页" width="49%">
+  <img src="assets/7-教程1.png" width="24%">
+  <img src="assets/7-教程2.png" width="24%">
+  <img src="assets/7-教程3.png" width="24%">
+  <img src="assets/7-教程4.png" width="24%">
 </p>
 
-<p align="center">
-  <img src="screenshots/02-check.png" alt="检测页" width="49%">
-  <img src="screenshots/05-final.png" alt="完成页" width="49%">
-</p>
-
-<p align="center">
-  <strong>📖 内置图文教程</strong>
-</p>
-
-<p align="center">
-  <img src="screenshots/06-tutorial-claude.png" alt="Claude Code 教程" width="24%">
-  <img src="screenshots/07-tutorial-apikey.png" alt="API Key 教程" width="24%">
-  <img src="screenshots/08-tutorial-ccswitch.png" alt="CC-Switch 教程" width="24%">
-  <img src="screenshots/09-tutorial-proxy.png" alt="科学上网教程" width="24%">
-</p>
+### 8. 一键卸载
+<p align="center"><img src="assets/8-卸载页.png" width="80%"></p>
 
 ---
 
 ## ✨ 它都能做什么
 
-- 🔍 **智能环境检测** — 一键扫描 Node.js、Git、PowerShell 策略、npm 镜像源、Windows Terminal 等 9 项环境
-- 📥 **从国内镜像安装** — 从 npmmirror 下载 Node.js 和 Git，速度飞快，不用科学上网
-- 🤖 **Claude Code 一键安装** — 自动设置执行策略、配置淘宝镜像、跳过 onboarding 引导
-- 🔀 **CC-Switch 安装** — 桌面板和命令行版任选，安装后自动引导使用
-- ⚙️ **5 家国内 AI 服务商** — 智谱 GLM · DeepSeek · MiniMax · 小米 MiMo · 通义千问，还支持自定义 API 地址
-- 🎨 **Color-cc 终端美化** — 一键安装 Oh My Posh 状态栏主题，让终端好看又好用
-- 🖥️ **Windows Terminal 检测与安装** — 自动检测并支持 winget 一键安装
-- 📖 **图文教程** — Claude Code 使用、API Key 获取、CC-Switch 配置、科学上网，每一步都有图
-- 🎯 **模型推荐配置** — 根据每家厂商的当前推荐自动填写 Haiku/Sonnet/Opus 模型，也支持手动覆盖
-- 🎉 **撒花庆祝** — 装完有好看的完成页，点一下就在 Windows Terminal 里启动 Claude Code
+- 🔍 **智能环境检测** — 13 项全方位扫描，CLI + 注册表双重回退，准确率极高
+- 📥 **多层下载回退** — CC-Switch 三层回退（GitHub API → 国内加速代理 → 直连），Node.js/Git 双镜像源
+- 🤖 **Claude Code 一键安装** — 自动设置执行策略、配置国内镜像、跳过 onboarding 引导
+- 🔀 **CC-Switch 安装** — 桌面版和命令行版任选，安装前后自动检测环境
+- ⚙️ **5 家国内 AI 服务商** — DeepSeek · 智谱 GLM · MiniMax · 小米 MiMo · 通义千问
+- 🎨 **Color-cc 终端美化** — 官方一键命令 `irm | iex`，自动 GitHub→Gitee 回退
+- 📖 **图文教程** — 4 篇完整教程，每步都有截图
+- 🗑️ **一键卸载** — 卸载前自动检测环境，配置自动备份，干净利落
+- 🖥️ **Windows Terminal 检测** — 自动检测并支持一键安装
+- 🎯 **版本过时检测** — 全部组件版本比对，支持一键升级最新版
+- 🎉 **完成页** — 撒花庆祝 + 操作步骤图解，小白也能看懂
 
 ---
 
@@ -72,29 +81,23 @@
 ### 给使用者
 
 1. 从 [Releases](../../releases) 下载 `1shot-CC.exe`
-2. 双击运行（Windows 可能会弹出安全提示，点"更多信息 → 仍要运行"）
-3. 浏览器会自动打开向导页面
-4. 跟着提示点点鼠标就完事了
+2. **右键 → 以管理员身份运行**（安装软件需要管理员权限）
+3. 浏览器会自动打开欢迎页，6 秒后进入主页
+4. 跟着提示一步步操作就完事了
 
-> **提示**：程序会打开浏览器和本地网页，所有操作都在你自己的电脑上完成，不会上传任何数据。
+> **提示**：所有操作都在你自己的电脑上完成，不会上传任何数据。
 
 ### 给开发者
 
 ```bash
-# 克隆仓库
-git clone https://github.com/farion1231/1shot-cc.git
+git clone https://github.com/JananZZZ/1shot-cc.git
 cd 1shot-cc
-
-# 安装依赖
 pip install flask
-
-# 启动开发服务器
 python main.py
 
 # 打包为 exe
 pip install pyinstaller
 python -m PyInstaller build.spec --clean --noconfirm
-# 输出: dist/1shot-CC.exe
 ```
 
 ---
@@ -103,45 +106,38 @@ python -m PyInstaller build.spec --clean --noconfirm
 
 ```
 1shot-cc/
-├── main.py                      # 入口：Flask 应用 + 浏览器自动打开
+├── main.py                      # 入口：欢迎页 + Flask 应用 + 看门狗
 ├── app/
-│   ├── config.py                # 配置常量（版本号、下载地址、供应商信息）
+│   ├── config.py                # 配置常量
 │   ├── routes/                  # API 路由层
-│   │   ├── api_system.py        #   系统检测接口
-│   │   ├── api_install.py       #   安装操作接口 + SSE 进度推送
-│   │   ├── api_config.py        #   配置管理接口
+│   │   ├── api_system.py        #   系统检测 + 页面生命周期
+│   │   ├── api_install.py       #   安装操作 + SSE 进度 + 卸载
+│   │   ├── api_config.py        #   配置管理
 │   │   └── api_tutorial.py      #   教程接口
 │   ├── services/                # 业务逻辑层
-│   │   ├── system_checker.py    #   环境检测
-│   │   ├── node_installer.py    #   Node.js 下载安装
-│   │   ├── git_installer.py     #   Git 下载安装
+│   │   ├── detector.py          #   统一检测引擎（13项 + 缓存）
+│   │   ├── error_resolver.py    #   错误诊断知识库
+│   │   ├── uninstaller.py       #   卸载引擎
+│   │   ├── node_installer.py    #   Node.js 安装（双镜像回退）
+│   │   ├── git_installer.py     #   Git 安装（双镜像回退）
 │   │   ├── claude_installer.py  #   Claude Code npm 安装
-│   │   ├── ccswitch_installer.py#   CC-Switch 下载安装
-│   │   ├── config_writer.py     #   settings.json 读写
-│   │   ├── launcher.py          #   终端/应用启动器（Windows Terminal 优先）
+│   │   ├── ccswitch_installer.py#   CC-Switch 安装（三层回退）
 │   │   ├── colorcc_installer.py #   Color-cc 终端美化
+│   │   ├── config_writer.py     #   settings.json 读写
+│   │   ├── launcher.py          #   终端/应用启动器
 │   │   └── proxy_helper.py      #   npm 镜像源工具
 │   ├── utils/                   # 工具函数
-│   │   ├── downloader.py        #   文件下载（进度+重试）
+│   │   ├── downloader.py        #   文件下载（进度+重试+SHA256）
+│   │   ├── elevation.py         #   管理员权限检测
+│   │   ├── logger.py            #   诊断日志
 │   │   ├── path_helper.py       #   路径处理
 │   │   ├── registry_reader.py   #   Windows 注册表读取
+│   │   ├── startup_checker.py   #   启动环境检查
 │   │   └── subprocess_runner.py #   子进程管理
 │   └── templates/               # Jinja2 前端模板
-│       ├── index.html           #   首页
-│       ├── wizard_check.html    #   系统检测页
-│       ├── wizard_nodejs.html   #   Node.js 安装页
-│       ├── wizard_git.html      #   Git 安装页
-│       ├── wizard_claude.html   #   Claude Code 安装页
-│       ├── wizard_ccswitch.html #   CC-Switch 安装页
-│       ├── wizard_ccswitch_guide.html  # CC-Switch 使用引导
-│       ├── wizard_config.html   #   API 配置页（含模型选择）
-│       ├── wizard_final.html    #   完成页（撒花庆祝）
-│       └── tutorial_*.html      #   图文教程页
-├── static/                      # 静态资源
-│   ├── css/                     #   样式表（含深色/浅色主题）
-│   └── js/                      #   前端 API 封装 + 安装向导控制
+├── static/                      # 静态资源（CSS + JS + 图片）
 ├── tutorials/                   # 教程 Markdown 源文件
-├── screenshots/                 # 软件截图
+├── assets/                      # 软件截图
 ├── build.spec                   # PyInstaller 打包配置
 └── requirements.txt             # Python 依赖
 ```
@@ -153,10 +149,11 @@ python -m PyInstaller build.spec --clean --noconfirm
 | 层 | 技术 |
 |---|------|
 | Web 框架 | Flask 3.x + Jinja2 |
-| 前端 | Vanilla JS + CSS Custom Properties（支持深浅色主题） |
+| 前端 | Vanilla JS + CSS Custom Properties（暖白主题） |
 | 实时推送 | Server-Sent Events (SSE) |
-| 打包 | PyInstaller（单文件 exe，约 13MB） |
+| 打包 | PyInstaller（单文件 exe，约 47MB） |
 | 平台 | Windows 10/11 |
+| 欢迎页 | 独立 HTTP Server + 鼠标视差动效 |
 
 ---
 
@@ -164,9 +161,6 @@ python -m PyInstaller build.spec --clean --noconfirm
 
 欢迎提 Issue 和 Pull Request。
 
-如果你发现什么 bug，或者有好的想法想让这个工具更顺手，请直接 [新建 Issue](../../issues/new)。
-
-贡献前请阅读：
 - 代码风格：保持简单，函数 < 50 行，文件 < 800 行
 - 错误消息：使用中文，面向小白用户
 - 提交信息：使用 [约定式提交](https://www.conventionalcommits.org/zh-hans/) 格式
@@ -183,7 +177,7 @@ MIT © [1shot-CC Contributors](../../graphs/contributors)
 
 如果这个项目对你有所帮助，欢迎请作者喝杯咖啡。**0.88 元即可！**
 
-一分也是爱，每天烧掉的 token 比代码还多 😭
+一分也是爱 😭
 
 <div align="center">
   <table>
@@ -202,7 +196,7 @@ MIT © [1shot-CC Contributors](../../graphs/contributors)
   </table>
 </div>
 
-> 💭 以上纯属良心自发，无任何功能限制，不给也完全不影响使用！好用的话给个 Star ⭐ 就很开心了
+> 💭 以上纯属良心自发，无任何功能限制。好用的话给个 Star ⭐ 就很开心了
 
 ---
 

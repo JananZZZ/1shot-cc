@@ -2,7 +2,7 @@
   <img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Platform-Windows-0078D6.svg" alt="Platform">
-  <img src="https://img.shields.io/badge/Release-v2.2-eb5e28.svg" alt="Release">
+  <img src="https://img.shields.io/badge/Release-v3.4-eb5e28.svg" alt="Release">
 </p>
 
 <h1 align="center">🚀 1shot-CC</h1>
@@ -15,55 +15,63 @@
 
 **1shot-CC** is a Windows desktop wizard that helps users with zero command-line experience set up a complete Claude Code development environment in one go.
 
-New to AI coding? Feel overwhelmed by words like "terminal", "npm", or "environment variables"? Don't worry — 1shot-CC turns all those complicated steps into a series of friendly buttons. Click, click, done.
+New to AI coding? Overwhelmed by "terminal", "npm", "environment variables"? Don't worry — 1shot-CC turns all those complicated steps into friendly buttons. Click, click, done.
 
 | You Just | 1shot-CC Handles |
 |----------|-----------------|
-| Click | Automatically checks what's missing on your system |
-| Click again | Downloads and installs Node.js & Git from CDN mirrors |
+| Click | Automatically checks what's missing |
+| Click again | Downloads & installs Node.js & Git from CDN mirrors |
 | Click again | Installs Claude Code globally |
-| Paste your Key | Configures your AI provider (5 Chinese providers supported) |
-| Click start | Opens a terminal, and you begin your first coding session |
+| Paste your Key | Configures your AI provider (5 Chinese providers) |
+| Click start | Opens terminal, begin your first coding session |
 
 ---
 
 ## 📸 Screenshots
 
+### 1. Welcome Page
+<p align="center"><img src="assets/1-欢迎页.png" width="80%"></p>
+
+### 2. Home
+<p align="center"><img src="assets/2-介绍页.png" width="80%"></p>
+
+### 3. System Check
+<p align="center"><img src="assets/3-检测页.png" width="80%"></p>
+
+### 4. One-Click Install (Node.js / Git / Claude Code)
+<p align="center"><img src="assets/4-安装页.png" width="80%"></p>
+
+### 5. API Configuration (5 Chinese providers)
+<p align="center"><img src="assets/5-api配置页.png" width="80%"></p>
+
+### 6. Finish Page
+<p align="center"><img src="assets/6-完成页.png" width="80%"></p>
+
+### 7. Built-in Tutorials
 <p align="center">
-  <img src="screenshots/01-home.png" alt="Home" width="49%">
-  <img src="screenshots/04-config.png" alt="Config" width="49%">
+  <img src="assets/7-教程1.png" width="24%">
+  <img src="assets/7-教程2.png" width="24%">
+  <img src="assets/7-教程3.png" width="24%">
+  <img src="assets/7-教程4.png" width="24%">
 </p>
 
-<p align="center">
-  <img src="screenshots/02-check.png" alt="System Check" width="49%">
-  <img src="screenshots/05-final.png" alt="Finish" width="49%">
-</p>
-
-<p align="center">
-  <strong>📖 Built-in Tutorials</strong>
-</p>
-
-<p align="center">
-  <img src="screenshots/06-tutorial-claude.png" alt="Claude Code Tutorial" width="24%">
-  <img src="screenshots/07-tutorial-apikey.png" alt="API Key Tutorial" width="24%">
-  <img src="screenshots/08-tutorial-ccswitch.png" alt="CC-Switch Tutorial" width="24%">
-  <img src="screenshots/09-tutorial-proxy.png" alt="Proxy Tutorial" width="24%">
-</p>
+### 8. One-Click Uninstall
+<p align="center"><img src="assets/8-卸载页.png" width="80%"></p>
 
 ---
 
 ## ✨ Features
 
-- 🔍 **Smart Environment Check** — One-click scan covers 9 items: Node.js, Git, PowerShell policy, npm registry, Windows Terminal, and more
-- 📥 **CDN-Accelerated Downloads** — Node.js and Git installers fetched from domestic mirrors for lightning-fast speeds
-- 🤖 **One-Click Claude Code** — Auto-configures execution policy, registry mirror, and skips onboarding wizard
-- 🔀 **CC-Switch Integration** — Desktop or CLI version, with auto-launch and step-by-step guide after installation
-- ⚙️ **5 AI Providers Built-in** — Zhipu GLM · DeepSeek · MiniMax · Xiaomi MiMo · Tongyi Qwen, plus custom API endpoint support
-- 🎨 **Color-cc Terminal Theme** — One-click Oh My Posh statusline installation for a beautiful terminal experience
-- 🖥️ **Windows Terminal Setup** — Detects and optionally installs Windows Terminal via winget
-- 📖 **Illustrated Tutorials** — Claude Code usage, API key acquisition, CC-Switch setup, proxy guide — all with screenshots
-- 🎯 **Smart Model Defaults** — Auto-fills recommended Haiku/Sonnet/Opus models per provider, with manual override
-- 🎉 **Confetti Celebration** — A cheerful finishing page that launches Claude Code in Windows Terminal with one click
+- 🔍 **Smart Environment Check** — 13-item full scan with CLI + registry dual fallback
+- 📥 **Multi-Layer Download Fallback** — CC-Switch 3-layer fallback, Node.js/Git dual mirrors
+- 🤖 **One-Click Claude Code** — Auto-configures execution policy, mirror registry, onboarding
+- 🔀 **CC-Switch Integration** — Desktop or CLI version with pre/post-install checks
+- ⚙️ **5 AI Providers Built-in** — DeepSeek · Zhipu GLM · MiniMax · Xiaomi MiMo · Tongyi Qwen
+- 🎨 **Color-cc Terminal Theme** — Official `irm | iex` one-liner with GitHub→Gitee auto-fallback
+- 📖 **Illustrated Tutorials** — 4 complete guides with screenshots
+- 🗑️ **One-Click Uninstall** — Pre-uninstall detection, config backup, clean removal
+- 🎯 **Version Outdated Detection** — All components with upgrade support
+- 🎉 **Finish Page** — Confetti celebration + visual step-by-step guide
 
 ---
 
@@ -72,29 +80,23 @@ New to AI coding? Feel overwhelmed by words like "terminal", "npm", or "environm
 ### For Users
 
 1. Download `1shot-CC.exe` from [Releases](../../releases)
-2. Double-click to run (Windows may show a security warning — click "More info → Run anyway")
-3. Your browser will open the wizard automatically
+2. **Right-click → Run as Administrator**
+3. Browser opens welcome page, auto-redirects to main app
 4. Follow the prompts — that's it!
 
-> **Note**: The wizard runs entirely on your local machine. No data is ever uploaded.
+> **Note**: Everything runs locally. No data is ever uploaded.
 
 ### For Developers
 
 ```bash
-# Clone the repo
-git clone https://github.com/farion1231/1shot-cc.git
+git clone https://github.com/JananZZZ/1shot-cc.git
 cd 1shot-cc
-
-# Install dependencies
 pip install flask
-
-# Start dev server
 python main.py
 
 # Build exe
 pip install pyinstaller
 python -m PyInstaller build.spec --clean --noconfirm
-# Output: dist/1shot-CC.exe
 ```
 
 ---
@@ -103,32 +105,34 @@ python -m PyInstaller build.spec --clean --noconfirm
 
 ```
 1shot-cc/
-├── main.py                      # Entry: Flask app + auto-open browser
+├── main.py                      # Entry: welcome page + Flask + watchdog
 ├── app/
-│   ├── config.py                # Constants (versions, download URLs, providers)
+│   ├── config.py                # Constants
 │   ├── routes/                  # API route layer
-│   │   ├── api_system.py        #   System check endpoints
-│   │   ├── api_install.py       #   Install operations + SSE progress
-│   │   ├── api_config.py        #   Config management endpoints
+│   │   ├── api_system.py        #   System check + page lifecycle
+│   │   ├── api_install.py       #   Install + SSE + uninstall
+│   │   ├── api_config.py        #   Config management
 │   │   └── api_tutorial.py      #   Tutorial endpoints
-│   ├── services/                # Business logic layer
-│   │   ├── node_installer.py    #   Node.js download & install
-│   │   ├── git_installer.py     #   Git download & install
+│   ├── services/                # Business logic
+│   │   ├── detector.py          #   Unified detection engine (13 items)
+│   │   ├── error_resolver.py    #   Error diagnostic KB
+│   │   ├── uninstaller.py       #   Uninstall engine
+│   │   ├── node_installer.py    #   Node.js install (dual mirrors)
+│   │   ├── git_installer.py     #   Git install (dual mirrors)
 │   │   ├── claude_installer.py  #   Claude Code npm install
-│   │   ├── ccswitch_installer.py#   CC-Switch download & install
+│   │   ├── ccswitch_installer.py#   CC-Switch install (3-layer fallback)
+│   │   ├── colorcc_installer.py #   Color-cc terminal theme
 │   │   ├── config_writer.py     #   settings.json read/write
-│   │   ├── launcher.py          #   Terminal/app launcher (WT preferred)
-│   │   ├── colorcc_installer.py #   Color-cc terminal theming
-│   │   └── proxy_helper.py      #   npm registry helpers
-│   ├── utils/                   # Utility functions
-│   │   ├── downloader.py        #   File downloader (progress + retry)
-│   │   ├── path_helper.py       #   Path utilities
-│   │   ├── registry_reader.py   #   Windows registry reader
+│   │   └── launcher.py          #   Terminal/app launcher
+│   ├── utils/                   # Utilities
+│   │   ├── downloader.py        #   File download (progress+retry+SHA256)
+│   │   ├── elevation.py         #   Admin privilege detection
+│   │   ├── logger.py            #   Diagnostic logging
 │   │   └── subprocess_runner.py #   Subprocess management
 │   └── templates/               # Jinja2 frontend templates
-├── static/                      # Static assets (CSS + JS)
+├── static/                      # Static assets (CSS + JS + images)
 ├── tutorials/                   # Tutorial markdown sources
-├── screenshots/                 # App screenshots
+├── assets/                      # Screenshots
 ├── build.spec                   # PyInstaller config
 └── requirements.txt             # Python dependencies
 ```
@@ -140,23 +144,20 @@ python -m PyInstaller build.spec --clean --noconfirm
 | Layer | Technology |
 |-------|-----------|
 | Web Framework | Flask 3.x + Jinja2 |
-| Frontend | Vanilla JS + CSS Custom Properties (light & dark themes) |
-| Real-time Updates | Server-Sent Events (SSE) |
-| Packaging | PyInstaller (single exe, ~13MB) |
+| Frontend | Vanilla JS + CSS Custom Properties (warm light theme) |
+| Real-time | Server-Sent Events (SSE) |
+| Packaging | PyInstaller (single exe, ~47MB) |
 | Platform | Windows 10/11 |
+| Welcome Page | Standalone HTTP Server + parallax effects |
 
 ---
 
 ## 🤝 Contributing
 
-Issues and pull requests are welcome!
+Issues and pull requests are welcome! [Open an Issue](../../issues/new)
 
-If you find a bug or have an idea to make this tool better, please [open an Issue](../../issues/new).
-
-Before contributing:
-- Keep it simple — functions under 50 lines, files under 800 lines
-- Error messages should be user-friendly (Chinese for end-user facing strings)
-- Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages
+- Keep it simple — functions < 50 lines, files < 800 lines
+- User-facing errors in Chinese
 
 ---
 
@@ -168,9 +169,7 @@ MIT © [1shot-CC Contributors](../../graphs/contributors)
 
 ## ☕ Buy Me a Coffee
 
-If this project has been helpful to you, consider buying the author a coffee. **Just ¥0.88!**
-
-Every bit of support helps offset the tokens burned during development 😭
+If this project helped you, consider buying the author a coffee. **Just ¥0.88!**
 
 <div align="center">
   <table>
@@ -189,7 +188,7 @@ Every bit of support helps offset the tokens burned during development 😭
   </table>
 </div>
 
-> 💭 This is completely voluntary — no features are locked behind payment. A ⭐ Star means just as much!
+> 💭 Completely voluntary. A ⭐ Star means just as much!
 
 ---
 
