@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="steps-bar">
+  <a href="/wizard/check" class="step done"><span class="step-dot">1</span><span class="step-label">检测</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/nodejs" class="step done"><span class="step-dot">2</span><span class="step-label">Node.js</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/git" class="step done"><span class="step-dot">3</span><span class="step-label">Git</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/claude" class="step done"><span class="step-dot">4</span><span class="step-label">Claude</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/ccswitch" class="step done"><span class="step-dot">5</span><span class="step-label">Switch</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/config" class="step"><span class="step-dot">6</span><span class="step-label">配置</span></a>
+</div>
 <div class="page-hero">
   <h1>🎉 CC-Switch 装好了！</h1>
   <p>最后一步——告诉 CC-Switch 你想用哪家 AI 服务</p>
@@ -43,9 +56,11 @@
   </div>
 </div>
 
-<div class="text-center mt-3">
-  <a href="/wizard/config" class="btn btn-accent">我已经配好了，继续下一步 →</a>
-  <p class="text-muted text-sm mt-1">或者不通过 CC-Switch，<a href="/wizard/config">直接在这里配置 API</a></p>
+<p class="text-muted text-sm mt-1 text-center">或者不通过 CC-Switch，<a href="/wizard/config">直接在这里配置 API</a></p>
+
+<div class="wizard-nav">
+  <a href="/wizard/ccswitch" class="btn btn-outline">← 上一步</a>
+  <a href="/wizard/config" class="btn btn-accent">下一步 →</a>
 </div>
 {% endblock %}
 {% block scripts %}

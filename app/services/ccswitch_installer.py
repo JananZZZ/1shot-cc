@@ -9,6 +9,42 @@ import urllib.error
 from app.config import CCSWITCH_RELEASES_API
 from app.utils.downloader import download_file
 
+# 下载回退 URL 列表（按优先级）
+_CCSWITCH_FALLBACK_URLS = [
+    "https://cdn.jsdelivr.net/gh/farion1231/cc-switch@latest/CC-Switch-Setup-x64.msi",
+    "https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
+]
+
+
+def preflight_ccswitch() -> dict:
+    """CC-Switch 安装前预检（GUI 版需要管理员权限）"""
+    import shutil
+    from app.utils.elevation import is_admin
+
+    issues = []
+
+    try:
+        tmp = os.environ.get("TEMP", "C:\\")
+        usage = shutil.disk_usage(tmp)
+        free_gb = usage.free / (1024 * 1024 * 1024)
+        if free_gb < 0.5:
+            issues.append(f"磁盘空间不足（仅剩 {free_gb:.1f} GB），需要至少 500MB")
+    except Exception:
+        pass
+
+    if not is_admin():
+        issues.append("安装桌面版 CC-Switch 需要管理员权限（右键 exe → 以管理员身份运行）")
+
+    try:
+        test = os.path.join(os.environ.get("TEMP", "."), "1shot-cc-test.tmp")
+        with open(test, "w") as f:
+            f.write("ok")
+        os.remove(test)
+    except Exception:
+        issues.append("临时目录不可写，无法下载安装包")
+
+    return {"ok": len(issues) == 0, "issues": issues}
+
 
 def get_latest_release_info() -> dict:
     """从 GitHub API 获取最新 CC-Switch 版本信息"""
@@ -45,29 +81,63 @@ def get_latest_release_info() -> dict:
         return {"success": False, "error": str(e)}
 
 
-def download_ccswitch(callback=None) -> dict:
-    """下载 CC-Switch MSI 安装包"""
-    info = get_latest_release_info()
-    if not info["success"]:
+def _try_download_urls(urls: list[str], dest: str, callback=None) -> dict:
+    """依次尝试多个下载 URL，返回第一个成功的结果"""
+    last_error = ""
+    for i, url in enumerate(urls):
         if callback:
-            callback(0, f"GitHub API 连接失败，尝试备用下载方式...")
-        info = {
-            "download_url": "https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
-            "filename": "CC-Switch-Setup-x64.msi",
-            "version": "latest",
+            if i == 0:
+                callback(0, "正在从 GitHub 获取最新版本...")
+            else:
+                callback(0, f"主源连接失败，尝试备用下载方式 {i}...")
+        result = download_file(url, dest, progress_callback=callback)
+        if result["success"]:
+            return result
+        last_error = result.get("error", "未知错误")
+        # 删除损坏的文件，准备重试
+        try:
+            os.remove(dest)
+        except Exception:
+            pass
+    return {"success": False, "error": last_error or "所有下载源均失败"}
+
+
+def download_ccswitch(callback=None) -> dict:
+    """下载 CC-Switch MSI 安装包（三层回退）"""
+    dest = os.path.join(tempfile.gettempdir(), "cc-switch-installer.msi")
+
+    # 第1层：GitHub API 获取下载 URL
+    info = get_latest_release_info()
+    version = "latest"
+
+    if info["success"] and info.get("download_url"):
+        version = info.get("version", "latest")
+        if callback:
+            callback(0, f"正在下载 CC-Switch {version}...")
+        result = download_file(info["download_url"], dest, progress_callback=callback)
+        if result["success"]:
+            return {"success": True, "path": result["path"], "version": version}
+
+        # API 返回的 URL 失败，继续尝试 fallback
+        if callback:
+            callback(0, "GitHub 下载失败，尝试 CDN 加速源...")
+
+    # 第2-3层：CDN + 直接下载
+    if callback and not info["success"]:
+        callback(0, "GitHub API 连接失败，使用备用下载源...")
+
+    result = _try_download_urls(_CCSWITCH_FALLBACK_URLS, dest, callback=callback)
+    if not result["success"]:
+        return {
+            "success": False,
+            "error": (
+                "CC-Switch 下载失败，所有下载源均不可用。\n"
+                "请检查网络连接后重试，或手动下载：\n"
+                "https://github.com/farion1231/cc-switch/releases"
+            ),
         }
 
-    if not info.get("download_url"):
-        return {"success": False, "error": "未找到 CC-Switch 下载链接。请访问 https://github.com/farion1231/cc-switch/releases 手动下载"}
-
-    dest = os.path.join(tempfile.gettempdir(), "cc-switch-installer.msi")
-    if callback:
-        callback(0, f"正在下载 CC-Switch {info.get('version', '')}...")
-
-    result = download_file(info["download_url"], dest, progress_callback=callback)
-    if not result["success"]:
-        return {"success": False, "error": result["error"]}
-    return {"success": True, "path": result["path"], "version": info.get("version", "")}
+    return {"success": True, "path": result["path"], "version": version}
 
 
 def install_ccswitch(msi_path: str, callback=None) -> dict:
@@ -80,12 +150,14 @@ def install_ccswitch(msi_path: str, callback=None) -> dict:
             ["msiexec", "/i", msi_path, "/quiet", "/norestart"],
             capture_output=True,
             text=True,
-            timeout=120,
+            timeout=180,
         )
         if proc.returncode != 0:
             return {"success": False, "error": f"安装返回码: {proc.returncode}"}
     except subprocess.TimeoutExpired:
-        return {"success": False, "error": "安装超时"}
+        return {"success": False, "error": "安装超时，请检查系统后重试"}
+    except FileNotFoundError:
+        return {"success": False, "error": "未找到 msiexec 命令，请确认 Windows Installer 服务正常运行"}
     except Exception as e:
         return {"success": False, "error": str(e)}
 
@@ -125,6 +197,8 @@ def install_ccswitch_cli(callback=None) -> dict:
             return {"success": True}
         return {"success": False, "error": "\n".join(out[-10:])}
     except subprocess.TimeoutExpired:
-        return {"success": False, "error": "安装超时"}
+        return {"success": False, "error": "安装超时，npm 下载可能较慢，请检查网络后重试"}
+    except FileNotFoundError:
+        return {"success": False, "error": "未找到 npm 命令，请先安装 Node.js"}
     except Exception as e:
         return {"success": False, "error": str(e)}

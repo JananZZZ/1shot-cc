@@ -1,5 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="steps-bar">
+  <a href="/wizard/check" class="step done"><span class="step-dot">1</span><span class="step-label">检测</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/nodejs" class="step done"><span class="step-dot">2</span><span class="step-label">Node.js</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/git" class="step done"><span class="step-dot">3</span><span class="step-label">Git</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/claude" class="step done"><span class="step-dot">4</span><span class="step-label">Claude</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/ccswitch" class="step done"><span class="step-dot">5</span><span class="step-label">Switch</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/config" class="step active"><span class="step-dot">6</span><span class="step-label">配置</span></a>
+</div>
 <div class="page-hero"><h1>接上 AI 服务</h1><p>选一家服务商，填上你的 API Key 就行</p></div>
 
 <div id="current-cfg" class="callout success mb-2" style="display:none;">
@@ -8,8 +21,8 @@
 
 <p class="text-sm text-muted mb-1">选一家你已经有 Key 的服务商（没有的话点下面教程去申请）：</p>
 <div class="provider-grid" id="provider-grid">
-  <div class="provider-card" data-p="zhipu" onclick="selectP('zhipu')"><div class="provider-icon">🔵</div><div class="provider-name">智谱 GLM</div><div class="provider-hint">¥22/月 起</div></div>
   <div class="provider-card" data-p="deepseek" onclick="selectP('deepseek')"><div class="provider-icon">🟣</div><div class="provider-name">DeepSeek</div><div class="provider-hint">超低价</div></div>
+  <div class="provider-card" data-p="zhipu" onclick="selectP('zhipu')"><div class="provider-icon">🔵</div><div class="provider-name">智谱 GLM</div><div class="provider-hint">¥22/月 起</div></div>
   <div class="provider-card" data-p="minimax" onclick="selectP('minimax')"><div class="provider-icon">🟠</div><div class="provider-name">MiniMax</div><div class="provider-hint">¥290/年 起</div></div>
   <div class="provider-card" data-p="mimo" onclick="selectP('mimo')"><div class="provider-icon">🟡</div><div class="provider-name">小米 MiMo</div><div class="provider-hint">有免费额度</div></div>
   <div class="provider-card" data-p="qwen" onclick="selectP('qwen')"><div class="provider-icon">🟢</div><div class="provider-name">通义千问</div><div class="provider-hint">新用户送额度</div></div>
@@ -42,17 +55,21 @@
 </div>
 
 <div class="callout warning mt-2"><strong>⚠️ 重要：</strong>不配 API 的话，Claude Code 会卡在"Log in"界面。配好再开始！</div>
-<div class="text-center mt-3"><a href="/wizard/final" class="btn btn-ghost">稍后再说，先去最后一步 →</a></div>
+
+<div class="wizard-nav">
+  <a href="/wizard/ccswitch_guide" class="btn btn-outline">← 上一步</a>
+  <a href="/wizard/final" class="btn btn-accent" onclick="saveAndContinue(event)">保存并继续 →</a>
+</div>
 {% endblock %}
 {% block scripts %}<script>
-const INFO={zhipu:{name:"智谱 GLM",key:"https://bigmodel.cn/usercenter/proj-mgmt/apikeys",haiku:"glm-4.5",sonnet:"glm-4.7",opus:"glm-4.7"},deepseek:{name:"DeepSeek",key:"https://platform.deepseek.com/api_keys",haiku:"deepseek-v4-flash[1m]",sonnet:"deepseek-v4-pro[1m]",opus:"deepseek-v4-pro[1m]"},minimax:{name:"MiniMax",key:"https://platform.minimaxi.com/user-center/basic-information/interface-key",haiku:"MiniMax-M1-40k",sonnet:"MiniMax-M2",opus:"MiniMax-M2"},mimo:{name:"小米 MiMo",key:"https://platform.xiaomimimo.com/#/console/api-keys",haiku:"mimo-v2-flash",sonnet:"mimo-v2-flash",opus:"mimo-v2-flash"},qwen:{name:"通义千问",key:"https://bailian.console.aliyun.com/#/api-key",haiku:"qwen3.6-flash",sonnet:"qwen3.6-plus",opus:"qwen3.6-plus"},custom:{name:"自定义",key:"#",haiku:"",sonnet:"",opus:""}};
+const INFO={deepseek:{name:"DeepSeek",key:"https://platform.deepseek.com/api_keys",haiku:"deepseek-v4-flash[1m]",sonnet:"deepseek-v4-pro[1m]",opus:"deepseek-v4-pro[1m]"},zhipu:{name:"智谱 GLM",key:"https://bigmodel.cn/usercenter/proj-mgmt/apikeys",haiku:"glm-4.5",sonnet:"glm-4.7",opus:"glm-4.7"},minimax:{name:"MiniMax",key:"https://platform.minimaxi.com/user-center/basic-information/interface-key",haiku:"MiniMax-M1-40k",sonnet:"MiniMax-M2",opus:"MiniMax-M2"},mimo:{name:"小米 MiMo",key:"https://platform.xiaomimimo.com/#/console/api-keys",haiku:"mimo-v2-flash",sonnet:"mimo-v2-flash",opus:"mimo-v2-flash"},qwen:{name:"通义千问",key:"https://bailian.console.aliyun.com/#/api-key",haiku:"qwen3.6-flash",sonnet:"qwen3.6-plus",opus:"qwen3.6-plus"},custom:{name:"自定义",key:"#",haiku:"",sonnet:"",opus:""}};
 let sel="";
 function selectP(k){sel=k;document.querySelectorAll(".provider-card").forEach(c=>c.classList.remove("selected"));document.querySelector(`[data-p="${k}"]`).classList.add("selected");document.getElementById("config-form").style.display="block";document.getElementById("form-title").textContent="配置 "+INFO[k].name;document.getElementById("custom-url-wrap").style.display=k==="custom"?"block":"none";document.getElementById("link-key").href=INFO[k].key;document.getElementById("save-result").style.display="none";
 const info=INFO[k];document.getElementById("haiku-model").placeholder=info.haiku||"无默认模型";document.getElementById("sonnet-model").placeholder=info.sonnet||"无默认模型";document.getElementById("opus-model").placeholder=info.opus||"无默认模型";
 const summary=document.getElementById("models-summary");if(summary){const d=[info.haiku,info.sonnet,info.opus].filter(Boolean);summary.textContent=info.haiku?`🔧 高级：自定义模型（可选）— 默认: ${d.join(" / ")}`:"🔧 高级：自定义模型（可选）";}}
 function toggleKey(){const el=document.getElementById("api-key");el.type=el.type==="password"?"text":"password";}
-async function saveConfig(){const key=document.getElementById("api-key").value.trim();if(!key){showToast("请粘贴 API Key","warning");return;}if(!sel){showToast("请先选服务商","warning");return;}const btn=document.getElementById("save-btn");btn.disabled=true;btn.textContent="⏳";const models={haiku:document.getElementById("haiku-model").value.trim(),sonnet:document.getElementById("sonnet-model").value.trim(),opus:document.getElementById("opus-model").value.trim()};
-const r=await API.writeConfig(sel,key,models);const d=document.getElementById("save-result");d.style.display="block";if(r.success){d.innerHTML=`<div class="callout success">✅ 保存好了！以后在终端输入 <code>claude</code> 就会用 ${r.provider||INFO[sel].name} 的服务</div>`;showToast("配置成功！","success");loadCfg();}else{d.innerHTML=`<div class="callout danger">❌ ${r.error}</div>`;showToast(r.error,"error");}btn.disabled=false;btn.textContent="💾 保存";}
+async function saveConfig(){const key=document.getElementById("api-key").value.trim();if(!key){showToast("请粘贴 API Key","warning");return;}if(!sel){showToast("请先选服务商","warning");return;}const btn=document.getElementById("save-btn");btn.disabled=true;btn.textContent="⏳";const models={haiku:document.getElementById("haiku-model").value.trim(),sonnet:document.getElementById("sonnet-model").value.trim(),opus:document.getElementById("opus-model").value.trim()};const customUrl=document.getElementById("custom-url").value.trim();const r=await API.writeConfig(sel,key,models,customUrl);const d=document.getElementById("save-result");d.style.display="block";if(r.success){d.innerHTML=`<div class="callout success">✅ 保存好了！以后在终端输入 <code>claude</code> 就会用 ${r.provider||INFO[sel].name} 的服务</div><a href="/wizard/final" class="btn btn-accent mt-2">🎉 去最后一步 →</a>`;showToast("配置成功！","success");loadCfg();}else{d.innerHTML=`<div class="callout danger">❌ ${r.error}</div>`;showToast(r.error,"error");}btn.disabled=false;btn.textContent="💾 保存";return r.success;}
+async function saveAndContinue(e){const key=document.getElementById("api-key").value.trim();if(key&&sel){e.preventDefault();const ok=await saveConfig();if(!ok)return;}window.location.href="/wizard/final";}
 async function loadCfg(){try{const r=await API.getCurrentConfig();if(r.success&&r.data.configured){const c=document.getElementById("current-cfg");c.style.display="block";document.getElementById("cfg-provider").textContent=r.data.provider||"未知";document.getElementById("cfg-key").textContent=r.data.api_key_masked;}}catch(e){}}
 document.addEventListener("DOMContentLoaded",loadCfg);
 </script>{% endblock %}

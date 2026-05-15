@@ -9,11 +9,56 @@ a = Analysis(
         ('static', 'static'),
         ('tutorials', 'tutorials'),
     ],
-    hiddenimports=['flask', 'jinja2', 'app', 'app.config', 'app.routes', 'app.services', 'app.utils'],
+    hiddenimports=[
+        # Flask & Jinja2
+        'flask',
+        'jinja2',
+
+        # App core
+        'app',
+        'app.config',
+
+        # Routes
+        'app.routes',
+        'app.routes.api_system',
+        'app.routes.api_install',
+        'app.routes.api_config',
+        'app.routes.api_tutorial',
+
+        # Services — detectors
+        'app.services',
+        'app.services.detector',
+
+        # Services — installers
+        'app.services.node_installer',
+        'app.services.git_installer',
+        'app.services.claude_installer',
+        'app.services.ccswitch_installer',
+        'app.services.colorcc_installer',
+
+        # Services — utilities
+        'app.services.config_writer',
+        'app.services.error_resolver',
+        'app.services.launcher',
+        'app.services.proxy_helper',
+        'app.services.system_checker',
+        'app.services.uninstaller',
+        'app.services.colorcc_installer',
+
+        # Utils
+        'app.utils',
+        'app.utils.downloader',
+        'app.utils.elevation',
+        'app.utils.logger',
+        'app.utils.path_helper',
+        'app.utils.registry_reader',
+        'app.utils.startup_checker',
+        'app.utils.subprocess_runner',
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['tkinter', 'test', 'unittest', 'pydoc'],
+    excludes=['test', 'unittest', 'pydoc'],
 )
 
 pyz = PYZ(a.pure)

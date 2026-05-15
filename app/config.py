@@ -5,6 +5,7 @@ NODEJS_VERSION = "20.18.0"
 NODEJS_DOWNLOAD_URL = (
     f"https://npmmirror.com/mirrors/node/v{NODEJS_VERSION}/node-v{NODEJS_VERSION}-x64.msi"
 )
+NODEJS_SHA256 = ""  # TODO: 发布时填入真实 SHA256 值
 
 # Git for Windows 版本
 GIT_VERSION = "2.47.1"
@@ -12,6 +13,7 @@ GIT_DOWNLOAD_URL = (
     f"https://npmmirror.com/mirrors/git-for-windows/v{GIT_VERSION}.windows.1/"
     f"Git-{GIT_VERSION}-64-bit.exe"
 )
+GIT_SHA256 = ""  # TODO: 发布时填入真实 SHA256 值
 
 # npm 淘宝镜像
 NPM_REGISTRY = "https://registry.npmmirror.com"
@@ -25,16 +27,6 @@ CLAUDE_CODE_PACKAGE = "@anthropic-ai/claude-code"
 
 # API 提供商预设
 PROVIDERS = {
-    "zhipu": {
-        "name": "智谱 GLM",
-        "base_url": "https://open.bigmodel.cn/api/anthropic",
-        "default_haiku": "glm-4.5",
-        "default_sonnet": "glm-4.7",
-        "default_opus": "glm-4.7",
-        "register_url": "https://open.bigmodel.cn",
-        "api_key_url": "https://bigmodel.cn/usercenter/proj-mgmt/apikeys",
-        "docs_url": "https://docs.bigmodel.cn/cn/coding-plan/tool/claude",
-    },
     "deepseek": {
         "name": "DeepSeek",
         "base_url": "https://api.deepseek.com/anthropic",
@@ -44,6 +36,16 @@ PROVIDERS = {
         "register_url": "https://platform.deepseek.com",
         "api_key_url": "https://platform.deepseek.com/api_keys",
         "docs_url": "https://api-docs.deepseek.com/zh-cn/",
+    },
+    "zhipu": {
+        "name": "智谱 GLM",
+        "base_url": "https://open.bigmodel.cn/api/anthropic",
+        "default_haiku": "glm-4.5",
+        "default_sonnet": "glm-4.7",
+        "default_opus": "glm-4.7",
+        "register_url": "https://open.bigmodel.cn",
+        "api_key_url": "https://bigmodel.cn/usercenter/proj-mgmt/apikeys",
+        "docs_url": "https://docs.bigmodel.cn/cn/coding-plan/tool/claude",
     },
     "minimax": {
         "name": "MiniMax",

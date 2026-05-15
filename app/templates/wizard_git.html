@@ -1,13 +1,58 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="steps-bar">
+  <a href="/wizard/check" class="step done"><span class="step-dot">1</span><span class="step-label">检测</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/nodejs" class="step done"><span class="step-dot">2</span><span class="step-label">Node.js</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/git" class="step active"><span class="step-dot">3</span><span class="step-label">Git</span></a>
+  <span class="step-line"></span>
+  <a href="/wizard/claude" class="step"><span class="step-dot">4</span><span class="step-label">Claude</span></a>
+  <span class="step-line"></span>
+  <a href="/wizard/ccswitch" class="step"><span class="step-dot">5</span><span class="step-label">Switch</span></a>
+  <span class="step-line"></span>
+  <a href="/wizard/config" class="step"><span class="step-dot">6</span><span class="step-label">配置</span></a>
+</div>
 <div class="page-hero"><h1>安装 Git</h1><p>管理代码变化的工具，Windows 上 Claude Code 需要它</p></div>
 <div class="install-panel">
   <div class="install-icon" id="icon">📦</div>
   <h3 id="status-text">准备帮你装 Git</h3>
   <p class="text-sm text-muted">从国内镜像下载，大约 1-2 分钟</p>
   <div class="progress-wrap"><div class="progress-bar"><div class="fill" id="bar" style="width:0"></div></div><p id="pct-text" class="text-xs text-muted">等待开始...</p></div>
+  <div class="error-detail-box" id="error-detail-box">
+    <div class="err-title" id="err-title"></div>
+    <div class="err-section-label">可能原因：</div>
+    <ul id="err-causes"></ul>
+    <div class="err-section-label">手动修复步骤：</div>
+    <ul id="err-manual"></ul>
+    <div class="error-actions">
+      <button class="btn-auto-fix" id="err-auto-fix-btn" style="display:none">🔧 自动修复</button>
+    </div>
+  </div>
   <button class="btn btn-primary btn-lg" id="start-btn" onclick="doInstall()">📥 帮我装好 Git</button>
   <button class="btn btn-outline mt-2" id="retry-btn" style="display:none" onclick="doInstall()">🔄 再试一次</button>
   <div id="next-step" class="mt-2" style="display:none"><a href="/wizard/claude" class="btn btn-accent">继续 → 装 Claude Code</a></div>
 </div>
-{% endblock %}{% block scripts %}<script>const w=new InstallWizard(()=>API.installGit(),{successMsg:"Git 装好了！"});function doInstall(){w.start();}</script>{% endblock %}
+<div class="wizard-nav">
+  <a href="/wizard/nodejs" class="btn btn-outline">← 上一步</a>
+  <a href="/wizard/claude" class="btn btn-ghost btn-sm">我已安装，跳过 →</a>
+  <a href="/wizard/claude" class="btn btn-accent">下一步 →</a>
+</div>
+{% endblock %}{% block scripts %}<script>
+const w=new InstallWizard(()=>API.installGit(),{successMsg:"Git 装好了！"});
+function doInstall(){w.start();}
+(function(){
+  var cached = getCheckCache();
+  if (cached && cached.git) {
+    var info = cached.git;
+    if (info.installed) { showInstalledCard('Git', info.version, info.outdated); return; }
+    return;
+  }
+  API.checkAll().then(function(r){
+    if (!r.success) return;
+    setCheckCache(r.data);
+    var info = r.data.git;
+    if (info && info.installed) { showInstalledCard('Git', info.version, info.outdated); }
+  }).catch(function(){});
+})();
+</script>{% endblock %}

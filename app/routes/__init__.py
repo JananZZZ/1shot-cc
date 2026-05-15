@@ -21,10 +21,19 @@ def register_blueprints(app):
 
     @app.route("/wizard/<step>")
     def wizard(step):
-        valid = ["check", "nodejs", "git", "claude", "ccswitch", "ccswitch_guide", "config", "final"]
+        valid = [
+            "check", "nodejs", "git", "claude",
+            "ccswitch", "ccswitch_guide",
+            "config", "final",
+            "uninstall", "uninstall_done",
+        ]
         if step not in valid:
             return render_template("index.html")
         return render_template(f"wizard_{step}.html")
+
+    @app.route("/welcome")
+    def welcome_page():
+        return render_template("welcome.html")
 
     @app.route("/tutorial/<tutorial_id>")
     def tutorial_page(tutorial_id):

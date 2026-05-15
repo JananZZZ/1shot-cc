@@ -18,6 +18,11 @@ class InstallWizard {
       start: document.getElementById("start-btn"),
       retry: document.getElementById("retry-btn"),
       next: document.getElementById("next-step"),
+      errorBox: document.getElementById("error-detail-box"),
+      errorTitle: document.getElementById("err-title"),
+      errorCauses: document.getElementById("err-causes"),
+      errorManual: document.getElementById("err-manual"),
+      errorAutoBtn: document.getElementById("err-auto-fix-btn"),
     };
   }
 
@@ -28,18 +33,19 @@ class InstallWizard {
     if (e.start) { e.start.disabled = true; e.start.textContent = "⏳ 正在准备..."; }
     if (e.retry) e.retry.style.display = "none";
     if (e.next) e.next.style.display = "none";
+    if (e.errorBox) e.errorBox.style.display = "none";
     if (e.icon) { e.icon.textContent = "⏳"; e.icon.classList.remove("done"); }
 
     try {
       const resp = await this.installFn();
       if (!resp || (!resp.success && !resp.task_id)) {
-        this._fail(resp?.error || "启动安装失败");
+        this._fail(resp?.error || "启动安装失败", resp?.error_detail || null);
         return;
       }
       this.taskId = resp.task_id;
       this._subscribe();
     } catch (err) {
-      this._fail(err.message);
+      this._fail(err.message, null);
     }
   }
 
@@ -48,7 +54,7 @@ class InstallWizard {
       this.taskId,
       (d) => this._onUpdate(d),
       (d) => this._onDone(d),
-      (e) => this._fail(e),
+      (err, detail) => this._fail(err, detail),
     );
   }
 
@@ -80,18 +86,76 @@ class InstallWizard {
     if (this.onSuccess) this.onSuccess();
   }
 
-  _fail(error) {
+  _fail(error, errorDetail) {
     this.started = false;
     const e = this.getEls();
     if (e.icon) e.icon.textContent = "❌";
-    if (e.status) e.status.textContent = "安装出错了";
-    if (e.pct) e.pct.textContent = error || "未知错误";
+    if (e.status) e.status.textContent = errorDetail?.title || "安装出错了";
+
+    // 渲染详细错误卡片
+    if (errorDetail && errorDetail.causes && errorDetail.causes.length > 0) {
+      if (e.pct) e.pct.textContent = "";
+      if (e.errorBox) {
+        e.errorBox.style.display = "block";
+        if (e.errorTitle) e.errorTitle.textContent = errorDetail.title || "安装失败";
+        if (e.errorCauses) {
+          e.errorCauses.innerHTML = errorDetail.causes.map(c => `<li>${c}</li>`).join("");
+        }
+        if (e.errorManual && errorDetail.manual_fix) {
+          e.errorManual.innerHTML = errorDetail.manual_fix.map(s => {
+            const escaped = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            return `<li>${escaped}</li>`;
+          }).join("");
+        }
+        if (e.errorAutoBtn) {
+          if (errorDetail.auto_fix && errorDetail.auto_fix.length > 0) {
+            e.errorAutoBtn.style.display = "inline-flex";
+            e.errorAutoBtn.onclick = () => this._doAutoFix(errorDetail.auto_fix);
+          } else {
+            e.errorAutoBtn.style.display = "none";
+          }
+        }
+      }
+    } else {
+      if (e.pct) e.pct.textContent = error || "未知错误";
+      if (e.errorBox) e.errorBox.style.display = "none";
+    }
+
     if (e.start) {
       e.start.disabled = false;
       e.start.textContent = "🔄 重试";
     }
     if (e.retry) e.retry.style.display = "inline-flex";
-    showToast(error || "安装失败", "error");
+    showToast(errorDetail?.title || error || "安装失败", "error");
+  }
+
+  async _doAutoFix(fixes) {
+    const e = this.getEls();
+    if (e.errorAutoBtn) e.errorAutoBtn.disabled = true;
+    try {
+      const resp = await API.autoFix(fixes);
+      if (resp.success && resp.results) {
+        const r = resp.results;
+        const fixed = [];
+        const failed = [];
+        if (r.policy?.success) fixed.push("PowerShell 策略");
+        else if (r.policy) failed.push("PowerShell 策略: " + (r.policy.error || ""));
+        if (r.registry?.success) fixed.push("npm 镜像源");
+        else if (r.registry) failed.push("npm 镜像源: " + (r.registry.stderr || r.registry.error || ""));
+        let msg = "";
+        if (fixed.length > 0) msg += "已修复: " + fixed.join(", ");
+        if (failed.length > 0) msg += (msg ? " | " : "") + "未能修复: " + failed.join(", ");
+        showToast(msg || "修复完成", fixed.length > 0 ? "success" : "warning");
+        if (fixed.length > 0) {
+          // 自动重试安装
+          setTimeout(() => this.start(), 500);
+        }
+      }
+    } catch (err) {
+      showToast("自动修复失败: " + err.message, "error");
+    } finally {
+      if (e.errorAutoBtn) e.errorAutoBtn.disabled = false;
+    }
   }
 
   destroy() {

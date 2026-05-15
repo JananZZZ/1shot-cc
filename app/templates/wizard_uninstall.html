@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-hero"><h1>🗑️ 一键卸载</h1><p>清理通过 1shot-CC 安装的软件和配置</p></div>
+
+<div id="loading" class="loading-pulse">
+  <span class="pulse-dot"></span>
+  <span class="text-muted">正在检测已安装的组件...</span>
+</div>
+
+<div id="results" style="display:none;">
+  <div id="component-list" class="max-w-560"></div>
+
+  <div id="confirm-box" class="card max-w-560 mt-2" style="display:none;">
+    <div class="card-header">⚠️ 确认卸载</div>
+    <p class="text-sm text-muted">卸载操作<strong>不可逆</strong>。软件卸载后如需再次使用，需重新安装。</p>
+    <p class="text-sm text-muted">配置文件已自动备份，不会删除你的项目和个人文件。</p>
+    <div class="flex flex-wrap gap-2 mt-2 justify-center">
+      <button class="btn btn-outline" onclick="cancelUninstall()">取消</button>
+      <button class="btn-auto-fix" id="confirm-btn" onclick="confirmUninstall()">确认卸载选中组件</button>
+    </div>
+  </div>
+
+  <!-- 二次确认模态框 -->
+  <div id="modal-overlay" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon">⚠️</div>
+      <h3 id="modal-title">最后确认</h3>
+      <p id="modal-body" class="text-sm text-muted"></p>
+      <div class="flex flex-wrap gap-2 justify-center mt-2">
+        <button class="btn btn-outline" onclick="closeModal()">我再想想</button>
+        <button class="btn-auto-fix" onclick="doUninstall()">确定卸载，开始执行</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 进度 -->
+  <div id="progress-section" class="max-w-560 mt-2" style="display:none;">
+    <div class="progress-wrap"><div class="progress-bar"><div class="fill" id="bar" style="width:0"></div></div><p id="pct-text" class="text-xs text-muted">等待开始...</p></div>
+  </div>
+
+  <div class="text-center mt-3">
+    <a href="/" class="btn btn-ghost btn-sm">🏠 回首页</a>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script>
+let allComponents = {};
+let selectedSet = new Set();
+let taskId = null;
+
+async function loadStatus() {
+  try {
+    const r = await fetch('/api/install/uninstall-status');
+    const data = await r.json();
+    if (!data.success) throw new Error('检测失败');
+    allComponents = data.data;
+    renderList();
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("results").style.display = "block";
+  } catch(e) {
+    document.getElementById("loading").innerHTML = `<p style="color:var(--red);">❌ 检测失败: ${e.message}</p><button class="btn btn-outline mt-2" onclick="location.reload()">再试一次</button>`;
+  }
+}
+
+function renderList() {
+  const container = document.getElementById("component-list");
+  let html = '';
+  const entries = Object.entries(allComponents);
+  // 软件在上，配置在下
+  entries.sort((a,b) => {
+    const catOrder = {software:0, config:1};
+    return (catOrder[a[1].category]||0) - (catOrder[b[1].category]||0);
+  });
+
+  for (const [key, item] of entries) {
+    const installed = item.installed;
+    const icon = installed ? '✅' : '⚪';
+    const statusText = installed
+      ? (item.version || item.path || '已安装')
+      : '未检测到';
+    const disabled = installed ? '' : 'disabled';
+    const checked = installed ? 'checked' : '';
+    html += `<div class="check-card status-${installed ? 'ok' : 'warn'}">
+      <div class="flex items-center gap-2">
+        <span class="check-icon">${icon}</span>
+        <div class="check-body">
+          <div class="check-title">${item.name}</div>
+          <div class="check-detail ${installed ? 'ok' : 'warn'}">${statusText}</div>
+        </div>
+        <div class="check-action">
+          <label class="text-sm" style="cursor:pointer; white-space:nowrap;">
+            <input type="checkbox" ${checked} ${disabled} onchange="toggleSelect('${key}', this.checked)" style="margin-right:4px;">
+            卸载
+          </label>
+        </div>
+      </div></div>`;
+    if (installed) selectedSet.add(key);
+  }
+  // 配置选项置顶
+  const callout_html = `
+    <div class="callout info mb-2">
+      <label class="text-sm" style="cursor:pointer;">
+        <input type="checkbox" id="opt-delete-config" style="margin-right:6px;">
+        <strong>同时删除配置文件</strong>（~/.claude/settings.json 等）
+      </label><br>
+      <label class="text-sm" style="cursor:pointer;">
+        <input type="checkbox" id="opt-delete-logs" style="margin-right:6px;">
+        <strong>同时删除诊断日志</strong>（%TEMP%\\1shot-cc\\）
+      </label>
+    </div>`;
+  container.innerHTML = callout_html + html;
+  updateConfirmBox();
+}
+
+function toggleSelect(key, checked) {
+  if (checked) selectedSet.add(key);
+  else selectedSet.delete(key);
+  updateConfirmBox();
+}
+
+function updateConfirmBox() {
+  const box = document.getElementById("confirm-box");
+  const hasSelection = selectedSet.size > 0;
+  box.style.display = hasSelection ? 'block' : 'none';
+}
+
+// 首次点击"确认卸载"→弹窗二次确认
+function confirmUninstall() {
+  const names = [];
+  for (const k of selectedSet) {
+    if (allComponents[k]) names.push(allComponents[k].name);
+  }
+  const lines = `即将卸载以下 ${names.length} 项：<br><strong>${names.join('、')}</strong><br><br>此操作不可逆，配置文件已自动备份。`;
+  document.getElementById("modal-body").innerHTML = lines;
+  document.getElementById("modal-title").textContent = '最后确认';
+  document.getElementById("modal-overlay").style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById("modal-overlay").style.display = 'none';
+}
+
+function cancelUninstall() {
+  selectedSet.clear();
+  document.getElementById("confirm-box").style.display = 'none';
+  // 取消勾选
+  const checkboxes = document.querySelectorAll('#component-list input[type=checkbox]');
+  checkboxes.forEach(cb => { cb.checked = false; });
+}
+
+async function doUninstall() {
+  document.getElementById("modal-overlay").style.display = 'none';
+  document.getElementById("confirm-box").style.display = 'none';
+  const progressSection = document.getElementById("progress-section");
+  progressSection.style.display = 'block';
+
+  // 加入可选的配置/日志
+  const components = Array.from(selectedSet);
+  if (document.getElementById("opt-delete-config")?.checked) components.push("claude_config");
+  if (document.getElementById("opt-delete-logs")?.checked) components.push("logs");
+
+  try {
+    const r = await fetch('/api/install/uninstall-all', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({components})
+    });
+    const data = await r.json();
+    if (!data.task_id) throw new Error('启动卸载失败');
+
+    taskId = data.task_id;
+    const es = new EventSource(`/api/install/progress/${taskId}`);
+    es.onmessage = function(e) {
+      const d = JSON.parse(e.data);
+      document.getElementById("bar").style.width = d.progress + '%';
+      document.getElementById("pct-text").textContent = `${Math.round(d.progress)}% — ${d.message || ''}`;
+      if (d.done) {
+        es.close();
+        if (d.error) {
+          document.getElementById("pct-text").innerHTML = `<span style="color:var(--red);">⚠️ ${d.message}</span><br><span class="text-xs text-muted">${d.error}</span>`;
+        } else {
+          document.getElementById("pct-text").innerHTML = `<span style="color:var(--green);">✅ ${d.message}</span>`;
+        }
+        showToast(d.error ? '卸载完成（有部分失败）' : '卸载完成！', d.error ? 'warning' : 'success');
+        if (!d.error) {
+          setTimeout(function() { window.location.href = '/wizard/uninstall_done'; }, 2000);
+        } else {
+          setTimeout(loadStatus, 1500);
+        }
+      }
+    };
+  } catch(e) {
+    showToast('卸载失败: ' + e.message, 'error');
+  }
+}
+
+loadStatus();
+</script>
+{% endblock %}

@@ -13,6 +13,7 @@
 <nav class="navbar">
   <a href="/" class="brand">🚀 1shot-CC</a>
   <div class="nav-links">
+    <a href="/welcome" target="_blank" class="nav-welcome">🏠 欢迎页</a>
     <div class="tutorial-dropdown" id="tutorial-dropdown">
       <button class="dropbtn" id="tutorial-toggle">📚 教程指南 ▾</button>
       <div class="dropdown-content" id="tutorial-menu">
@@ -24,6 +25,8 @@
     </div>
     <a href="/wizard/check">🔍 系统检测</a>
     <a href="/wizard/config">⚙️ API 配置</a>
+    <a href="/wizard/uninstall">🗑️ 一键卸载</a>
+    <a href="https://github.com/JananZZZ/1shot-cc" target="_blank" style="color:var(--brand); font-weight:600;">⭐ 点亮 GitHub</a>
   </div>
 </nav>
 
@@ -36,6 +39,43 @@
 <script src="/static/js/api.js"></script>
 <script src="/static/js/wizard.js"></script>
 <script>
+// 全局：显示"已安装"绿色卡片 + 显示下一步按钮
+function showInstalledCard(name, version, outdated) {
+  var panel = document.querySelector('.install-panel');
+  if (!panel) return;
+  var vtext = version ? ' (' + version + ')' : '';
+  var extra = '';
+  if (outdated) {
+    extra = '<p class="text-sm" style="color:var(--amber);margin-top:8px;">⚠️ 版本过旧，建议升级到最新版</p>';
+  }
+  panel.innerHTML = '<div class="callout success text-center" style="padding:32px;"><div style="font-size:2rem;">✅</div><h3>' + name + ' 已安装' + vtext + '</h3>' + extra + '<p class="text-muted">可以直接进入下一步</p></div>';
+  var next = document.getElementById('next-step');
+  if (next) next.style.display = 'block';
+}
+
+// 全局：统一检测缓存
+var CHECK_CACHE_KEY = '1shot-cc-check-all';
+var CHECK_CACHE_TTL = 300000; // 5 minutes
+
+function getCheckCache() {
+  var raw = sessionStorage.getItem(CHECK_CACHE_KEY);
+  if (!raw) return null;
+  try {
+    var d = JSON.parse(raw);
+    if (Date.now() - d.ts > CHECK_CACHE_TTL) { sessionStorage.removeItem(CHECK_CACHE_KEY); return null; }
+    return d.data;
+  } catch(e) { return null; }
+}
+
+function setCheckCache(data) {
+  sessionStorage.setItem(CHECK_CACHE_KEY, JSON.stringify({ts: Date.now(), data: data}));
+}
+
+function clearCheckCache() {
+  sessionStorage.removeItem(CHECK_CACHE_KEY);
+}
+</script>
+<script>
 // 教程下拉菜单 — click toggle
 (function() {
   const toggle = document.getElementById("tutorial-toggle");
@@ -47,6 +87,37 @@
   });
   document.addEventListener("click", function() {
     menu.classList.remove("show");
+  });
+})();
+
+// 页面引用计数 — 只有所有页面关闭后才退出后台
+(function() {
+  var pageId = sessionStorage.getItem('1shot-cc-page-id');
+  if (!pageId) {
+    pageId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    sessionStorage.setItem('1shot-cc-page-id', pageId);
+  }
+
+  // 页面打开时注册
+  fetch('/api/system/page-open', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({page_id: pageId})
+  }).catch(function() {});
+
+  // 兜底心跳（30s，仅用于防止僵尸页面）
+  setInterval(function() {
+    fetch('/api/system/heartbeat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({page_id: pageId})
+    }).catch(function() {});
+  }, 30000);
+
+  // 页面关闭时通知（sendBeacon 保证送达）
+  window.addEventListener('beforeunload', function() {
+    var data = JSON.stringify({page_id: pageId});
+    navigator.sendBeacon('/api/system/page-closed', new Blob([data], {type: 'application/json'}));
   });
 })();
 </script>

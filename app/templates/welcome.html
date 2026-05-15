@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>1shot-CC</title><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;background:#faf8f5;overflow:hidden;height:100vh;display:flex;align-items:center;justify-content:center;user-select:none}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(196,117,90,0.04),transparent),radial-gradient(ellipse 50% 50% at 20% 70%,rgba(107,143,113,0.04),transparent)}
+.bubble{position:fixed;border-radius:50%;pointer-events:none;z-index:0;will-change:transform}
+.bubble.b1{width:180px;height:180px;top:10%;left:5%;background:radial-gradient(circle,rgba(196,117,90,0.12),transparent);animation:floatB 7s ease-in-out infinite}
+.bubble.b2{width:120px;height:120px;top:50%;right:8%;background:radial-gradient(circle,rgba(107,143,113,0.10),transparent);animation:floatB 6s ease-in-out 1s infinite}
+.bubble.b3{width:90px;height:90px;bottom:15%;left:12%;background:radial-gradient(circle,rgba(196,146,74,0.10),transparent);animation:floatB 8s ease-in-out 2s infinite}
+.bubble.b4{width:140px;height:140px;top:25%;right:20%;background:radial-gradient(circle,rgba(196,117,90,0.08),transparent);animation:floatB 7.5s ease-in-out 0.5s infinite}
+@keyframes floatB{0%,100%{transform:translateY(0)translateX(0)}25%{transform:translateY(-20px)translateX(10px)}50%{transform:translateY(-8px)translateX(-8px)}75%{transform:translateY(-25px)translateX(5px)}}
+main{position:relative;z-index:1;text-align:center;padding:40px 24px;animation:mainIn .8s cubic-bezier(.16,1,.3,1) both}
+@keyframes mainIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.floats{position:fixed;inset:0;pointer-events:none;z-index:2}
+.floats span{position:absolute;font-size:1.6rem;animation:emojiFloat 4s ease-in-out infinite}
+.floats span:nth-child(1){top:8%;left:10%;animation-delay:0s}
+.floats span:nth-child(2){top:12%;right:12%;animation-delay:.5s;font-size:1.3rem}
+.floats span:nth-child(3){top:45%;left:4%;animation-delay:1s;font-size:1.1rem}
+.floats span:nth-child(4){bottom:20%;right:6%;animation-delay:1.5s;font-size:1.4rem}
+.floats span:nth-child(5){bottom:25%;left:8%;animation-delay:2s;font-size:1.2rem}
+.floats span:nth-child(6){top:55%;right:10%;animation-delay:2.5s;font-size:1rem}
+@keyframes emojiFloat{0%,100%{transform:translateY(0)rotate(0deg)}50%{transform:translateY(-18px)rotate(5deg)}}
+.code-line{font-family:"Consolas","Cascadia Code",monospace;color:rgba(107,143,113,0.7);font-size:1.05rem;letter-spacing:1.5px;margin-bottom:8px;animation:codeIn .6s .2s both;transition:transform .12s}
+@keyframes codeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.title{font-family:"Noto Serif SC","Georgia",serif;color:#c4755a;font-size:2.8rem;font-weight:700;letter-spacing:.08em;line-height:1.3;animation:titleIn .7s .3s both}
+@keyframes titleIn{from{opacity:0;letter-spacing:.25em}to{opacity:1;letter-spacing:.08em}}
+.subtitle{color:#5c5344;font-size:1.25rem;margin:14px 0 10px;font-weight:400;animation:fadeUp .6s .5s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.tagline{color:#9c9384;font-size:1.15rem;margin:8px 0;animation:fadeUp .6s .65s both}
+.bracket{font-family:"Consolas","Cascadia Code",monospace;color:rgba(196,117,90,0.5);font-size:1rem;letter-spacing:2.5px;animation:fadeUp .6s .7s both}
+.quote{color:#5c5344;font-size:1.2rem;margin:12px 0 0;font-weight:500;animation:fadeUp .6s .75s both}
+.quote em{color:#c4755a;font-style:normal}
+footer{position:fixed;bottom:18px;left:0;right:0;text-align:center;z-index:1;color:#bfb8aa;font-size:.85rem;animation:fadeUp .6s 1s both}
+.glow{position:fixed;pointer-events:none;z-index:0;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(196,117,90,.08),transparent 65%);transform:translate(-50%,-50%)}
+</style></head><body>
+<div class="glow" id="glow"></div>
+<div class="bubble b1"></div><div class="bubble b2"></div><div class="bubble b3"></div><div class="bubble b4"></div>
+<div class="floats" id="floats"><span>✨</span><span>🚀</span><span>💻</span><span>🔧</span><span>🤖</span><span>⚡</span></div>
+<main id="main-content">
+  <p class="code-line" id="code-line">&gt; 1shot-CC.init()</p>
+  <h1 class="title">欢 迎 使 用 <br>1shot-CC</h1>
+  <p class="subtitle">Claude Code 全流程自动安装配置</p>
+  <p class="tagline">人人都可以发挥想象力的 AI 编程时代</p>
+  <p class="bracket">&lt; 科技平权 &gt; &nbsp;{ 从您迈出的第一步开始 }</p>
+  <p class="quote">开心享用吧 <em>~</em></p>
+</main>
+<footer>1shot-CC &copy; 2026 &middot; 让每个人都能用上 AI 编程</footer>
+<script>
+document.addEventListener('mousemove',function(e){
+  var cx=e.clientX,cy=e.clientY,w=window.innerWidth,h=window.innerHeight;
+  var rx=(cx/w-.5)*20,ry=(cy/h-.5)*18;
+  var g=document.getElementById('glow');g.style.left=cx+'px';g.style.top=cy+'px';
+  document.querySelectorAll('.bubble').forEach(function(b,i){b.style.transform='translate('+rx*(i+1)*.8+'px,'+ry*(i+1)*.8+'px)'});
+  var cl=document.getElementById('code-line');if(cl)cl.style.transform='translateX('+rx*.5+'px)';
+  var fl=document.getElementById('floats');if(fl)fl.style.transform='rotate('+rx*.08+'deg)';
+  var mc=document.getElementById('main-content');if(mc)mc.style.transform='translate('+rx*.35+'px,'+ry*.3+'px)';
+});
+</script>
+</body></html>

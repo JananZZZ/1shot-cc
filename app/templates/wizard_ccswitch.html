@@ -1,11 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="steps-bar">
+  <a href="/wizard/check" class="step done"><span class="step-dot">1</span><span class="step-label">检测</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/nodejs" class="step done"><span class="step-dot">2</span><span class="step-label">Node.js</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/git" class="step done"><span class="step-dot">3</span><span class="step-label">Git</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/claude" class="step done"><span class="step-dot">4</span><span class="step-label">Claude</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/ccswitch" class="step active"><span class="step-dot">5</span><span class="step-label">Switch</span></a>
+  <span class="step-line"></span>
+  <a href="/wizard/config" class="step"><span class="step-dot">6</span><span class="step-label">配置</span></a>
+</div>
 <div class="page-hero"><h1>🔀 安装 CC-Switch</h1><p>有了它，切换不同 AI 服务商就像换插座一样简单</p></div>
 
 <div class="card mb-2">
   <div class="card-header">选一种安装方式</div>
   <div class="grid-2 mt-1">
-    <div class="card" style="border:2px solid var(--brand-400); cursor:pointer;" onclick="selectMode('gui')" id="mode-gui">
+    <div class="card" style="border:2px solid var(--brand); cursor:pointer;" onclick="selectMode('gui')" id="mode-gui">
       <div class="card-header">🖥️ 桌面版（推荐）</div>
       <ul class="text-sm text-muted" style="padding-left:16px;">
         <li>有漂亮的界面，点鼠标就能操作</li>
@@ -32,6 +45,16 @@
     <div class="progress-bar"><div class="fill" id="bar" style="width:0"></div></div>
     <p id="pct-text" class="text-xs text-muted">等待开始...</p>
   </div>
+  <div class="error-detail-box" id="error-detail-box">
+    <div class="err-title" id="err-title"></div>
+    <div class="err-section-label">可能原因：</div>
+    <ul id="err-causes"></ul>
+    <div class="err-section-label">手动修复步骤：</div>
+    <ul id="err-manual"></ul>
+    <div class="error-actions">
+      <button class="btn-auto-fix" id="err-auto-fix-btn" style="display:none">🔧 自动修复</button>
+    </div>
+  </div>
   <button class="btn btn-primary btn-lg" id="start-btn" onclick="doInstall()" disabled>📥 帮我装好 CC-Switch</button>
   <button class="btn btn-outline mt-2" id="retry-btn" style="display:none" onclick="doInstall()">🔄 再试一次</button>
   <div id="next-step" class="mt-2" style="display:none">
@@ -40,20 +63,50 @@
 </div>
 
 <div class="callout info">💡 <strong>小知识：</strong>CC-Switch 就是一个"遥控器"，让你在 Claude Code 里可以一键切换使用智谱、DeepSeek 还是 MiniMax。不用每次改配置文件，点一下就换好了。</div>
+
+<div class="wizard-nav">
+  <a href="/wizard/claude" class="btn btn-outline">← 上一步</a>
+  <a href="/wizard/ccswitch_guide" class="btn btn-ghost btn-sm">我已安装，跳过 →</a>
+  <a href="/wizard/ccswitch_guide" class="btn btn-accent">下一步 →</a>
+</div>
 {% endblock %}
 {% block scripts %}<script>
 let mode = "";
+let ccWizard = null;
+// 默认选中桌面版，启用安装按钮
+document.addEventListener('DOMContentLoaded', function() { selectMode('gui'); });
 function selectMode(m) {
   mode = m;
-  document.getElementById("mode-gui").style.border = m==="gui" ? "2px solid var(--brand-400)" : "";
-  document.getElementById("mode-cli").style.border = m==="cli" ? "2px solid var(--brand-400)" : "";
+  document.getElementById("mode-gui").style.border = m==="gui" ? "2px solid var(--brand)" : "";
+  document.getElementById("mode-cli").style.border = m==="cli" ? "2px solid var(--brand)" : "";
   document.getElementById("start-btn").disabled = false;
   document.getElementById("mode-hint").textContent = `已选择：${m==="gui"?"桌面版（.msi 安装包）":"命令行版（npm 安装）"}`;
 }
 function doInstall() {
   if (!mode) { showToast("先选一种安装方式吧", "warning"); return; }
   const fn = mode === "gui" ? () => API.installCCSwitchGUI() : () => API.installCCSwitchCLI();
-  const w = new InstallWizard(fn, { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！", onSuccess: () => { sessionStorage.setItem("ccswitch-just-installed", "1"); } });
-  w.start();
+  if (!ccWizard) {
+    ccWizard = new InstallWizard(fn, { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！", onSuccess: () => { clearCheckCache(); } });
+  }
+  if (ccWizard.installFn.toString() !== fn.toString()) {
+    ccWizard.destroy();
+    ccWizard = new InstallWizard(fn, { title:"安装 CC-Switch", successMsg:"CC-Switch 装好了！", onSuccess: () => { clearCheckCache(); } });
+  }
+  ccWizard.start();
 }
+// 统一检测缓存 — 已安装则显示绿色完成卡片
+(function(){
+  var cached = getCheckCache();
+  if (cached && cached.ccswitch) {
+    var info = cached.ccswitch;
+    if (info.installed) { showInstalledCard('CC-Switch', info.version, info.outdated); return; }
+    return;
+  }
+  API.checkAll().then(function(r){
+    if (!r.success) return;
+    setCheckCache(r.data);
+    var info = r.data.ccswitch;
+    if (info && info.installed) { showInstalledCard('CC-Switch', info.version, info.outdated); }
+  }).catch(function(){});
+})();
 </script>{% endblock %}

@@ -3,32 +3,108 @@
    Warm Editorial · Light Theme
    ═══════════════════════════════ */
 
-/* 步骤进度条 */
+/* ═══ 步骤进度条 ═══ */
 .steps-bar {
-  display: none;
-  align-items: center; justify-content: center; gap: 0;
-  padding: 6px 0 14px;
+  display: flex;
+  align-items: flex-start; justify-content: center; gap: 0;
+  padding: 8px 0 16px;
+  flex-wrap: wrap;
 }
-@media (min-width: 900px) { .steps-bar { display: flex; } }
+.steps-bar .step {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  flex-shrink: 0;
+  text-decoration: none; color: inherit;
+  position: relative;
+  padding: 0 2px;
+}
+.steps-bar .step.done {
+  cursor: pointer;
+}
+.steps-bar .step.done:hover .step-label {
+  color: var(--accent);
+}
+.steps-bar .step.active {
+  cursor: default;
+}
+.steps-bar .step.active .step-label {
+  color: var(--brand);
+  font-weight: 700;
+}
 
 .step-dot {
-  width: 26px; height: 26px;
+  width: 24px; height: 24px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.68rem; font-weight: 700;
+  font-size: 0.65rem; font-weight: 700;
   flex-shrink: 0;
   background: var(--border-light);
   color: var(--t3);
   transition: all 0.3s var(--ease);
 }
-.step-dot.active { background: var(--brand); color: #fff; }
-.step-dot.done   { background: var(--accent); color: #fff; }
-.step-line {
-  width: 26px; height: 1.5px;
-  background: var(--border-light);
-  flex-shrink: 0;
+.steps-bar .step.done .step-dot {
+  background: var(--accent); color: #fff;
 }
-.step-line.done { background: var(--accent); }
+.steps-bar .step.active .step-dot {
+  background: var(--brand); color: #fff;
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+.step-line {
+  width: 20px; height: 1.5px;
+  background: var(--border);
+  flex-shrink: 0; align-self: center;
+  margin-bottom: 16px;
+}
+.steps-bar .step.done + .step-line,
+.step-line.done {
+  background: var(--accent);
+}
+
+.step-label {
+  font-size: 0.7rem;
+  color: var(--t3);
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+@media (max-width: 699px) {
+  .steps-bar .step:not(.active) { display: none; }
+  .step-line { display: none; }
+  .steps-bar .step.active { display: flex; }
+  .steps-bar .step.active .step-label { font-size: 0.82rem; }
+}
+
+/* ═══ 向导底部导航按钮 ═══ */
+.wizard-nav {
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; padding: 28px 0 8px;
+}
+
+/* 未来步骤可点击样式 */
+.steps-bar .step:not(.done):not(.active) .step-label {
+  color: var(--t4);
+}
+.steps-bar .step:not(.done):not(.active):hover .step-label {
+  color: var(--t2);
+}
+.steps-bar .step:not(.done):not(.active) .step-dot:hover {
+  background: var(--bg-warm);
+}
+
+/* ═══ 脉动加载动画（替代假进度条）═══ */
+.loading-pulse {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; padding: 48px;
+}
+.pulse-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--brand);
+  animation: pulseBreath 1.2s ease-in-out infinite;
+}
+@keyframes pulseBreath {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50%      { transform: scale(1.8); opacity: 1; }
+}
 
 /* 安装面板 */
 .install-panel {
@@ -167,6 +243,70 @@
   0%   { transform: scale(0) rotate(-8deg); opacity: 0; }
   60%  { transform: scale(1.2) rotate(3deg); opacity: 1; }
   100% { transform: scale(1) rotate(0); }
+}
+
+/* ═══ 错误详情卡片 ═══ */
+.error-detail-box {
+  display: none;
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--red, #c4554a);
+  border-left: 4px solid var(--red, #c4554a);
+  border-radius: var(--r-md, 8px);
+  padding: 16px 20px;
+  margin: 14px 0;
+  text-align: left;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.error-detail-box .err-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--red, #c4554a);
+  margin-bottom: 10px;
+}
+.error-detail-box .err-section-label {
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--t2, #555);
+  margin: 10px 0 4px;
+}
+.error-detail-box ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.85rem;
+  color: var(--t2, #555);
+  line-height: 1.7;
+}
+.error-detail-box ul li {
+  margin-bottom: 2px;
+}
+.error-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn-auto-fix {
+  background: var(--red, #c4554a);
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: var(--r-sm, 4px);
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.btn-auto-fix:hover {
+  background: var(--red, #c4554a);
+  filter: brightness(0.9);
+  transform: translateY(-1px);
+}
+.btn-auto-fix:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ═══ Hero CTA ═══ */

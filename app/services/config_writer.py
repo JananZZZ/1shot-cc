@@ -56,7 +56,7 @@ def write_claude_settings(provider_key: str, api_key: str, custom_base_url: str 
     env.update({
         "ANTHROPIC_AUTH_TOKEN": api_key,
         "ANTHROPIC_BASE_URL": provider["base_url"],
-        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": 1,
+        "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
     })
 
     # 模型：用户手动填的优先，否则用提供商默认值
