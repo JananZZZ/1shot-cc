@@ -89,18 +89,22 @@ class InstallWizard {
   _fail(error, errorDetail) {
     this.started = false;
     const e = this.getEls();
-    var isWarn = errorDetail && errorDetail.category === "system";
-    if (e.icon) e.icon.textContent = isWarn ? "⚠️" : "❌";
+    if (e.icon) e.icon.textContent = "⚠️";
     if (e.status) e.status.textContent = errorDetail?.title || "安装出错了";
 
     if (errorDetail && errorDetail.causes && errorDetail.causes.length > 0) {
       if (e.pct) e.pct.textContent = "";
       if (e.errorBox) {
         e.errorBox.style.display = "block";
-        if (isWarn) e.errorBox.classList.add("warning");
+        e.errorBox.classList.add("warning");
         if (e.errorTitle) e.errorTitle.textContent = errorDetail.title || "安装失败";
         if (e.errorCauses) {
-          e.errorCauses.innerHTML = errorDetail.causes.map(c => `<li>${c}</li>`).join("");
+          var causesHtml = errorDetail.causes.map(c => `<li>${c}</li>`).join("");
+          // CC-Switch: 提醒用户先检查开始菜单
+          if (error.indexOf("CC-Switch") > -1 || error.indexOf("ccswitch") > -1) {
+            causesHtml = `<li style="color:var(--t1);font-weight:600;">💡 先看看开始菜单里是不是已经有 CC Switch 了？可能早就装好了。</li>` + causesHtml;
+          }
+          e.errorCauses.innerHTML = causesHtml;
         }
         if (e.errorManual && errorDetail.manual_fix) {
           e.errorManual.innerHTML = errorDetail.manual_fix.map(s => {
@@ -126,7 +130,7 @@ class InstallWizard {
       e.start.disabled = false;
     }
     if (e.retry) e.retry.style.display = "inline-flex";
-    showToast(errorDetail?.title || error || "安装失败", isWarn ? "warning" : "error");
+    showToast(errorDetail?.title || error || "安装失败", "warning");
   }
 
   async _doAutoFix(fixes) {

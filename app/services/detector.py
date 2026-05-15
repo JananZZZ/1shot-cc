@@ -162,19 +162,51 @@ def _detect_claude_code() -> dict:
 
 
 def _detect_ccswitch() -> dict:
-    """检测 CC-Switch（桌面版优先，其次是 CLI 版）"""
-    path = reg_ccswitch()
-    installed = path is not None
+    """检测 CC Switch（开始菜单 → 注册表 → CLI → 文件系统）"""
+    path = ""
+    installed = False
     vers = ""
-    ctype = "desktop" if path else "none"
+    ctype = "none"
 
+    # 1) 扫描开始菜单快捷方式（最可靠，多名称匹配）
+    _CC_NAMES = ["cc-switch", "cc switch", "ccswitch"]
+    _start_menu_dirs = [
+        os.path.join(os.environ.get("APPDATA", ""), r"Microsoft\Windows\Start Menu\Programs"),
+        os.path.join(os.environ.get("PROGRAMDATA", ""), r"Microsoft\Windows\Start Menu\Programs"),
+    ]
+    for sm_base in _start_menu_dirs:
+        if not os.path.isdir(sm_base):
+            continue
+        try:
+            for root, dirs, files in os.walk(sm_base):
+                for f in files:
+                    fn = f.lower().replace(".lnk", "").replace(".exe", "")
+                    if any(name in fn for name in _CC_NAMES):
+                        installed = True
+                        ctype = "desktop"
+                        path = os.path.join(root, f)
+                        break
+                if installed:
+                    break
+        except Exception:
+            pass
+        if installed:
+            break
+
+    # 2) 注册表检测
+    if not installed:
+        path = reg_ccswitch()
+        if path:
+            installed = True
+            ctype = "desktop"
+
+    # 3) CLI 检测
     if not installed:
         r = run_cmd("cc-switch --version", timeout=10)
         if r["success"]:
             installed = True
             vers = _ver(r["stdout"])
             ctype = "cli"
-        # CLI 也失败但注册表有桌面版路径 → 已安装但 cc-switch 不在 PATH
         elif path:
             installed = True
             ctype = "desktop"
