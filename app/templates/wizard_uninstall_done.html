@@ -16,6 +16,6 @@
 {% block scripts %}
 <script>
 clearCheckCache();
-async function exitApp(){clearCheckCache();try{await fetch('/api/system/shutdown',{method:'POST'});}catch(e){}document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;font-family:inherit;"><div><div style="font-size:3rem;">👋</div><h2 style="color:var(--t1);">程序已退出</h2><p style="color:var(--t3);">感谢使用 1shot-CC，可以关闭此页面了</p></div></div>';setTimeout(function(){window.close();},1000);}
+async function exitApp(){clearCheckCache();try{await fetch('/api/system/shutdown',{method:'POST'});}catch(e){}document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;font-family:inherit;"><div><div style="font-size:3rem;">👋</div><h2 style="color:var(--t1);">拜拜~</h2></div></div>';var w=window.open('','_self','');w.close();setTimeout(function(){if(!window.closed)window.close();},500);}
 </script>
 {% endblock %}
