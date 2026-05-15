@@ -21,9 +21,10 @@
 </div>
 <div class="page-hero"><h1>先看看电脑还缺什么</h1><p>自动帮你检查一遍，缺什么一目了然</p></div>
 
-<div class="wizard-nav">
+<div class="wizard-nav" id="wizard-nav">
   <a href="/" class="btn btn-outline">← 首页</a>
-  <a href="/wizard/nodejs" class="btn btn-accent">下一步 → 装 Node.js</a>
+  <a href="/wizard/nodejs" class="btn btn-accent" id="btn-next">下一步 → 装 Node.js</a>
+  <a href="/wizard/final" class="btn btn-accent" id="btn-finish" style="display:none;">🎉 完成配置</a>
 </div>
 
 <div class="summary-box mt-2 max-w-560" id="summary-box" style="display:none;">
@@ -141,6 +142,8 @@ async function loadAll() {
   if (ready) {
     sb.classList.add("ready");
     sbody.innerHTML = `<div class="text-center"><span style="font-size:2rem;">🎉</span><h3>环境就绪</h3><p class="text-muted">所有必需组件已安装，可以直接开始配置 API！</p></div>`;
+    document.getElementById("btn-next").textContent = "下一步 → 装 Node.js（可选）";
+    document.getElementById("btn-finish").style.display = "inline-flex";
   } else {
     sbody.innerHTML = `<p class="text-muted">还有 <strong>${Object.values(data).filter(d=>d&&!d.ok).length}</strong> 项需要处理，按上方步骤依次操作即可</p>`;
   }

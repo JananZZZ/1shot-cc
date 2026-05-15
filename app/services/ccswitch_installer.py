@@ -14,8 +14,10 @@ from app.utils.downloader import download_file
 _CCSWITCH_FALLBACK_URLS = [
     "https://ghproxy.com/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
     "https://mirror.ghproxy.com/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
+    "https://gh.llkk.cc/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
     "https://gh.api.99988866.xyz/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
     "https://gh.con.sh/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
+    "https://github.ur1.fun/https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
     "https://github.com/farion1231/cc-switch/releases/latest/download/CC-Switch-Setup-x64.msi",
 ]
 
@@ -57,7 +59,7 @@ def get_latest_release_info() -> dict:
             CCSWITCH_RELEASES_API,
             headers={"User-Agent": "1shot-CC/1.0"},
         )
-        with urllib.request.urlopen(req, timeout=15) as resp:
+        with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             assets = data.get("assets", [])
             msi_asset = None
@@ -85,20 +87,19 @@ def get_latest_release_info() -> dict:
         return {"success": False, "error": str(e)}
 
 
-def _try_download_urls(urls: list[str], dest: str, callback=None) -> dict:
+def _try_download_urls(urls: list[str], dest: str, callback=None, min_size: int = 0) -> dict:
     """依次尝试多个下载 URL，返回第一个成功的结果"""
     last_error = ""
     for i, url in enumerate(urls):
         if callback:
             if i == 0:
-                callback(0, "正在从 GitHub 获取最新版本...")
+                callback(0, "正在连接下载源...")
             else:
-                callback(0, f"主源连接失败，尝试备用下载方式 {i}...")
-        result = download_file(url, dest, progress_callback=callback)
+                callback(0, f"切换备用下载源 {i}...")
+        result = download_file(url, dest, progress_callback=callback, min_size=min_size)
         if result["success"]:
             return result
         last_error = result.get("error", "未知错误")
-        # 删除损坏的文件，准备重试
         try:
             os.remove(dest)
         except Exception:
@@ -107,30 +108,26 @@ def _try_download_urls(urls: list[str], dest: str, callback=None) -> dict:
 
 
 def download_ccswitch(callback=None) -> dict:
-    """下载 CC-Switch MSI 安装包（三层回退）"""
+    """下载 CC-Switch MSI 安装包（多源快速回退）"""
     dest = os.path.join(tempfile.gettempdir(), "cc-switch-installer.msi")
+    MSI_MIN_SIZE = 1024 * 1024  # MSI 至少 1MB
 
-    # 第1层：GitHub API 获取下载 URL
+    # 第1层：GitHub API 获取真实下载 URL 和文件名
     info = get_latest_release_info()
     version = "latest"
 
+    # 构建回退列表：API 返回的真实 URL 优先，然后硬编码镜像兜底
+    fallback_urls = list(_CCSWITCH_FALLBACK_URLS)
     if info["success"] and info.get("download_url"):
         version = info.get("version", "latest")
+        # 把 API 返回的真实 URL 插到列表最前面
+        fallback_urls.insert(0, info["download_url"])
         if callback:
             callback(0, f"正在下载 CC-Switch {version}...")
-        result = download_file(info["download_url"], dest, progress_callback=callback)
-        if result["success"]:
-            return {"success": True, "path": result["path"], "version": version}
+    elif callback:
+        callback(0, "GitHub API 不可达，使用 CDN 加速源...")
 
-        # API 返回的 URL 失败，继续尝试 fallback
-        if callback:
-            callback(0, "GitHub 下载失败，尝试 CDN 加速源...")
-
-    # 第2-3层：CDN + 直接下载
-    if callback and not info["success"]:
-        callback(0, "GitHub API 连接失败，使用备用下载源...")
-
-    result = _try_download_urls(_CCSWITCH_FALLBACK_URLS, dest, callback=callback)
+    result = _try_download_urls(fallback_urls, dest, callback=callback, min_size=MSI_MIN_SIZE)
     if not result["success"]:
         return {
             "success": False,

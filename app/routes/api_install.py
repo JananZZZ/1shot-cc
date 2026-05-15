@@ -191,6 +191,8 @@ def install_ccswitch_gui():
             diag = resolve(inst["error"])
             _update_task(task_id, "error", 0, inst["error"], done=True, error=json.dumps(diag, ensure_ascii=False))
             return
+        import time as _time
+        _time.sleep(1)
         _update_task(task_id, "complete", 100, "CC-Switch 安装完成！", done=True)
 
     _bg(task_id, work)
