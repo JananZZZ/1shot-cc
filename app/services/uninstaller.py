@@ -32,12 +32,13 @@ def detect_all() -> dict:
         "category": "software",
     }
 
-    # 3. CC-Switch GUI (注册表 + 文件系统)
-    from app.utils.registry_reader import get_ccswitch_install_path
-    cc_path = get_ccswitch_install_path()
+    # 3. CC-Switch GUI (使用 detector 统一检测，含开始菜单扫描)
+    from app.services.detector import _detect_ccswitch
+    cc_info = _detect_ccswitch()
+    cc_path = cc_info.get("paths", [None])[0] if cc_info.get("installed") else None
     results["ccswitch_gui"] = {
-        "name": "CC-Switch 桌面版",
-        "installed": cc_path is not None,
+        "name": "CC Switch 桌面版",
+        "installed": cc_info.get("installed", False),
         "path": cc_path or "",
         "uninstall_method": "msi",
         "category": "software",

@@ -44,7 +44,24 @@ def launch_in_terminal(ps1_path: str) -> dict:
 
 
 def find_ccswitch_exe() -> str | None:
-    """通过注册表 + 文件系统查找 CC-Switch 可执行文件"""
+    """通过开始菜单 + 注册表 + 文件系统查找 CC-Switch"""
+    # 1) 扫描开始菜单快捷方式
+    _CC_NAMES = ["cc-switch", "cc switch", "ccswitch"]
+    _start_dirs = [
+        os.path.join(os.environ.get("APPDATA",""), r"Microsoft\Windows\Start Menu\Programs"),
+        os.path.join(os.environ.get("PROGRAMDATA",""), r"Microsoft\Windows\Start Menu\Programs"),
+    ]
+    for sm_base in _start_dirs:
+        if not os.path.isdir(sm_base): continue
+        try:
+            for root, dirs, files in os.walk(sm_base):
+                for f in files:
+                    if f.endswith(".lnk"):
+                        fn = f.lower().replace(".lnk","")
+                        if any(name in fn for name in _CC_NAMES):
+                            return os.path.join(root, f)
+        except Exception: pass
+    # 2) 注册表回退
     from app.utils.registry_reader import _find_ccswitch_exe_path
     return _find_ccswitch_exe_path()
 

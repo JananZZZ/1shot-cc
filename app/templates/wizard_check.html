@@ -74,8 +74,10 @@ function renderCard(item, data) {
     if (data.outdated) detail += ` <span class="check-detail warn">（可升级到 v${data.latest_version}）</span>`;
   } else if (status === "err") {
     detail = `<span class="check-detail err">未安装</span>`;
+  } else if (data && data.installed) {
+    detail = `<span class="check-detail warn">已安装，需要调整</span>`;
   } else {
-    detail = `<span class="check-detail warn">未安装（非必需，可后续再装）</span>`;
+    detail = `<span class="check-detail warn">未安装（非必需）</span>`;
   }
   var action = "";
   if (status === "err" && item.installUrl) {
