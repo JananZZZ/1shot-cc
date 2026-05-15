@@ -16,6 +16,6 @@
 {% block scripts %}
 <script>
 clearCheckCache();
-async function exitApp(){clearCheckCache();try{await fetch('/api/system/shutdown',{method:'POST'});showToast('程序已退出','success');}catch(e){}}
+async function exitApp(){clearCheckCache();try{await fetch('/api/system/shutdown',{method:'POST'});}catch(e){}showToast('程序已退出，即将关闭页面','success');setTimeout(function(){window.close();},2000);}
 </script>
 {% endblock %}

@@ -115,6 +115,15 @@ h1, h2, h3, .serif {
   align-items: center;
 }
 
+.navbar .nav-github {
+  color: var(--brand);
+  font-weight: 600;
+}
+.navbar .nav-github:hover {
+  color: var(--brand-hover);
+  background: var(--bg-warm);
+}
+
 .navbar .nav-links a:hover,
 .navbar .nav-links .dropbtn:hover,
 .navbar .nav-welcome:hover {

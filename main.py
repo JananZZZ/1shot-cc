@@ -70,7 +70,7 @@ document.addEventListener('mousemove',function(e){
 SPLASH_HTML = WELCOME_HTML_BASE.replace(
     "</body></html>",
     """<script>
-var FLASK_PORT = __FLASK_PORT__, MIN_DISPLAY = 6000, _startTime = Date.now();
+var FLASK_PORT = __FLASK_PORT__, MIN_DISPLAY = 5000, _startTime = Date.now();
 (function poll(n){n=n||0;if(n>180){return}
 fetch('/ping').then(function(r){return r.json()}).then(function(d){
 if(d.ok){var remain=Math.max(300,MIN_DISPLAY-(Date.now()-_startTime));setTimeout(function(){location.href='http://127.0.0.1:'+FLASK_PORT+'/'},remain)}
