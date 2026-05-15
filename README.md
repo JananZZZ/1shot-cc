@@ -44,9 +44,6 @@
 ### ⚙️ API 配置 · 5 家国内厂商随心选
 <p align="center"><img src="assets/5-api配置页.png" width="80%"></p>
 
-### 🔀 CC-Switch + 🎨 终端美化
-<p align="center"><img src="assets/6-完成页.png" width="80%"></p>
-
 ### 🎉 完成撒花
 <p align="center"><img src="assets/6-完成页.png" width="80%"></p>
 
