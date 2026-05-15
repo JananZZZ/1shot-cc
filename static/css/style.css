@@ -123,6 +123,8 @@ h1, h2, h3, .serif {
   color: var(--brand-hover);
   background: var(--bg-warm);
 }
+.navbar .nav-exit { color: var(--t3); }
+.navbar .nav-exit:hover { color: var(--red); background: var(--bg-warm); }
 
 .navbar .nav-links a:hover,
 .navbar .nav-links .dropbtn:hover,

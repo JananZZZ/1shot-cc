@@ -19,12 +19,6 @@
   <span class="step-line"></span>
   <a href="/wizard/final" class="step"><span class="step-dot">9</span><span class="step-label">完成</span></a>
 </div>
-  <a href="/wizard/terminal" class="step"><span class="step-dot">7</span><span class="step-label">美化</span></a>
-  <span class="step-line"></span>
-  <a href="/wizard/summary" class="step"><span class="step-dot">8</span><span class="step-label">收尾</span></a>
-  <span class="step-line"></span>
-  <a href="/wizard/final" class="step"><span class="step-dot">9</span><span class="step-label">完成</span></a>
-</div>
 <div class="page-hero"><h1>安装 Claude Code</h1><p>主角登场——你的 AI 编程伙伴</p></div>
 <div class="install-panel">
   <div class="install-icon" id="icon">🤖</div>
@@ -49,8 +43,8 @@
 
 <div class="wizard-nav">
   <a href="/wizard/git" class="btn btn-outline">← 上一步</a>
-  <a href="/wizard/ccswitch" class="btn btn-ghost btn-sm">我已安装，跳过 →</a>
-  <a href="/wizard/ccswitch" class="btn btn-accent">下一步 →</a>
+  <a href="/wizard/config" class="btn btn-ghost btn-sm">我已安装，跳过 →</a>
+  <a href="/wizard/config" class="btn btn-accent">下一步 →</a>
 </div>
 {% endblock %}{% block scripts %}<script>
 const w=new InstallWizard(()=>API.installClaudeCode(),{successMsg:"Claude Code 装好了！在终端输入 claude 就能召唤它",onSuccess:()=>clearCheckCache()});
