@@ -19,11 +19,16 @@
   <span class="step-line"></span>
   <a href="/wizard/final" class="step"><span class="step-dot">9</span><span class="step-label">完成</span></a>
 </div>
-<div class="page-hero"><h1>先看看电脑还缺什么</h1><p>自动帮你检查一遍，缺什么一目了然</p></div>
+<div class="page-hero" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+  <div>
+    <h1>先看看电脑还缺什么</h1>
+    <p>自动帮你检查一遍，缺什么一目了然</p>
+  </div>
+  <button class="btn btn-outline btn-sm" onclick="forceRecheck()">🔄 重新检测</button>
+</div>
 
 <div class="wizard-nav">
   <a href="/" class="btn btn-outline">← 首页</a>
-  <button class="btn btn-outline btn-sm" onclick="forceRecheck()">🔄 重新检测</button>
   <a href="/wizard/nodejs" class="btn btn-accent">下一步 → 装 Node.js</a>
 </div>
 
@@ -63,6 +68,8 @@ const ITEMS = [
 
 function renderCard(item, data) {
   var status = data ? (data.ok ? "ok" : "err") : "warn";
+  // CC-Switch 未安装不标红，用橙色提醒即可
+  if (item.key === "ccswitch" && status === "err") status = "warn";
   var icon = {ok:"✅", err:"❌", warn:"⚠️"}[status];
   var detail = "";
   if (status === "ok" && data.version) {
@@ -71,13 +78,15 @@ function renderCard(item, data) {
   } else if (status === "err") {
     detail = `<span class="check-detail err">未安装</span>`;
   } else {
-    detail = `<span class="check-detail warn">需要注意</span>`;
+    detail = `<span class="check-detail warn">未安装（非必需，可后续再装）</span>`;
   }
   var action = "";
   if (status === "err" && item.installUrl) {
     action = `<a href="${item.installUrl}" class="btn btn-primary btn-sm">📥 去安装</a>`;
   } else if (status === "warn" && item.fixUrl) {
     action = `<a href="${item.fixUrl}" class="btn btn-outline btn-sm">🔧 去修复</a>`;
+  } else if (status === "warn" && item.installUrl) {
+    action = `<a href="${item.installUrl}" class="btn btn-outline btn-sm">📦 查看</a>`;
   } else if (status === "ok" && item.installUrl) {
     action = `<a href="${item.installUrl}" class="btn btn-outline btn-sm">📦 查看</a>`;
   }

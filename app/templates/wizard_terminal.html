@@ -61,8 +61,7 @@
     var btn = document.getElementById('wt-btn');
     if(r.data && r.data.installed){
       el.innerHTML = '<span style="color:var(--green);">✅ 已安装</span>';
-      btn.textContent = '✅ 已安装';
-      btn.disabled = true;
+      btn.style.display = 'none';
     }else{
       el.innerHTML = '<span style="color:var(--t3);">未安装</span>';
     }
