@@ -56,7 +56,7 @@ def install_nodejs():
             "success": False,
             "error": f"Node.js 预检发现问题: {'; '.join(issues)}",
             "error_detail": {
-                "title": "安装前检查发现问题",
+                "title": "安装前需要注意",
                 "causes": issues,
                 "auto_fix": [],
                 "manual_fix": ["请先解决上述问题，再点击重试"],
@@ -101,7 +101,7 @@ def install_git():
             "success": False,
             "error": f"Git 预检发现问题: {'; '.join(issues)}",
             "error_detail": {
-                "title": "安装前检查发现问题",
+                "title": "安装前需要注意",
                 "causes": issues,
                 "auto_fix": [],
                 "manual_fix": ["请先解决上述问题，再点击重试"],
@@ -167,7 +167,7 @@ def install_ccswitch_gui():
             "success": False,
             "error": f"CC-Switch 预检发现问题: {'; '.join(issues)}",
             "error_detail": {
-                "title": "安装前检查发现问题",
+                "title": "安装前需要注意",
                 "causes": issues,
                 "auto_fix": [],
                 "manual_fix": ["请先解决上述问题，再点击重试"],

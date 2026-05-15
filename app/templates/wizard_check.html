@@ -19,17 +19,19 @@
   <span class="step-line"></span>
   <a href="/wizard/final" class="step"><span class="step-dot">9</span><span class="step-label">完成</span></a>
 </div>
-<div class="page-hero" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-  <div>
-    <h1>先看看电脑还缺什么</h1>
-    <p>自动帮你检查一遍，缺什么一目了然</p>
-  </div>
-  <button class="btn btn-outline btn-sm" onclick="forceRecheck()">🔄 重新检测</button>
-</div>
+<div class="page-hero"><h1>先看看电脑还缺什么</h1><p>自动帮你检查一遍，缺什么一目了然</p></div>
 
 <div class="wizard-nav">
   <a href="/" class="btn btn-outline">← 首页</a>
   <a href="/wizard/nodejs" class="btn btn-accent">下一步 → 装 Node.js</a>
+</div>
+
+<div class="summary-box mt-2" id="summary-box" style="display:none;">
+  <div class="summary-body" id="summary-body"></div>
+</div>
+
+<div class="callout info mt-2">
+  💡 <strong>提示：</strong>按照顺序依次操作即可。小项可在第⑧步"收尾检查"中一键修复。
 </div>
 
 <div id="loading" class="loading-pulse">
@@ -39,13 +41,8 @@
 
 <div id="results" style="display:none;">
   <div id="cards-container" class="max-w-560"></div>
-
-  <div class="summary-box mt-2" id="summary-box">
-    <div class="summary-body" id="summary-body"></div>
-  </div>
-
-  <div class="callout info mt-2">
-    💡 <strong>提示：</strong>按照上方步骤顺序依次操作即可。小项可以在第⑧步"收尾检查"中一键修复。
+  <div class="text-center mt-3">
+    <button class="btn btn-outline btn-sm" onclick="forceRecheck()">🔄 重新检测</button>
   </div>
 </div>
 {% endblock %}
@@ -118,6 +115,7 @@ async function loadAll() {
   }
   document.getElementById("loading").style.display = "none";
   document.getElementById("results").style.display = "block";
+  document.getElementById("summary-box").style.display = "none";
   var html = "";
   for (var i = 0; i < ITEMS.length; i++) {
     var item = ITEMS[i];
@@ -127,6 +125,7 @@ async function loadAll() {
   var ready = data.ready;
   var sb = document.getElementById("summary-box");
   var sbody = document.getElementById("summary-body");
+  sb.style.display = "block";
   if (ready) {
     sb.classList.add("ready");
     sbody.innerHTML = `<div class="text-center"><span style="font-size:2rem;">🎉</span><h3>环境就绪</h3><p class="text-muted">所有必需组件已安装，可以直接开始配置 API！</p></div>`;

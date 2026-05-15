@@ -254,6 +254,11 @@
   margin-left: auto;
   margin-right: auto;
 }
+.error-detail-box.warning {
+  border-color: var(--amber);
+  border-left-color: var(--amber);
+}
+.error-detail-box.warning .err-title { color: var(--amber); }
 .error-detail-box .err-title {
   font-weight: 700;
   font-size: 1.05rem;

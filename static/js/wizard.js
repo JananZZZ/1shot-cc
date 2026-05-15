@@ -89,14 +89,15 @@ class InstallWizard {
   _fail(error, errorDetail) {
     this.started = false;
     const e = this.getEls();
-    if (e.icon) e.icon.textContent = "❌";
+    var isWarn = errorDetail && errorDetail.category === "system";
+    if (e.icon) e.icon.textContent = isWarn ? "⚠️" : "❌";
     if (e.status) e.status.textContent = errorDetail?.title || "安装出错了";
 
-    // 渲染详细错误卡片
     if (errorDetail && errorDetail.causes && errorDetail.causes.length > 0) {
       if (e.pct) e.pct.textContent = "";
       if (e.errorBox) {
         e.errorBox.style.display = "block";
+        if (isWarn) e.errorBox.classList.add("warning");
         if (e.errorTitle) e.errorTitle.textContent = errorDetail.title || "安装失败";
         if (e.errorCauses) {
           e.errorCauses.innerHTML = errorDetail.causes.map(c => `<li>${c}</li>`).join("");
@@ -123,10 +124,9 @@ class InstallWizard {
 
     if (e.start) {
       e.start.disabled = false;
-      e.start.textContent = "🔄 重试";
     }
     if (e.retry) e.retry.style.display = "inline-flex";
-    showToast(errorDetail?.title || error || "安装失败", "error");
+    showToast(errorDetail?.title || error || "安装失败", isWarn ? "warning" : "error");
   }
 
   async _doAutoFix(fixes) {
