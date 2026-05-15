@@ -220,7 +220,8 @@
   padding: 14px 18px;
   border-radius: var(--r-md);
   font-size: 0.87rem;
-  margin: 12px 0;
+  margin-top: 12px;
+  margin-bottom: 12px;
 }
 .callout.info    { background: var(--brand-soft); border-left: 3px solid var(--brand); color: var(--brand-hover); }
 .callout.success { background: var(--green-bg); border-left: 3px solid var(--green); color: var(--green); }

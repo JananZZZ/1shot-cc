@@ -75,7 +75,7 @@ function renderCard(item, data) {
   } else if (status === "err") {
     detail = `<span class="check-detail err">未安装</span>`;
   } else if (data && data.installed) {
-    detail = `<span class="check-detail warn">已安装，需要调整</span>`;
+    detail = `<span class="check-detail warn">已安装，按需调整</span>`;
   } else {
     detail = `<span class="check-detail warn">未安装（非必需）</span>`;
   }
