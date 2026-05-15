@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="steps-bar">
+  <a href="/wizard/check" class="step done"><span class="step-dot">1</span><span class="step-label">检测</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/nodejs" class="step done"><span class="step-dot">2</span><span class="step-label">Node.js</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/git" class="step done"><span class="step-dot">3</span><span class="step-label">Git</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/claude" class="step done"><span class="step-dot">4</span><span class="step-label">Claude</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/config" class="step done"><span class="step-dot">5</span><span class="step-label">API</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/ccswitch" class="step done"><span class="step-dot">6</span><span class="step-label">Switch</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/terminal" class="step done"><span class="step-dot">7</span><span class="step-label">美化</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/summary" class="step active"><span class="step-dot">8</span><span class="step-label">收尾</span></a>
+  <span class="step-line"></span>
+  <a href="/wizard/final" class="step"><span class="step-dot">9</span><span class="step-label">完成</span></a>
+</div>
+<div class="page-hero"><h1>✅ 收尾检查</h1><p>确保所有设置都搞定</p></div>
+
+<div id="items-container" class="max-w-560">
+  <p class="text-center text-muted text-sm">正在检查...</p>
+</div>
+
+<div class="wizard-nav">
+  <a href="/wizard/terminal" class="btn btn-outline">← 上一步</a>
+  <a href="/wizard/final" class="btn btn-accent">一切就绪 →</a>
+</div>
+{% endblock %}
+{% block scripts %}<script>
+var ITEMS = [
+{key:"powershell_policy",name:"系统安全设置",ok_msg:"PowerShell 策略正常",warn_msg:"策略过严可能导致安装失败",fix_action:"policy",fix_label:"🔧 一键修复"},
+{key:"npm_registry",name:"下载加速通道",ok_msg:"已使用国内镜像加速",warn_msg:"未配置国内镜像，下载可能很慢",fix_action:"registry",fix_label:"🔧 切换到国内"},
+{key:"claude_config",name:"启动配置",ok_msg:"配置文件就绪",warn_msg:"配置文件缺失",fix_url:"/wizard/config",fix_label:"⚙️ 去配置"},
+{key:"path_issues",name:"用户名检查",ok_msg:"路径正常",warn_msg:"用户名含中文可能出问题",fix_label:""},
+];
+
+function renderItem(item, data){
+  var ok = data ? (data.ok || data.installed) : false;
+  var status_color = ok ? 'var(--green)' : 'var(--amber)';
+  var status_icon = ok ? '✅' : '⚠️';
+  var status_text = ok ? item.ok_msg : item.warn_msg;
+  var fix_html = '';
+  if(!ok){
+    if(item.fix_action){
+      fix_html = '<button class="btn btn-outline btn-sm mt-1" onclick="quickFix(\''+item.fix_action+'\')">'+item.fix_label+'</button>';
+    }else if(item.fix_url){
+      fix_html = '<a href="'+item.fix_url+'" class="btn btn-outline btn-sm mt-1">'+item.fix_label+'</a>';
+    }else if(item.fix_label){
+      fix_html = '<p class="text-xs text-muted mt-1">'+item.fix_label+'</p>';
+    }
+  }
+  return '<div class="check-card status-'+(ok?'ok':'warn')+'" id="card-'+item.key+'">'+
+    '<div class="flex items-center gap-3">'+
+      '<div class="check-icon">'+status_icon+'</div>'+
+      '<div class="check-body">'+
+        '<div class="check-title">'+item.name+'</div>'+
+        '<div class="check-detail '+(ok?'ok':'warn')+'">'+status_text+'</div>'+
+        fix_html+
+      '</div>'+
+    '</div></div>';
+}
+
+async function quickFix(action){
+  if(action === 'policy'){
+    var btn = event.target; btn.disabled = true; btn.textContent = '⏳ 修复中...';
+    var r = await API.fixPolicy();
+    if(r.success){ btn.textContent = '✅ 已修复'; setTimeout(function(){loadAll();},500); }
+    else { btn.textContent = '❌ 修复失败'; btn.disabled = false; }
+  }else if(action === 'registry'){
+    var btn = event.target; btn.disabled = true; btn.textContent = '⏳ 切换中...';
+    var r = await API.fixRegistry();
+    if(r.success){ btn.textContent = '✅ 已切换'; setTimeout(function(){loadAll();},500); }
+    else { btn.textContent = '❌ 切换失败'; btn.disabled = false; }
+  }
+}
+
+async function loadAll(){
+  try{
+    var r = await API.checkAll();
+    if(!r.success) throw new Error('检测失败');
+    var data = r.data;
+    var html = '';
+    for(var i=0; i<ITEMS.length; i++){
+      var item = ITEMS[i];
+      html += renderItem(item, data[item.key]);
+    }
+    document.getElementById('items-container').innerHTML = html;
+  }catch(e){
+    document.getElementById('items-container').innerHTML = '<p class="text-center" style="color:var(--red);">检测出错，请刷新重试</p>';
+  }
+}
+
+loadAll();
+</script>{% endblock %}

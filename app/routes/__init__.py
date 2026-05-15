@@ -23,8 +23,8 @@ def register_blueprints(app):
     def wizard(step):
         valid = [
             "check", "nodejs", "git", "claude",
-            "ccswitch", "ccswitch_guide",
-            "config", "final",
+            "ccswitch", "config",
+            "terminal", "summary", "final",
             "uninstall", "uninstall_done",
         ]
         if step not in valid:

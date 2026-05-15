@@ -9,11 +9,19 @@
   <span class="step-line done"></span>
   <a href="/wizard/claude" class="step done"><span class="step-dot">4</span><span class="step-label">Claude</span></a>
   <span class="step-line done"></span>
-  <a href="/wizard/ccswitch" class="step active"><span class="step-dot">5</span><span class="step-label">Switch</span></a>
+  <a href="/wizard/config" class="step done"><span class="step-dot">5</span><span class="step-label">API</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/ccswitch" class="step active"><span class="step-dot">6</span><span class="step-label">Switch</span></a>
   <span class="step-line"></span>
-  <a href="/wizard/config" class="step"><span class="step-dot">6</span><span class="step-label">配置</span></a>
+  <a href="/wizard/terminal" class="step"><span class="step-dot">7</span><span class="step-label">美化</span></a>
+  <span class="step-line"></span>
+  <a href="/wizard/summary" class="step"><span class="step-dot">8</span><span class="step-label">收尾</span></a>
+  <span class="step-line"></span>
+  <a href="/wizard/final" class="step"><span class="step-dot">9</span><span class="step-label">完成</span></a>
 </div>
-<div class="page-hero"><h1>🔀 安装 CC-Switch</h1><p>有了它，切换不同 AI 服务商就像换插座一样简单</p></div>
+<div class="page-hero"><h1>🔀 更方便的切换方式</h1><p>你已经配好 API 了！如果只用一家服务，可以跳过这步</p></div>
+
+<div class="callout info">💡 <strong>啥时候需要它：</strong>同时使用 DeepSeek + 智谱等多家服务时，CC-Switch 让你在它们之间一键切换，不用每次改配置文件。</div>
 
 <div class="card mb-2">
   <div class="card-header">选一种安装方式</div>
@@ -57,23 +65,20 @@
   </div>
   <button class="btn btn-primary btn-lg" id="start-btn" onclick="doInstall()" disabled>📥 帮我装好 CC-Switch</button>
   <button class="btn btn-outline mt-2" id="retry-btn" style="display:none" onclick="doInstall()">🔄 再试一次</button>
-  <div id="next-step" class="mt-2" style="display:none">
-    <a href="/wizard/ccswitch_guide" class="btn btn-accent">继续 → 教你用 CC-Switch</a>
-  </div>
+  <div id="next-step" class="mt-2" style="display:none"><a href="/wizard/terminal" class="btn btn-accent">继续 → 终端美化</a></div>
 </div>
 
-<div class="callout info">💡 <strong>小知识：</strong>CC-Switch 就是一个"遥控器"，让你在 Claude Code 里可以一键切换使用智谱、DeepSeek 还是 MiniMax。不用每次改配置文件，点一下就换好了。</div>
+<div class="callout info">💡 <strong>怎么用：</strong>装好后，任务栏右下角会出现 CC-Switch 图标。右键点它 → 选择服务商 → 填入 API 密钥 → 切换完成！</div>
 
 <div class="wizard-nav">
-  <a href="/wizard/claude" class="btn btn-outline">← 上一步</a>
-  <a href="/wizard/ccswitch_guide" class="btn btn-ghost btn-sm">我已安装，跳过 →</a>
-  <a href="/wizard/ccswitch_guide" class="btn btn-accent">下一步 →</a>
+  <a href="/wizard/config" class="btn btn-outline">← 上一步</a>
+  <a href="/wizard/terminal" class="btn btn-ghost btn-sm">我已经有了，跳过 →</a>
+  <a href="/wizard/terminal" class="btn btn-accent">下一步 →</a>
 </div>
 {% endblock %}
 {% block scripts %}<script>
 let mode = "";
 let ccWizard = null;
-// 默认选中桌面版，启用安装按钮
 document.addEventListener('DOMContentLoaded', function() { selectMode('gui'); });
 function selectMode(m) {
   mode = m;
@@ -94,7 +99,6 @@ function doInstall() {
   }
   ccWizard.start();
 }
-// 统一检测缓存 — 已安装则显示绿色完成卡片
 (function(){
   var cached = getCheckCache();
   if (cached && cached.ccswitch) {

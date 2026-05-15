@@ -9,9 +9,15 @@
   <span class="step-line"></span>
   <a href="/wizard/claude" class="step"><span class="step-dot">4</span><span class="step-label">Claude</span></a>
   <span class="step-line"></span>
-  <a href="/wizard/ccswitch" class="step"><span class="step-dot">5</span><span class="step-label">Switch</span></a>
+  <a href="/wizard/config" class="step"><span class="step-dot">5</span><span class="step-label">API</span></a>
   <span class="step-line"></span>
-  <a href="/wizard/config" class="step"><span class="step-dot">6</span><span class="step-label">配置</span></a>
+  <a href="/wizard/ccswitch" class="step"><span class="step-dot">6</span><span class="step-label">Switch</span></a>
+  <span class="step-line"></span>
+  <a href="/wizard/terminal" class="step"><span class="step-dot">7</span><span class="step-label">美化</span></a>
+  <span class="step-line"></span>
+  <a href="/wizard/summary" class="step"><span class="step-dot">8</span><span class="step-label">收尾</span></a>
+  <span class="step-line"></span>
+  <a href="/wizard/final" class="step"><span class="step-dot">9</span><span class="step-label">完成</span></a>
 </div>
 <div class="page-hero"><h1>先看看电脑还缺什么</h1><p>自动帮你检查一遍，缺什么一目了然</p></div>
 
@@ -21,143 +27,109 @@
 </div>
 
 <div id="results" style="display:none;">
-  <div id="check-list"></div>
-  <div id="summary-box" class="summary-box" style="display:none;">
-    <div class="flex items-center gap-2 mb-2">
-      <span id="summary-icon" style="font-size:1.3rem;"></span>
-      <span id="summary-title" style="font-weight:700; font-family:'Noto Serif SC',serif;"></span>
-    </div>
-    <div id="summary-detail" class="text-sm text-muted mb-2"></div>
-    <div class="flex flex-wrap gap-2" id="action-buttons"></div>
+  <div id="cards-container" class="max-w-560"></div>
+
+  <div class="summary-box mt-2" id="summary-box">
+    <div class="summary-body" id="summary-body"></div>
   </div>
+
+  <div class="callout info mt-2">
+    💡 <strong>提示：</strong>按照上方步骤顺序依次操作即可。标记 ⚠️ 的项目可以在第⑧步"收尾检查"中一键修复。
+  </div>
+
   <div class="text-center mt-3">
-    <button class="btn btn-ghost btn-sm" onclick="forceRecheck()">🔄 重新检查</button>
-    <span class="text-xs text-muted ml-1">上次检查：<span id="last-time">-</span></span>
+    <button class="btn btn-outline btn-sm" onclick="forceRecheck()">🔄 重新检测</button>
   </div>
 </div>
 
 <div class="wizard-nav">
-  <span class="btn btn-outline" style="opacity:0.4; cursor:default;">← 上一步</span>
-  <a href="/wizard/nodejs" class="btn btn-accent" id="next-btn">下一步 →</a>
+  <a href="/" class="btn btn-outline">← 首页</a>
+  <a href="/wizard/nodejs" class="btn btn-accent">下一步 → 装 Node.js</a>
 </div>
-<script>
-// 根据检测结果智能跳转下一步
-(function() {
-  var cached = sessionStorage.getItem('1shot-v21-check');
-  if (cached) {
-    try {
-      var data = JSON.parse(cached).data;
-      if (data) {
-        if (data.nodejs && data.nodejs.installed && !data.git.installed) {
-          document.getElementById('next-btn').href = '/wizard/git';
-        } else if (data.nodejs && data.nodejs.installed && data.git && data.git.installed && !data.claude_code.installed) {
-          document.getElementById('next-btn').href = '/wizard/claude';
-        } else if (data.ready) {
-          document.getElementById('next-btn').href = '/wizard/config';
-        }
-      }
-    } catch(e) {}
-  }
-})();
-</script>
 {% endblock %}
 {% block scripts %}
 <script>
 function forceRecheck() { clearCheckCache(); location.reload(); }
 
 const ITEMS = [
-  { key:"nodejs", name:"Node.js — 运行环境", desc:"让 Claude Code 能跑起来的基础", installUrl:"/wizard/nodejs", canUpgrade:true },
-  { key:"git", name:"Git — 版本管理", desc:"记录代码变化用，Windows 上必需", installUrl:"/wizard/git", canUpgrade:true },
-  { key:"powershell_policy", name:"系统安全设置", desc:"太严格会导致安装失败", fixAction:"policy" },
-  { key:"npm_registry", name:"下载加速通道", desc:"从国内镜像下载，快很多", fixAction:"registry" },
-  { key:"windows_terminal", name:"Windows Terminal", desc:"现代化的终端工具，好看好用", installUrl:"#", installAction:"winterm" },
-  { key:"claude_code", name:"Claude Code", desc:"AI 编程伙伴，今天的主角", installUrl:"/wizard/claude" },
-  { key:"ccswitch", name:"CC-Switch — 配置管家", desc:"轻松切换不同 AI 服务商", installUrl:"/wizard/ccswitch", launchAction:true },
-  { key:"colorcc", name:"Color-cc 终端美化", desc:"Oh My Posh 状态栏主题", installUrl:"/wizard/final" },
-  { key:"claude_config", name:"启动配置", desc:"确保能正常启动的配置文件" },
-  { key:"path_issues", name:"用户名检查", desc:"检查电脑用户名有没有中文" },
+  { key:"nodejs",   name:"Node.js — 运行环境",          desc:"让 Claude Code 能跑起来的基础",   installUrl:"/wizard/nodejs" },
+  { key:"git",      name:"Git — 版本管理",              desc:"记录代码变化，Windows 上必需",     installUrl:"/wizard/git" },
+  { key:"claude_code", name:"Claude Code",              desc:"AI 编程伙伴，今天的主角",          installUrl:"/wizard/claude" },
+  { key:"ccswitch", name:"CC-Switch — 配置管家",        desc:"轻松切换不同 AI 服务商",           installUrl:"/wizard/ccswitch" },
+  { key:"npm_registry", name:"下载加速通道",            desc:"从国内镜像下载，快很多",           fixUrl:"/wizard/summary" },
+  { key:"powershell_policy", name:"系统安全设置",       desc:"太严格会导致安装失败",             fixUrl:"/wizard/summary" },
+  { key:"windows_terminal", name:"Windows Terminal",    desc:"现代化的终端工具",                 installUrl:"/wizard/terminal" },
+  { key:"colorcc",  name:"Color-cc 终端美化",           desc:"Oh My Posh 状态栏主题",            installUrl:"/wizard/terminal" },
+  { key:"claude_config", name:"启动配置",               desc:"确保能正常启动的配置文件",         fixUrl:"/wizard/summary" },
+  { key:"path_issues", name:"用户名检查",               desc:"检查电脑用户名有没有中文",         fixUrl:"/wizard/summary" },
 ];
 
 function renderCard(item, data) {
-  let status="ok", icon="", detail="", action="";
-  if (item.key === "nodejs") {
-    if(data.installed&&data.outdated){status="warn";icon="⚠️";detail=`版本过旧 (${data.version||'?'} < ${data.latest_version||'最新'})，建议更新`;}
-    else{status=data.installed?"ok":"err";icon=data.installed?"✅":"❌";detail=data.installed?`已装好，${data.version}`:"还没装——没有它 Claude Code 跑不了";}
-  } else if (item.key === "git") {
-    if(data.installed&&data.outdated){status="warn";icon="⚠️";detail=`版本过旧 (${data.version||'?'} < ${data.latest_version||'最新'})，建议更新`;}
-    else{status=data.installed?"ok":"warn";icon=data.installed?"✅":"⚠️";detail=data.installed?`已装好，${data.version}`:"还没装——Windows 上 Claude Code 需要它<br><span class='text-xs text-muted'>如在开始菜单中找到 Git，请忽略此提示</span>";}
-  } else if (item.key === "powershell_policy") {
-    status=data.need_fix?"warn":"ok"; icon=data.need_fix?"⚠️":"✅";
-    detail=data.need_fix?"太严格了，需要放松一点":"设置正常 ✓";
-  } else if (item.key === "npm_registry") {
-    status=data.is_mirror?"ok":"warn"; icon=data.is_mirror?"✅":"⚠️";
-    detail=data.is_mirror?"已使用国内镜像":"建议切换到国内镜像，下载更快";
-  } else if (item.key === "windows_terminal") {
-    status=data.installed?"ok":"warn"; icon=data.installed?"✅":"⚠️";
-    detail=data.installed?"已安装":"建议安装——更现代的终端，界面好看";
-  } else if (item.key === "claude_code") {
-    status=data.installed?"ok":"err"; icon=data.installed?"✅":"❌";
-    detail=data.installed?`已装好！${data.version}`:"还没装——别担心，下步一键装好";
-  } else if (item.key === "ccswitch") {
-    status=data.installed?"ok":"warn"; icon=data.installed?"✅":"⚠️";
-    detail=data.installed?"已装好":((data.type==="desktop"?"桌面版已安装":"建议安装——切换 AI 服务商超方便")+"<br><span class='text-xs text-muted'>MSI 安装后可能需重启终端才能检测到</span>");
-  } else if (item.key === "claude_config") {
-    status=data.onboarding_done?"ok":"warn"; icon=data.onboarding_done?"✅":"⚠️";
-    detail=data.onboarding_done?"配置就绪":"装 Claude Code 时会自动处理好";
-  } else if (item.key === "colorcc") {
-    status=data.installed?"ok":"warn"; icon=data.installed?"✅":"⚪";
-    detail=data.installed?`已美化 — ${data.method}`:"可选——一键美化终端配色";
-  } else if (item.key === "path_issues") {
-    status=data.ok?"ok":"warn"; icon=data.ok?"✅":"⚠️";
-    detail=data.ok?"没问题":"路径含中文，可能出问题";
+  var status = data ? (data.ok ? "ok" : "err") : "warn";
+  var icon = {ok:"✅", err:"❌", warn:"⚠️"}[status];
+  var detail = "";
+  if (status === "ok" && data.version) {
+    detail = `<span class="check-detail ok">v${data.version} 已安装</span>`;
+    if (data.outdated) detail += ` <span class="check-detail warn">（可升级到 v${data.latest_version}）</span>`;
+  } else if (status === "err") {
+    detail = `<span class="check-detail err">未安装</span>`;
+  } else {
+    detail = `<span class="check-detail warn">需要注意</span>`;
   }
-
-  if (item.installUrl && status==="err") action=`<a href="${item.installUrl}" class="btn btn-primary btn-sm">📥 帮我安装</a>`;
-  else if (item.installAction==="winterm" && status==="warn") action=`<button class="btn btn-outline btn-sm" onclick="installWT(this)">📥 一键安装</button>`;
-  else if (item.key==="ccswitch" && status==="warn") action=`<a href="${item.installUrl}" class="btn btn-outline btn-sm">📥 安装</a>`;
-  else if (item.fixAction==="policy" && status==="warn") action=`<button class="btn btn-outline btn-sm" onclick="quickFixPolicy(this)">🔧 一键修复</button>`;
-  else if (item.fixAction==="registry" && status==="warn") action=`<button class="btn btn-outline btn-sm" onclick="quickFixRegistry(this)">🔧 切换到国内</button>`;
-  if (item.key==="ccswitch" && data.installed) action=`<button class="btn btn-outline btn-sm" onclick="launchCCS(this)">▶ 启动</button>`;
-  if (item.canUpgrade && data.installed && data.outdated) action=`<button class="btn btn-primary btn-sm" onclick="upgradeComp(this,'${item.key}')">⬆ 一键升级</button>`;
-
+  var action = "";
+  if (status === "err" && item.installUrl) {
+    action = `<a href="${item.installUrl}" class="btn btn-primary btn-sm">📥 去安装</a>`;
+  } else if (status === "warn" && item.fixUrl) {
+    action = `<a href="${item.fixUrl}" class="btn btn-outline btn-sm">🔧 去修复</a>`;
+  } else if (status === "ok" && item.installUrl) {
+    action = `<a href="${item.installUrl}" class="btn btn-outline btn-sm">📦 查看</a>`;
+  }
   return `<div class="check-card status-${status}" id="card-${item.key}">
-    <div class="flex items-center gap-2">
-      <span class="check-icon">${icon}</span>
+    <div class="flex items-center gap-3">
+      <div class="check-icon">${icon}</div>
       <div class="check-body">
         <div class="check-title">${item.name}</div>
         <div class="check-desc">${item.desc}</div>
-        <div class="check-detail ${status}">${detail}</div>
+        ${detail}
       </div>
       <div class="check-action">${action}</div>
-    </div></div>`;
+    </div>
+  </div>`;
 }
 
-async function upgradeComp(b, comp) { b.disabled=true;b.textContent="⏳ 升级中..."; const r=await API.upgradeComponent(comp); if(r.task_id){const es=new EventSource(`/api/install/progress/${r.task_id}`);es.onmessage=(e)=>{const d=JSON.parse(e.data);b.textContent=d.message;if(d.done){es.close();if(d.error){showToast("升级失败: "+d.error,"error");b.textContent="⬆ 一键升级";b.disabled=false;}else{showToast("升级完成！","success");b.textContent="✅ 已升级";}}}}}async function quickFixPolicy(b) { b.disabled=true;b.textContent="⏳"; const r=await API.fixPolicy(); if(r.success){showToast("安全设置已调整好！","success");updateCard("powershell_policy",{policy:"RemoteSigned",need_fix:false,ok:true});} else {showToast("失败","error");b.disabled=false;b.textContent="🔧 一键修复";} }
-async function quickFixRegistry(b) { b.disabled=true;b.textContent="⏳"; const r=await API.fixRegistry(); if(r.success){showToast("已切换到国内镜像！","success");updateCard("npm_registry",{current:"https://registry.npmmirror.com/",is_mirror:true,ok:true});} else {showToast("失败","error");b.disabled=false;b.textContent="🔧 切换到国内";} }
-async function installWT(b) { b.disabled=true;b.textContent="⏳ 安装中..."; const r=await API.installWinTerm(); if(r.task_id){const es=new EventSource(`/api/install/progress/${r.task_id}`);es.onmessage=async(e)=>{const d=JSON.parse(e.data);b.textContent=d.message;if(d.done){es.close();if(d.error){showToast("安装失败: "+d.error,"error");b.textContent="📥 一键安装";b.disabled=false;}else{b.textContent="⏳ 验证安装...";await new Promise(r=>setTimeout(r,3000));const v=await API.checkWinTerm();if(v.installed){updateCard("windows_terminal",{installed:true,ok:true});showToast("Windows Terminal 安装完成！","success");}else{showToast("已执行安装但未检测到，请尝试从 Microsoft Store 手动安装","warning");b.textContent="📥 一键安装";b.disabled=false;}}}} } else {showToast("启动失败","error");b.disabled=false;b.textContent="📥 一键安装";} }
-async function launchCCS(b) { b.disabled=true;b.textContent="⏳"; const r=await API.launchCCSwitch(); if(r.success)showToast("CC-Switch 已启动！","success"); else showToast(r.error||"启动失败","warning"); b.disabled=false;b.textContent="▶ 启动"; }
-function updateCard(key,data){const item=ITEMS.find(i=>i.key===key);if(!item)return;const old=document.getElementById(`card-${key}`);if(old)old.outerHTML=renderCard(item,data);const c=getCheckCache()||{};if(c[key])Object.assign(c[key],data);setCheckCache(c);}
-
-function renderSummary(r){
-  const box=document.getElementById("summary-box"),icon=document.getElementById("summary-icon"),title=document.getElementById("summary-title"),detail=document.getElementById("summary-detail"),btns=document.getElementById("action-buttons");
-  box.style.display="block";
-  if(r.ready){box.classList.add("ready");icon.textContent="🎉";title.textContent="一切就绪！";detail.textContent="可以开始配置 AI 服务了";
-    btns.innerHTML=`<a href="/wizard/config" class="btn btn-accent">⚙️ 配置 AI 服务</a><a href="/wizard/final" class="btn btn-outline">到最后一步</a>`;}
-  else {icon.textContent="🔧";title.textContent="还需要处理几项";
-    const issues=[];if(!r.nodejs.installed)issues.push("Node.js");if(!r.git.installed)issues.push("Git");if(!r.claude_code.installed)issues.push("Claude Code");if(r.powershell_policy.need_fix)issues.push("安全设置");
-    detail.textContent=issues.length?`${issues.join("、")} 还没好`:"";
-    let h="";if(!r.nodejs.installed)h+=`<a href="/wizard/nodejs" class="btn btn-primary">📥 装 Node.js</a>`;if(!r.git.installed)h+=`<a href="/wizard/git" class="btn btn-primary">📥 装 Git</a>`;if(r.powershell_policy.need_fix)h+=`<button class="btn btn-outline" onclick="quickFixPolicy(this)">🔧 修复安全设置</button>`;if(!r.claude_code.installed&&r.nodejs.installed)h+=`<a href="/wizard/claude" class="btn btn-primary">📥 装 Claude Code</a>`;if(!r.ccswitch.installed)h+=`<a href="/wizard/ccswitch" class="btn btn-outline">📥 装 CC-Switch</a>`;
-    btns.innerHTML=h||'<span class="text-muted">请先装好 Node.js 和 Git</span>';}
+async function loadAll() {
+  let data = getCheckCache();
+  if (!data) {
+    try {
+      const resp = await API.checkAll();
+      if (!resp.success) throw new Error("检测失败");
+      data = resp.data;
+      setCheckCache(data);
+    } catch(e) {
+      document.getElementById("loading").innerHTML = `<p style="color:var(--red);">❌ 检测出错: ${e.message}</p><button class="btn btn-outline mt-2" onclick="location.reload()">再试一次</button>`;
+      return;
+    }
+  }
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("results").style.display = "block";
+  var html = "";
+  for (var i = 0; i < ITEMS.length; i++) {
+    var item = ITEMS[i];
+    html += renderCard(item, data[item.key]);
+  }
+  document.getElementById("cards-container").innerHTML = html;
+  // Summary
+  var ready = data.ready;
+  var sb = document.getElementById("summary-box");
+  var sbody = document.getElementById("summary-body");
+  if (ready) {
+    sb.classList.add("ready");
+    sbody.innerHTML = `<div class="text-center"><span style="font-size:2rem;">🎉</span><h3>环境就绪</h3><p class="text-muted">所有必需组件已安装，可以直接开始配置 API！</p></div>`;
+  } else {
+    sbody.innerHTML = `<p class="text-muted">还有 <strong>${Object.values(data).filter(d=>d&&!d.ok).length}</strong> 项需要处理，按上方步骤依次操作即可</p>`;
+  }
 }
 
-(async function(){
-  if(sessionStorage.getItem("ccswitch-just-installed")){sessionStorage.removeItem(CACHE_KEY);sessionStorage.removeItem("ccswitch-just-installed");}
-  let data=getCheckCache();
-  if(!data){try{const resp=await API.checkAll();if(!resp.success)throw new Error("检测失败");data=resp.data;setCheckCache(data);}catch(e){document.getElementById("loading").innerHTML=`<p style="color:var(--red);">❌ 检测出错: ${e.message}</p><button class="btn btn-outline mt-2" onclick="location.reload()">再试一次</button>`;return;}}
-  document.getElementById("loading").style.display="none";document.getElementById("results").style.display="block";
-  document.getElementById("last-time").textContent=new Date().toLocaleTimeString();
-  let cards="";for(const item of ITEMS)cards+=renderCard(item,data[item.key]||{});
-  document.getElementById("check-list").innerHTML=cards;renderSummary(data);
-})();
+loadAll();
 </script>
 {% endblock %}

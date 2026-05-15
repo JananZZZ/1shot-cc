@@ -9,9 +9,21 @@
   <span class="step-line done"></span>
   <a href="/wizard/claude" class="step done"><span class="step-dot">4</span><span class="step-label">Claude</span></a>
   <span class="step-line done"></span>
-  <a href="/wizard/ccswitch" class="step done"><span class="step-dot">5</span><span class="step-label">Switch</span></a>
+  <a href="/wizard/config" class="step done"><span class="step-dot">5</span><span class="step-label">API</span></a>
   <span class="step-line done"></span>
-  <a href="/wizard/config" class="step active"><span class="step-dot">6</span><span class="step-label">完成</span></a>
+  <a href="/wizard/ccswitch" class="step done"><span class="step-dot">6</span><span class="step-label">Switch</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/terminal" class="step done"><span class="step-dot">7</span><span class="step-label">美化</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/summary" class="step done"><span class="step-dot">8</span><span class="step-label">收尾</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/final" class="step active"><span class="step-dot">9</span><span class="step-label">完成</span></a>
+</div>
+  <a href="/wizard/terminal" class="step done"><span class="step-dot">7</span><span class="step-label">美化</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/summary" class="step done"><span class="step-dot">8</span><span class="step-label">收尾</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/final" class="step active"><span class="step-dot">9</span><span class="step-label">完成</span></a>
 </div>
 
 <div id="confetti-box" class="confetti-container"></div>
@@ -50,21 +62,6 @@
   </div>
 </div>
 
-<div class="card mb-3">
-  <div class="flex items-center justify-between flex-wrap gap-2">
-    <div>
-      <div class="card-header" style="margin-bottom:0;">🎨 想让终端更好看？</div>
-      <p class="text-sm text-muted">Color-cc 一键美化终端配色</p>
-      <p class="text-xs text-muted mt-1">⏳ 安装耗时约 3-5 分钟，请耐心等待</p>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn btn-outline" id="colorcc-btn" onclick="installColorCC()">🎨 一键美化</button>
-      <a href="https://github.com/JananZZZ/color-cc" target="_blank" class="btn btn-outline">⭐ 点亮GitHub</a>
-    </div>
-  </div>
-  <div id="colorcc-msg" class="text-sm mt-1" style="display:none;"></div>
-</div>
-
 <div class="card">
   <div class="card-header">👋 第一次用？试试这样</div>
   <ol class="text-sm" style="padding-left:16px;color:var(--t2);">
@@ -79,7 +76,7 @@
   <div class="card-header">📸 操作步骤图解</div>
   <div class="guide-step-card">
     <img src="/static/img/guide-claude-run.png" alt="在终端输入claude" class="guide-img">
-    <p class="text-sm text-center text-muted">① 打开工作文件夹，鼠标右键，<strong>在终端中打开(T)</strong></p>
+    <p class="text-sm text-center text-muted">① 打开工作文件夹，鼠标右键空白处，选择<strong>【在终端中打开(T)】</strong></p>
   </div>
   <div class="guide-step-card mt-2">
     <img src="/static/img/guide-trust-folder.png" alt="信任此文件夹" class="guide-img">

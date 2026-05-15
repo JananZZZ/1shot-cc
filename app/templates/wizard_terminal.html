@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="steps-bar">
+  <a href="/wizard/check" class="step done"><span class="step-dot">1</span><span class="step-label">检测</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/nodejs" class="step done"><span class="step-dot">2</span><span class="step-label">Node.js</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/git" class="step done"><span class="step-dot">3</span><span class="step-label">Git</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/claude" class="step done"><span class="step-dot">4</span><span class="step-label">Claude</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/config" class="step done"><span class="step-dot">5</span><span class="step-label">API</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/ccswitch" class="step done"><span class="step-dot">6</span><span class="step-label">Switch</span></a>
+  <span class="step-line done"></span>
+  <a href="/wizard/terminal" class="step active"><span class="step-dot">7</span><span class="step-label">美化</span></a>
+  <span class="step-line"></span>
+  <a href="/wizard/summary" class="step"><span class="step-dot">8</span><span class="step-label">收尾</span></a>
+  <span class="step-line"></span>
+  <a href="/wizard/final" class="step"><span class="step-dot">9</span><span class="step-label">完成</span></a>
+</div>
+<div class="page-hero"><h1>🖥️ 终端美化</h1><p>让终端好看又好用（选做）</p></div>
+
+<!-- Windows Terminal -->
+<div class="card mb-3">
+  <div class="card-header">💻 Windows Terminal</div>
+  <p class="text-sm text-muted">微软官方出品的现代化终端工具，支持多标签、主题配色</p>
+  <div id="wt-status" class="text-sm mt-1"></div>
+  <div class="mt-2">
+    <button class="btn btn-outline" id="wt-btn" onclick="installWT()">📥 一键安装</button>
+  </div>
+</div>
+
+<div class="callout info">💡 <strong>这是啥：</strong>Windows Terminal 是微软官方出品的终端工具，比系统自带的 PowerShell 窗口好看得多，支持多标签页和主题。</div>
+
+<!-- Color-cc -->
+<div class="card mb-3">
+  <div class="card-header">🎨 Color-cc 终端配色</div>
+  <p class="text-sm text-muted">Color-cc 一键美化终端配色方案</p>
+  <p class="text-xs mt-1" style="color:var(--amber);">⚠️ 依赖于上方 Windows Terminal，请先确保 WT 已安装</p>
+  <p class="text-xs text-muted mt-1">⏳ 安装耗时约 3-5 分钟，请耐心等待</p>
+  <div id="colorcc-msg" class="text-sm mt-1" style="display:none;"></div>
+  <div class="mt-2 flex flex-wrap gap-2">
+    <button class="btn btn-outline" id="colorcc-btn" onclick="installColorCC()">🎨 一键美化</button>
+    <a href="https://github.com/JananZZZ/color-cc" target="_blank" class="btn btn-outline">⭐ 点亮GitHub</a>
+  </div>
+</div>
+
+<div class="wizard-nav">
+  <a href="/wizard/ccswitch" class="btn btn-outline">← 上一步</a>
+  <a href="/wizard/summary" class="btn btn-ghost btn-sm">跳过美化 →</a>
+  <a href="/wizard/summary" class="btn btn-accent">下一步 →</a>
+</div>
+{% endblock %}
+{% block scripts %}<script>
+// WT 状态检测
+(async function(){
+  try{
+    var r = await API.checkWinTerm();
+    var el = document.getElementById('wt-status');
+    var btn = document.getElementById('wt-btn');
+    if(r.data && r.data.installed){
+      el.innerHTML = '<span style="color:var(--green);">✅ 已安装</span>';
+      btn.textContent = '✅ 已安装';
+      btn.disabled = true;
+    }else{
+      el.innerHTML = '<span style="color:var(--t3);">未安装</span>';
+    }
+  }catch(e){}
+})();
+
+async function installWT(){
+  var btn = document.getElementById('wt-btn');
+  var el = document.getElementById('wt-status');
+  btn.disabled = true;
+  btn.textContent = '⏳ 安装中...';
+  try{
+    var r = await API.installWinTerm();
+    if(r.task_id){
+      var es = new EventSource('/api/install/progress/'+r.task_id);
+      es.onmessage = function(e){
+        var d = JSON.parse(e.data);
+        el.textContent = d.message;
+        if(d.done){
+          es.close();
+          if(d.error){
+            el.innerHTML = '<span style="color:var(--red);">安装失败，请从 Microsoft Store 手动安装</span>';
+            btn.textContent = '🔄 重试';
+          }else{
+            el.innerHTML = '<span style="color:var(--green);">✅ 已安装</span>';
+            btn.textContent = '✅ 已安装';
+          }
+          btn.disabled = false;
+        }
+      };
+    }
+  }catch(e){
+    el.innerHTML = '<span style="color:var(--red);">安装失败</span>';
+    btn.disabled = false;
+    btn.textContent = '📥 一键安装';
+  }
+}
+
+async function installColorCC(){
+  var btn = document.getElementById('colorcc-btn'), m = document.getElementById('colorcc-msg');
+  btn.disabled = true; btn.textContent = '⏳ 安装中...'; m.style.display = 'block'; m.textContent = '正在下载...';
+  try{
+    var r = await API.installColorCC();
+    if(r.task_id){
+      var es = new EventSource('/api/install/progress/'+r.task_id);
+      es.onmessage = function(e){
+        var d = JSON.parse(e.data);
+        m.textContent = d.message;
+        if(d.done){
+          es.close();
+          if(d.error){
+            m.innerHTML = '<span style="color:var(--red);">安装失败：'+d.error+'</span>';
+            btn.textContent = '🔄 重试';
+          }else{
+            m.innerHTML = '<span style="color:var(--green);">✅ '+d.message+'</span>';
+            btn.textContent = '✅ 已安装';
+          }
+          btn.disabled = false;
+        }
+      };
+    }
+  }catch(e){
+    m.textContent = '安装失败：'+e.message;
+    btn.disabled = false; btn.textContent = '🎨 一键美化';
+  }
+}
+</script>{% endblock %}
