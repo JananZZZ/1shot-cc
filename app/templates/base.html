@@ -26,6 +26,7 @@
     <a href="/wizard/check">🔍 系统检测</a>
     <a href="/wizard/config">⚙️ API 配置</a>
     <a href="/wizard/uninstall">🗑️ 一键卸载</a>
+    <a href="#" onclick="launchClaude()">🤖 启动 Claude Code</a>
     <a href="https://github.com/JananZZZ/1shot-cc" target="_blank" class="nav-github">⭐ 点亮 GitHub</a>
     <a href="#" onclick="exitApp()" class="nav-exit">🚪 退出</a>
   </div>
@@ -92,6 +93,7 @@ function clearCheckCache() {
 })();
 
 async function exitApp(){try{await fetch('/api/system/shutdown',{method:'POST'});}catch(e){}document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;font-family:inherit;"><div><div style="font-size:3rem;">👋</div><h2 style="color:var(--t1);">拜拜~</h2></div></div>';var w=window.open('','_self','');w.close();setTimeout(function(){if(!window.closed)window.close();},500);}
+async function launchClaude(){try{await API.launchClaude();showToast('Claude Code 正在启动','success');}catch(e){showToast('启动失败，请手动打开终端输入 claude','error');}}
 
 // 页面引用计数 — 只有所有页面关闭后才退出后台
 (function() {

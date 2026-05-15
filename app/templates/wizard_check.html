@@ -21,6 +21,12 @@
 </div>
 <div class="page-hero"><h1>先看看电脑还缺什么</h1><p>自动帮你检查一遍，缺什么一目了然</p></div>
 
+<div class="wizard-nav">
+  <a href="/" class="btn btn-outline">← 首页</a>
+  <button class="btn btn-outline btn-sm" onclick="forceRecheck()">🔄 重新检测</button>
+  <a href="/wizard/nodejs" class="btn btn-accent">下一步 → 装 Node.js</a>
+</div>
+
 <div id="loading" class="loading-pulse">
   <span class="pulse-dot"></span>
   <span class="text-muted">正在检查你的电脑...</span>
@@ -34,15 +40,9 @@
   </div>
 
   <div class="callout info mt-2">
-    💡 <strong>提示：</strong>按照上方步骤顺序依次操作即可。标记 ⚠️ 的项目可以在第⑧步"收尾检查"中一键修复。
-  </div>
-
-  <div class="text-center mt-3">
-    <button class="btn btn-outline btn-sm" onclick="forceRecheck()">🔄 重新检测</button>
+    💡 <strong>提示：</strong>按照上方步骤顺序依次操作即可。小项可以在第⑧步"收尾检查"中一键修复。
   </div>
 </div>
-
-
 {% endblock %}
 {% block scripts %}
 <script>
@@ -81,7 +81,7 @@ function renderCard(item, data) {
   } else if (status === "ok" && item.installUrl) {
     action = `<a href="${item.installUrl}" class="btn btn-outline btn-sm">📦 查看</a>`;
   }
-  return `<div class="check-card status-${status}" id="card-${item.key}">
+  return `<div class="status-card status-${status}" id="card-${item.key}">
     <div class="flex items-center gap-3">
       <div class="check-icon">${icon}</div>
       <div class="check-body">
@@ -115,7 +115,6 @@ async function loadAll() {
     html += renderCard(item, data[item.key]);
   }
   document.getElementById("cards-container").innerHTML = html;
-  // Summary
   var ready = data.ready;
   var sb = document.getElementById("summary-box");
   var sbody = document.getElementById("summary-body");

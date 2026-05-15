@@ -53,7 +53,7 @@ function renderItem(item, data){
       fix_html = '<p class="text-xs text-muted mt-1">'+item.fix_label+'</p>';
     }
   }
-  return '<div class="check-card status-'+(ok?'ok':'warn')+'" id="card-'+item.key+'">'+
+  return '<div class="status-card status-'+(ok?'ok':'warn')+'" id="card-'+item.key+'">'+
     '<div class="flex items-center gap-3">'+
       '<div class="check-icon">'+status_icon+'</div>'+
       '<div class="check-body">'+

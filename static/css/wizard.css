@@ -133,39 +133,34 @@
 .progress-wrap .progress-bar { margin-bottom: 6px; }
 
 /* ═══ 检测卡片 ═══ */
-.check-card {
+.check-card, .status-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
+  border-left: 4px solid var(--border);
   border-radius: var(--r-md);
   padding: 18px 22px;
   margin-bottom: 10px;
   transition: all 0.2s var(--ease);
-  position: relative;
 }
-.check-card::before {
-  content: ''; position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 3px; border-radius: 0 2px 2px 0;
-}
-.check-card.status-ok::before  { background: var(--green); }
-.check-card.status-warn::before { background: var(--amber); }
-.check-card.status-err::before  { background: var(--red); }
-.check-card:hover { box-shadow: var(--shadow-sm); }
+.check-card.status-ok, .status-card.status-ok   { border-left-color: var(--green); }
+.check-card.status-warn, .status-card.status-warn { border-left-color: var(--amber); }
+.check-card.status-err, .status-card.status-err   { border-left-color: var(--red); }
+.check-card:hover, .status-card:hover { box-shadow: var(--shadow-sm); }
 
-.check-card .check-icon { font-size: 1.4rem; flex-shrink: 0; }
-.check-card .check-body { flex: 1; min-width: 0; }
-.check-card .check-title {
+.check-card .check-icon, .status-card .check-icon { font-size: 1.4rem; flex-shrink: 0; }
+.check-card .check-body, .status-card .check-body { flex: 1; min-width: 0; }
+.check-card .check-title, .status-card .check-title {
   font-family: "Noto Serif SC", serif;
   font-weight: 600;
   font-size: 0.95rem;
   color: var(--t1);
 }
-.check-card .check-desc { color: var(--t3); font-size: 0.82rem; margin-top: 1px; }
-.check-card .check-detail { font-size: 0.8rem; margin-top: 3px; font-weight: 500; }
-.check-card .check-detail.ok   { color: var(--green); }
-.check-card .check-detail.warn { color: var(--amber); }
-.check-card .check-detail.err  { color: var(--red); }
-.check-card .check-action { flex-shrink: 0; margin-left: 12px; }
+.check-card .check-desc, .status-card .check-desc { color: var(--t3); font-size: 0.82rem; margin-top: 1px; }
+.check-card .check-detail, .status-card .check-detail { font-size: 0.8rem; margin-top: 3px; font-weight: 500; }
+.check-card .check-detail.ok, .status-card .check-detail.ok   { color: var(--green); }
+.check-card .check-detail.warn, .status-card .check-detail.warn { color: var(--amber); }
+.check-card .check-detail.err, .status-card .check-detail.err  { color: var(--red); }
+.check-card .check-action, .status-card .check-action { flex-shrink: 0; margin-left: 12px; }
 
 /* 摘要 */
 .summary-box {
