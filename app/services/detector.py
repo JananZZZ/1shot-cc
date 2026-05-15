@@ -59,6 +59,15 @@ def _detect_nodejs() -> dict:
     installed = r["success"] and r["stdout"].startswith("v")
     version = _ver(r["stdout"]) if installed else ""
     path = reg_nodejs() or ""
+
+    # CLI 失败但注册表有安装路径 → Node.js 已安装但不在 PATH
+    if not installed and path:
+        node_exe = os.path.join(path, "node.exe")
+        r2 = run_cmd(f'"{node_exe}" --version', timeout=10)
+        if r2["success"] and r2["stdout"].startswith("v"):
+            installed = True
+            version = _ver(r2["stdout"])
+
     latest = NODEJS_VERSION
     return {
         "installed": installed,
@@ -100,6 +109,15 @@ def _detect_git() -> dict:
     installed = r["success"] and "git version" in r["stdout"].lower()
     version = _ver(r["stdout"]) if installed else ""
     path = reg_git() or ""
+
+    # CLI 失败但注册表有安装路径 → Git 已安装但不在 PATH
+    if not installed and path:
+        git_exe = os.path.join(path, "bin", "git.exe")
+        r2 = run_cmd(f'"{git_exe}" --version', timeout=10)
+        if r2["success"] and "git version" in r2["stdout"].lower():
+            installed = True
+            version = _ver(r2["stdout"])
+
     latest = GIT_VERSION
     return {
         "installed": installed,
@@ -116,11 +134,14 @@ def _detect_claude_code() -> dict:
     r = run_cmd("claude --version", timeout=15)
     installed = r["success"] and not r["stderr"]
     version = _ver(r["stdout"]) if installed else ""
-    # npm global path
     npm_global = get_npm_global_path()
     paths = []
     if npm_global:
-        paths.append(os.path.join(npm_global, "node_modules", "@anthropic-ai", "claude-code"))
+        p = os.path.join(npm_global, "node_modules", "@anthropic-ai", "claude-code")
+        paths.append(p)
+        # CLI 失败但 npm 全局目录有包 → Claude Code 已安装但不在 PATH
+        if not installed and os.path.isdir(p):
+            installed = True
 
     # 检查 Claude Code 最新版本
     latest = ""
@@ -153,6 +174,10 @@ def _detect_ccswitch() -> dict:
             installed = True
             vers = _ver(r["stdout"])
             ctype = "cli"
+        # CLI 也失败但注册表有桌面版路径 → 已安装但 cc-switch 不在 PATH
+        elif path:
+            installed = True
+            ctype = "desktop"
 
     # 从 GitHub API 获取最新版本
     latest = ""

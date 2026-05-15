@@ -450,8 +450,10 @@ def upgrade_component(component: str):
 
 @bp.route("/uninstall-status", methods=["GET"])
 def uninstall_status():
-    """获取当前所有组件的安装状态"""
+    """获取当前所有组件的安装状态（强制刷新，不走缓存）"""
+    from app.services.detector import clear_cache
     from app.services.uninstaller import detect_all
+    clear_cache()  # 卸载前强制刷新检测结果
     results = detect_all()
     return jsonify({"success": True, "data": results})
 

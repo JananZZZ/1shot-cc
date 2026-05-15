@@ -49,6 +49,9 @@ let selectedSet = new Set();
 let taskId = null;
 
 async function loadStatus() {
+  // 强制重新检测（不读缓存），确保卸载前看到实时状态
+  clearCheckCache();
+  API.clearCheckCache().catch(function(){});
   try {
     const r = await fetch('/api/install/uninstall-status');
     const data = await r.json();

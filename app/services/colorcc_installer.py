@@ -9,8 +9,9 @@ import tempfile
 import urllib.request
 
 INSTALL_PS1_URLS = [
-    "https://raw.githubusercontent.com/JananZZZ/color-cc/main/install.ps1",
-    "https://cdn.jsdelivr.net/gh/JananZZZ/color-cc@main/install.ps1",
+    "https://gitee.com/JananZZZ/color-cc/raw/main/install.ps1",             # Gitee 镜像（国内优先）
+    "https://raw.githubusercontent.com/JananZZZ/color-cc/main/install.ps1",  # GitHub raw
+    "https://cdn.jsdelivr.net/gh/JananZZZ/color-cc@main/install.ps1",        # jsDelivr CDN
 ]
 
 CLAUDE_DIR = os.path.join(os.path.expanduser("~"), ".claude")
@@ -53,7 +54,7 @@ def _download_install_script(callback=None) -> str | None:
             callback(10, "正在下载 Color-cc 安装脚本...")
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "1shot-CC/2.0"})
-            with urllib.request.urlopen(req, timeout=30) as resp:
+            with urllib.request.urlopen(req, timeout=10) as resp:
                 content = resp.read().decode("utf-8")
                 if resp.status == 200 and content.strip():
                     tmpdir = tempfile.gettempdir()

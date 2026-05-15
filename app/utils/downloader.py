@@ -55,7 +55,7 @@ class Downloader:
         request = urllib.request.Request(url, headers={"User-Agent": "1shot-CC/1.0"})
 
         try:
-            response = urllib.request.urlopen(request, timeout=30)
+            response = urllib.request.urlopen(request, timeout=12)
         except urllib.error.HTTPError as e:
             return {"success": False, "path": "", "error": f"HTTP {e.code}: {e.reason}"}
         except urllib.error.URLError as e:

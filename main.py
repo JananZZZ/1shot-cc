@@ -109,7 +109,6 @@ def main():
 
 class _SplashServer:
     def __init__(self, port: int, flask_port: int):
-        import http.server
         self._running = True
         self._server = None
         self.flask_port = flask_port

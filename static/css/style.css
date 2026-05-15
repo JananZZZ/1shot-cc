@@ -98,7 +98,8 @@ h1, h2, h3, .serif {
 .navbar .nav-links { display: flex; gap: 4px; align-items: center; }
 
 .navbar .nav-links a,
-.navbar .nav-links .dropbtn {
+.navbar .nav-links .dropbtn,
+.navbar .nav-welcome {
   color: var(--t2);
   text-decoration: none;
   padding: 7px 16px;
@@ -110,10 +111,13 @@ h1, h2, h3, .serif {
   background: none;
   cursor: pointer;
   font-family: inherit;
+  display: inline-flex;
+  align-items: center;
 }
 
 .navbar .nav-links a:hover,
-.navbar .nav-links .dropbtn:hover {
+.navbar .nav-links .dropbtn:hover,
+.navbar .nav-welcome:hover {
   color: var(--t1);
   background: var(--bg-warm);
 }
