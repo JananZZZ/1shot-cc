@@ -44,9 +44,6 @@ New to AI coding? Overwhelmed by words like "terminal", "npm", and "environment 
 ### ⚙️ API Config · 5 AI Providers
 <p align="center"><img src="assets/5-api配置页.png" width="80%"></p>
 
-### 🔀 CC-Switch + 🎨 Terminal Makeover
-<p align="center"><img src="assets/6-完成页.png" width="80%"></p>
-
 ### 🎉 Finish & Celebrate
 <p align="center"><img src="assets/6-完成页.png" width="80%"></p>
 
