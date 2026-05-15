@@ -97,10 +97,13 @@ def launch_ccswitch_app() -> dict:
     if not path:
         return {"success": False, "error": "找不到 CC-Switch 安装位置，请确认已安装。可以从开始菜单手动启动。"}
     try:
-        subprocess.Popen(
-            [path],
-            creationflags=subprocess.CREATE_NEW_CONSOLE if hasattr(subprocess, "CREATE_NEW_CONSOLE") else 0,
-        )
+        if path.lower().endswith(".lnk"):
+            os.startfile(path)
+        else:
+            subprocess.Popen(
+                [path],
+                creationflags=subprocess.CREATE_NEW_CONSOLE if hasattr(subprocess, "CREATE_NEW_CONSOLE") else 0,
+            )
         return {"success": True, "message": f"CC-Switch 已启动: {path}"}
     except Exception as e:
         return {"success": False, "error": str(e)}

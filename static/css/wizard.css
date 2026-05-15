@@ -178,7 +178,7 @@
 /* ═══ 提供商卡片 ═══ */
 .provider-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-bottom: 18px;
 }

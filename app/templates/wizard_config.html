@@ -21,7 +21,7 @@
 </div>
 <div class="page-hero"><h1>⚙️ 配置你的第一个 API</h1><p>选择 AI 服务商，填入密钥就能用了</p></div>
 
-<div id="current-cfg" class="callout success mb-2" style="display:none;">
+<div id="current-cfg" class="callout success mb-2 max-w-560" style="display:none;">
   <strong>📌 当前已连接：</strong><span id="cfg-provider"></span> · 密钥 <code id="cfg-key"></code>
 </div>
 
@@ -68,7 +68,7 @@
 </div>
 {% endblock %}
 {% block scripts %}<script>
-const INFO={deepseek:{name:"DeepSeek",key:"https://platform.deepseek.com/api_keys",haiku:"deepseek-v4-flash[1m]",sonnet:"deepseek-v4-pro[1m]",opus:"deepseek-v4-pro[1m]"},zhipu:{name:"智谱 GLM",key:"https://bigmodel.cn/usercenter/proj-mgmt/apikeys",haiku:"glm-4.5",sonnet:"glm-4.7",opus:"glm-4.7"},minimax:{name:"MiniMax",key:"https://platform.minimaxi.com/user-center/basic-information/interface-key",haiku:"MiniMax-M1-40k",sonnet:"MiniMax-M2",opus:"MiniMax-M2"},mimo:{name:"小米 MiMo",key:"https://platform.xiaomimimo.com/#/console/api-keys",haiku:"mimo-v2-flash",sonnet:"mimo-v2-flash",opus:"mimo-v2-flash"},qwen:{name:"通义千问",key:"https://bailian.console.aliyun.com/#/api-key",haiku:"qwen3.6-flash",sonnet:"qwen3.6-plus",opus:"qwen3.6-plus"},custom:{name:"自定义",key:"#",haiku:"",sonnet:"",opus:""}};
+const INFO={deepseek:{name:"DeepSeek",key:"https://platform.deepseek.com/api_keys",haiku:"deepseek-v4-flash[1m]",sonnet:"deepseek-v4-pro[1m]",opus:"deepseek-v4-pro[1m]"},zhipu:{name:"智谱 GLM",key:"https://bigmodel.cn/usercenter/proj-mgmt/apikeys",haiku:"glm-4.5",sonnet:"glm-4.7",opus:"glm-4.7"},minimax:{name:"MiniMax",key:"https://platform.minimaxi.com/user-center/basic-information/interface-key",haiku:"MiniMax-M1-40k",sonnet:"MiniMax-M2",opus:"MiniMax-M2"},mimo:{name:"小米 MiMo",key:"https://platform.xiaomimimo.com/#/console/api-keys",haiku:"mimo-v2-flash",sonnet:"mimo-v2-flash",opus:"mimo-v2-flash"},qwen:{name:"通义千问",key:"https://bailian.console.aliyun.com/#/api-key",haiku:"qwen3.6-flash",sonnet:"qwen3.6-plus",opus:"qwen3.6-plus"},custom:{name:"自定义",key:"#",haiku:"deepseek-v4-flash[1m]",sonnet:"deepseek-v4-pro[1m]",opus:"deepseek-v4-pro[1m]"}};
 let sel="";
 function selectP(k){sel=k;document.querySelectorAll(".provider-card").forEach(c=>c.classList.remove("selected"));document.querySelector(`[data-p="${k}"]`).classList.add("selected");document.getElementById("config-form").style.display="block";document.getElementById("form-title").textContent="配置 "+INFO[k].name;document.getElementById("custom-url-wrap").style.display=k==="custom"?"block":"none";document.getElementById("link-key").href=INFO[k].key;document.getElementById("save-result").style.display="none";
 const info=INFO[k];document.getElementById("haiku-model").placeholder=info.haiku||"无默认模型";document.getElementById("sonnet-model").placeholder=info.sonnet||"无默认模型";document.getElementById("opus-model").placeholder=info.opus||"无默认模型";
