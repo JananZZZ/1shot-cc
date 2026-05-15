@@ -103,14 +103,14 @@ function doInstall() {
   var cached = getCheckCache();
   if (cached && cached.ccswitch) {
     var info = cached.ccswitch;
-    if (info.installed) { showInstalledCard('CC-Switch', info.version, info.outdated); return; }
+    if (info.installed) { showInstalledCard('CC Switch', info.version, info.outdated, true); return; }
     return;
   }
   API.checkAll().then(function(r){
     if (!r.success) return;
     setCheckCache(r.data);
     var info = r.data.ccswitch;
-    if (info && info.installed) { showInstalledCard('CC-Switch', info.version, info.outdated); }
+    if (info && info.installed) { showInstalledCard('CC Switch', info.version, info.outdated, true); }
   }).catch(function(){});
 })();
 </script>{% endblock %}

@@ -42,7 +42,7 @@
 <script src="/static/js/wizard.js"></script>
 <script>
 // 全局：显示"已安装"绿色卡片 + 显示下一步按钮
-function showInstalledCard(name, version, outdated) {
+function showInstalledCard(name, version, outdated, showActions) {
   var panel = document.querySelector('.install-panel');
   if (!panel) return;
   var vtext = version ? ' (' + version + ')' : '';
@@ -50,10 +50,15 @@ function showInstalledCard(name, version, outdated) {
   if (outdated) {
     extra = '<p class="text-sm" style="color:var(--amber);margin-top:8px;">⚠️ 版本过旧，建议升级到最新版</p>';
   }
-  panel.innerHTML = '<div class="callout success text-center" style="padding:32px;"><div style="font-size:2rem;">✅</div><h3>' + name + ' 已安装' + vtext + '</h3>' + extra + '<p class="text-muted">可以直接进入下一步</p></div>';
+  var actions = '';
+  if (showActions) {
+    actions = '<div class="flex flex-wrap gap-2 justify-center mt-2"><button class="btn btn-outline btn-sm" onclick="launchCCS()">🚀 启动 CC Switch</button><a href="/tutorial/ccswitch" target="_blank" class="btn btn-outline btn-sm">📖 CC Switch 指南</a></div>';
+  }
+  panel.innerHTML = '<div class="callout success text-center" style="padding:32px;"><div style="font-size:2rem;">✅</div><h3>' + name + ' 已安装' + vtext + '</h3>' + extra + actions + '<p class="text-muted">可以直接进入下一步</p></div>';
   var next = document.getElementById('next-step');
   if (next) next.style.display = 'block';
 }
+async function launchCCS(){try{await API.launchCCSwitch();showToast('CC Switch 正在启动','success');}catch(e){showToast('启动失败，请从开始菜单手动打开','warning');}}
 
 // 全局：统一检测缓存
 var CHECK_CACHE_KEY = '1shot-cc-check-all';
@@ -92,7 +97,7 @@ function clearCheckCache() {
   });
 })();
 
-async function exitApp(){try{await fetch('/api/system/shutdown',{method:'POST'});}catch(e){}document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;font-family:inherit;"><div><div style="font-size:3rem;">👋</div><h2 style="color:var(--t1);">拜拜~</h2></div></div>';var w=window.open('','_self','');w.close();setTimeout(function(){if(!window.closed)window.close();},500);}
+async function exitApp(){try{await fetch('/api/system/shutdown',{method:'POST'});}catch(e){}document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;font-family:inherit;"><div><div style="font-size:3rem;">👋</div><h2 style="color:var(--t1);">拜拜~再会。</h2></div></div>';var w=window.open('','_self','');w.close();setTimeout(function(){if(!window.closed)window.close();},500);}
 async function launchClaude(){try{await API.launchClaude();showToast('Claude Code 正在启动','success');}catch(e){showToast('启动失败，请手动打开终端输入 claude','error');}}
 
 // 页面引用计数 — 只有所有页面关闭后才退出后台
